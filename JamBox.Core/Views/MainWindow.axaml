@@ -1,9 +1,114 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="JamBox.Core.MainWindow"
-        Title="JamBox">
-    Welcome to Avalonia!
+        xmlns:vm="using:JamBox.Core.ViewModels"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+	x:Class="JamBox.Core.Views.MainWindow"
+	Title="🎶 Jam Box - Jellyfin Connect">
+
+	<!-- Design-time DataContext for Avalonia UI previewer -->
+	<Design.DataContext>
+		<vm:MainViewModel/>
+	</Design.DataContext>
+
+	<!-- Main layout: A Grid to structure the UI vertically -->
+	<Grid RowDefinitions="Auto, Auto, Auto, *" Background="#1a202c">
+		<!-- Application Title -->
+		<TextBlock Grid.Row="0" Text="🎶 Jam Box 🎶"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Margin="20"
+                   FontSize="32" FontWeight="Bold" Foreground="#66CCCC"/>
+
+		<!-- Input fields and button for connection -->
+		<StackPanel Grid.Row="1" Margin="20" Spacing="15">
+			<!-- Inline Control Themes for TextBox and Button for visual consistency -->
+			<StackPanel.Resources>
+				<ControlTheme x:Key="JamBoxTextBoxTheme" TargetType="TextBox">
+					<Setter Property="Background" Value="#2d3748"/>
+					<Setter Property="BorderBrush" Value="#4a5568"/>
+					<Setter Property="BorderThickness" Value="1"/>
+					<Setter Property="CornerRadius" Value="8"/>
+					<Setter Property="Foreground" Value="#e2e8f0"/>
+					<Setter Property="CaretBrush" Value="#66CCCC"/>
+					<Setter Property="Padding" Value="10"/>
+					<Setter Property="FontSize" Value="14"/>
+					<Setter Property="VerticalContentAlignment" Value="Center"/>
+					<Style Selector="^:focus">
+						<Setter Property="BorderBrush" Value="#4299e1"/>
+					</Style>
+				</ControlTheme>
+
+				<ControlTheme x:Key="JamBoxButtonTheme" TargetType="Button">
+					<Setter Property="Background" Value="#4299e1"/>
+					<Setter Property="Foreground" Value="White"/>
+					<Setter Property="BorderBrush" Value="#4299e1"/>
+					<Setter Property="BorderThickness" Value="1"/>
+					<Setter Property="CornerRadius" Value="8"/>
+					<Setter Property="Padding" Value="10 15"/>
+					<Setter Property="FontSize" Value="16"/>
+					<Setter Property="FontWeight" Value="SemiBold"/>
+					<Setter Property="Cursor" Value="Hand"/>
+					<Style Selector="^:pointerover">
+						<Setter Property="Background" Value="#3182ce"/>
+					</Style>
+					<Style Selector="^:pressed">
+						<Setter Property="Background" Value="#2b6cb0"/>
+						<Setter Property="RenderTransform" Value="scale(0.98)"/>
+					</Style>
+					<Style Selector="^:disabled">
+						<Setter Property="Opacity" Value="0.6"/>
+						<Setter Property="Cursor" Value="No"/>
+					</Style>
+				</ControlTheme>
+			</StackPanel.Resources>
+
+			<TextBlock Text="Jellyfin Server URL:" Foreground="#cbd5e0" Margin="0,0,0,-5"/>
+			<TextBox Text="{Binding ServerUrl}" Theme="{StaticResource JamBoxTextBoxTheme}" Watermark="http://192.168.68.100:8096"/>
+
+			<TextBlock Text="Username:" Foreground="#cbd5e0" Margin="0,0,0,-5"/>
+			<TextBox Text="{Binding Username}" Theme="{StaticResource JamBoxTextBoxTheme}" Watermark="Your Jellyfin username"/>
+
+			<TextBlock Text="Password:" Foreground="#cbd5e0" Margin="0,0,0,-5"/>
+			<TextBox PasswordChar="*" Text="{Binding Password}" Theme="{StaticResource JamBoxTextBoxTheme}" Watermark="Your Jellyfin password"/>
+
+			<Button Content="{Binding IsLoading, Converter={StaticResource BooleanToTextConverter}}"
+                    Command="{Binding ConnectCommand}"
+                    Theme="{StaticResource JamBoxButtonTheme}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    IsEnabled="{Binding !IsLoading}"/>
+		</StackPanel>
+
+		<!-- Display area for connection status messages -->
+		<TextBlock Grid.Row="2" Text="{Binding ConnectionStatus}"
+                   HorizontalAlignment="Center" VerticalAlignment="Top"
+                   Margin="20,10,20,0"
+                   FontSize="16" FontWeight="SemiBold"
+                   TextWrapping="Wrap"
+                   Foreground="{Binding ConnectionStatus, Converter={StaticResource ConnectionStatusToColorConverter}}"/>
+
+		<!-- Scrollable area for server information and libraries -->
+		<ScrollViewer Grid.Row="3" Margin="20,0,20,20" VerticalScrollBarVisibility="Auto">
+			<StackPanel IsVisible="{Binding ServerInfo, Converter={StaticResource IsNotNullConverter}}" Spacing="10">
+				<TextBlock Text="Server Information:" FontSize="18" FontWeight="Bold" Foreground="#66CCCC"/>
+				<TextBlock Text="{Binding ServerInfo.ServerName, StringFormat='Server Name: {0}'}" Foreground="#e2e8f0"/>
+				<TextBlock Text="{Binding ServerInfo.Version, StringFormat='Version: {0}'}" Foreground="#e2e8f0"/>
+				<TextBlock Text="{Binding ServerInfo.Id, StringFormat='ID: {0}'}" Foreground="#e2e8f0"/>
+				<TextBlock Text="{Binding ServerInfo.DeviceName, StringFormat='Device Name: {0}'}" Foreground="#e2e8f0"/>
+
+				<TextBlock Text="Your Libraries:" FontSize="18" FontWeight="Bold" Foreground="#66CCCC" Margin="0,10,0,0"
+                           IsVisible="{Binding UserLibraries.Count, Converter={StaticResource IsGreaterThanZeroConverter}}"/>
+
+				<ItemsControl ItemsSource="{Binding UserLibraries}"
+                              IsVisible="{Binding UserLibraries.Count, Converter={StaticResource IsGreaterThanZeroConverter}}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Name, StringFormat='• {0} ({CollectionType})'}" Foreground="#cbd5e0"/>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
 </Window>
