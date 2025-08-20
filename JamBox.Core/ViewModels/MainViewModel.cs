@@ -1,5 +1,5 @@
-﻿using JamBox.Jellyfin; // Assuming your JellyfinApiService is in JamBox.Jellyfin namespace
-using JamBox.JellyFin;
+﻿using JamBox.Core.Jellyfin;
+using JamBox.Core.JellyFin;
 using ReactiveUI;
 using System.Collections.ObjectModel; // For ObservableCollection
 using System.Reactive;

@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace JamBox
+namespace JamBox.Core
 {
     public partial class MainWindow : Window
     {

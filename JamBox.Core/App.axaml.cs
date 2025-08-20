@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
-namespace JamBox
+namespace JamBox.Core
 {
     public partial class App : Application
     {

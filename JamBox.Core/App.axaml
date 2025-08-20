@@ -1,10 +1,84 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="JamBox.App"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             x:Class="JamBox.Core.App"
+             RequestedThemeVariant="Default"
+			 xmlns:local="clr-namespace:JamBox.Core"	
+             xmlns:converters="using:JamBox.Core.Converters">
 
-    <Application.Styles>
-		<SimpleTheme />
-    </Application.Styles>
+	<Application.DataTemplates>
+		<local:ViewLocator/>
+	</Application.DataTemplates>
+
+	<Application.Styles>
+		<FluentTheme />
+
+		<Style Selector="TextBlock.Header">
+			<Setter Property="FontSize" Value="24"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="Foreground" Value="#66CCCC"/>
+			<Setter Property="Margin" Value="0,10,0,5"/>
+		</Style>
+
+		<Style Selector="TextBlock.SubHeader">
+			<Setter Property="FontSize" Value="18"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="Foreground" Value="#99CCCC"/>
+			<Setter Property="Margin" Value="0,5,0,2"/>
+		</Style>
+
+		<Style Selector="TextBox">
+			<Setter Property="Background" Value="#2d3748"/>
+			<Setter Property="BorderBrush" Value="#4a5568"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Foreground" Value="#e2e8f0"/>
+			<Setter Property="CaretBrush" Value="#66CCCC"/>
+			<Setter Property="Padding" Value="10"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="TextBox:focus">
+			<Setter Property="BorderBrush" Value="#4299e1"/>
+		</Style>
+
+		<Style Selector="Button">
+			<Setter Property="Background" Value="#4299e1"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="BorderBrush" Value="#4299e1"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="10 15"/>
+			<Setter Property="FontSize" Value="16"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="Cursor" Value="Hand"/>
+		</Style>
+
+		<Style Selector="Button:pointerover">
+			<Setter Property="Background" Value="#3182ce"/>
+		</Style>
+
+		<Style Selector="Button:pressed">
+			<Setter Property="Background" Value="#2b6cb0"/>
+			<Setter Property="RenderTransform" Value="scale(0.98)"/>
+		</Style>
+
+		<Style Selector="Button:disabled">
+			<Setter Property="Opacity" Value="0.6"/>
+			<Setter Property="Cursor" Value="No"/>
+		</Style>
+
+		<Style Selector="ScrollViewer">
+			<Setter Property="Background" Value="#1a202c"/>
+		</Style>
+
+		<Style Selector="Application">
+			<Style.Resources>
+				<converters:BooleanToTextConverter x:Key="BooleanToTextConverter"/>
+				<converters:ConnectionStatusToColorConverter x:Key="ConnectionStatusToColorConverter"/>
+				<converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
+				<converters:IsGreaterThanZeroConverter x:Key="IsGreaterThanZeroConverter"/>
+			</Style.Resources>
+		</Style>
+	</Application.Styles>
 </Application>

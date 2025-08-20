@@ -1,5 +1,7 @@
-﻿using System;
-using Avalonia;
+﻿using Avalonia;
+using Avalonia.ReactiveUI;
+using JamBox.Core;
+using System;
 
 namespace JamBox
 {
@@ -17,6 +19,7 @@ namespace JamBox
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .WithInterFont()
-                .LogToTrace();
+                .LogToTrace()
+                .UseReactiveUI();
     }
 }

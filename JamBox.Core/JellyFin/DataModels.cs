@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace JamBox.Jellyfin
+namespace JamBox.Core.Jellyfin
 {
     public class AuthenticationResult
     {

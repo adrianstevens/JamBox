@@ -1,13 +1,9 @@
-﻿using JamBox.Jellyfin;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
+﻿using JamBox.Core.Jellyfin;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
-namespace JamBox.JellyFin
+namespace JamBox.Core.JellyFin
 {
     public class JellyfinApiService
     {
