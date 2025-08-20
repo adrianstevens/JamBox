@@ -98,16 +98,11 @@
                               IsVisible="{Binding UserLibraries.Count, Converter={StaticResource IsGreaterThanZeroConverter}}">
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
-							<TextBlock Text="{Binding Name, StringFormat='• {0} ({CollectionType})'}" Foreground="#cbd5e0"/>
+							<TextBlock Text="{Binding DisplayName}" Foreground="#cbd5e0"/>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 			</StackPanel>
 		</ScrollViewer>
-		<StackPanel Grid.Row="4" Margin="20" HorizontalAlignment="Center">
-			<Button Content="Click Me To Test UI!"
-                    Theme="{StaticResource JamBoxButtonTheme}" />
-			<TextBlock Text="{Binding TestMessage}" HorizontalAlignment="Center" Foreground="#99CCCC" Margin="0,5,0,0"/>
-		</StackPanel>
 	</Grid>
 </Window>

@@ -48,7 +48,7 @@ namespace JamBox.Core.JellyFin
         [JsonPropertyName("CollectionType")]
         public string CollectionType { get; set; } // e.g., "movies", "music", "tvshows"
 
-        // Add other properties relevant to media items (e.g., ImageTags, Type)
+        public string DisplayName => $"{Name} ({CollectionType})";
     }
 
     public class UserViewsResult
