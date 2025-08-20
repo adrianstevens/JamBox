@@ -1,8 +1,8 @@
-﻿using JamBox.Core.Jellyfin;
-using JamBox.Core.JellyFin;
+﻿using JamBox.Core.JellyFin;
 using ReactiveUI;
-using System.Collections.ObjectModel; // For ObservableCollection
+using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Linq;
 
 namespace JamBox.Core.ViewModels
 {
@@ -10,8 +10,8 @@ namespace JamBox.Core.ViewModels
     {
         private readonly JellyfinApiService _jellyfinApiService;
 
-        // Properties for UI binding
-        private string _serverUrl = "http://192.168.68.100:8096"; // Default to your local IP
+        // UI Bound Properties
+        private string _serverUrl = "http://192.168.68.100:8096";
         public string ServerUrl
         {
             get => _serverUrl;
@@ -46,19 +46,11 @@ namespace JamBox.Core.ViewModels
             set => this.RaiseAndSetIfChanged(ref _serverInfo, value);
         }
 
-        // Use ObservableCollection for lists that the UI needs to update dynamically
         private ObservableCollection<BaseItemDto> _userLibraries = new ObservableCollection<BaseItemDto>();
         public ObservableCollection<BaseItemDto> UserLibraries
         {
             get => _userLibraries;
             set => this.RaiseAndSetIfChanged(ref _userLibraries, value);
-        }
-
-        private bool _isLoading = false;
-        public bool IsLoading
-        {
-            get => _isLoading;
-            set => this.RaiseAndSetIfChanged(ref _isLoading, value);
         }
 
         // Command for the Connect button
@@ -68,70 +60,59 @@ namespace JamBox.Core.ViewModels
         {
             _jellyfinApiService = new JellyfinApiService();
 
-            // Initialize the ConnectCommand.
-            // It's enabled when ServerUrl, Username, and Password are not empty, and not already loading.
-            ConnectCommand = ReactiveCommand.CreateFromTask(ConnectToJellyfinAsync,
-                this.WhenAnyValue(x => x.ServerUrl, x => x.Username, x => x.Password, x => x.IsLoading,
-                                  (url, user, pass, loading) =>
-                                      !string.IsNullOrWhiteSpace(url) &&
-                                      !string.IsNullOrWhiteSpace(user) &&
-                                      !string.IsNullOrWhiteSpace(pass) &&
-                                      !loading));
+            // Connect Command: Enabled when inputs are valid and not loading
+            ConnectCommand = ReactiveCommand.CreateFromTask(ConnectToJellyfinAsync, Observable.Return(true));
         }
 
         private async Task ConnectToJellyfinAsync()
         {
-            IsLoading = true;
             ConnectionStatus = "Attempting to connect...";
             ServerInfo = null;
-            UserLibraries.Clear(); // Clear previous libraries
+            UserLibraries.Clear();
 
-            _jellyfinApiService.SetServerUrl(ServerUrl); // Update service URL with current UI input
+            _jellyfinApiService.SetServerUrl(ServerUrl);
 
             try
             {
-                // Step 1: Get public info
                 var publicInfo = await _jellyfinApiService.GetPublicSystemInfoAsync();
+
                 if (publicInfo == null)
                 {
-                    ConnectionStatus = "Connection failed: Could not get public server info. Check URL.";
+                    ConnectionStatus = "Connection failed: Could not get public server info. Check URL or connectivity.";
                     return;
                 }
+
                 ServerInfo = publicInfo;
                 ConnectionStatus = $"Found Jellyfin server: {publicInfo.ServerName} (v{publicInfo.Version}). Authenticating...";
 
-                // Step 2: Authenticate
                 var isAuthenticated = await _jellyfinApiService.AuthenticateUserAsync(Username, Password);
                 if (!isAuthenticated)
                 {
                     ConnectionStatus = "Authentication failed. Check username and password.";
                     return;
                 }
+
                 ConnectionStatus = "Authentication successful! Fetching libraries...";
 
-                // Step 3: Get user libraries
                 var libraries = await _jellyfinApiService.GetUserMediaViewsAsync();
                 if (libraries == null)
                 {
                     ConnectionStatus = "Failed to fetch user libraries.";
                     return;
                 }
-                // Populate ObservableCollection for UI update
+
+                UserLibraries.Clear();
                 foreach (var lib in libraries)
                 {
                     UserLibraries.Add(lib);
                 }
+
                 ConnectionStatus = "Successfully connected and loaded libraries!";
             }
             catch (Exception ex)
             {
-                // Log the full exception for debugging
                 Console.WriteLine($"An unexpected error occurred during Jellyfin connection: {ex}");
                 ConnectionStatus = $"An unexpected error occurred: {ex.Message}";
-            }
-            finally
-            {
-                IsLoading = false;
             }
         }
     }

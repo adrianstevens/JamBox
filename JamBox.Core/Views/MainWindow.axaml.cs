@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using JamBox.Core.ViewModels;
 
 namespace JamBox.Core.Views
 {
@@ -7,6 +8,7 @@ namespace JamBox.Core.Views
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainViewModel();
         }
     }
 }

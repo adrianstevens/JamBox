@@ -7,22 +7,18 @@
 	x:Class="JamBox.Core.Views.MainWindow"
 	Title="🎶 Jam Box - Jellyfin Connect">
 
-	<!-- Design-time DataContext for Avalonia UI previewer -->
 	<Design.DataContext>
 		<vm:MainViewModel/>
 	</Design.DataContext>
 
-	<!-- Main layout: A Grid to structure the UI vertically -->
 	<Grid RowDefinitions="Auto, Auto, Auto, *" Background="#1a202c">
-		<!-- Application Title -->
+		
 		<TextBlock Grid.Row="0" Text="🎶 Jam Box 🎶"
                    HorizontalAlignment="Center" VerticalAlignment="Center"
                    Margin="20"
                    FontSize="32" FontWeight="Bold" Foreground="#66CCCC"/>
 
-		<!-- Input fields and button for connection -->
 		<StackPanel Grid.Row="1" Margin="20" Spacing="15">
-			<!-- Inline Control Themes for TextBox and Button for visual consistency -->
 			<StackPanel.Resources>
 				<ControlTheme x:Key="JamBoxTextBoxTheme" TargetType="TextBox">
 					<Setter Property="Background" Value="#2d3748"/>
@@ -64,20 +60,18 @@
 			</StackPanel.Resources>
 
 			<TextBlock Text="Jellyfin Server URL:" Foreground="#cbd5e0" Margin="0,0,0,-5"/>
-			<TextBox Text="{Binding ServerUrl}" Theme="{StaticResource JamBoxTextBoxTheme}" Watermark="http://192.168.68.100:8096"/>
+			<TextBox Text="{Binding ServerUrl}" Watermark="http://192.168.68.100:8096"/>
 
 			<TextBlock Text="Username:" Foreground="#cbd5e0" Margin="0,0,0,-5"/>
-			<TextBox Text="{Binding Username}" Theme="{StaticResource JamBoxTextBoxTheme}" Watermark="Your Jellyfin username"/>
+			<TextBox Text="{Binding Username}" Watermark="Your Jellyfin username"/>
 
 			<TextBlock Text="Password:" Foreground="#cbd5e0" Margin="0,0,0,-5"/>
-			<TextBox PasswordChar="*" Text="{Binding Password}" Theme="{StaticResource JamBoxTextBoxTheme}" Watermark="Your Jellyfin password"/>
+			<TextBox PasswordChar="*" Text="{Binding Password}" Watermark="Your Jellyfin password"/>
 
-			<Button Content="{Binding IsLoading, Converter={StaticResource BooleanToTextConverter}}"
+			<Button Content="Connect"
                     Command="{Binding ConnectCommand}"
-                    Theme="{StaticResource JamBoxButtonTheme}"
                     HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    IsEnabled="{Binding !IsLoading}"/>
+                    VerticalAlignment="Center" />
 		</StackPanel>
 
 		<!-- Display area for connection status messages -->
@@ -110,5 +104,10 @@
 				</ItemsControl>
 			</StackPanel>
 		</ScrollViewer>
+		<StackPanel Grid.Row="4" Margin="20" HorizontalAlignment="Center">
+			<Button Content="Click Me To Test UI!"
+                    Theme="{StaticResource JamBoxButtonTheme}" />
+			<TextBlock Text="{Binding TestMessage}" HorizontalAlignment="Center" Foreground="#99CCCC" Margin="0,5,0,0"/>
+		</StackPanel>
 	</Grid>
 </Window>

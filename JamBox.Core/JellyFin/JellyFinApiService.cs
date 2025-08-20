@@ -1,6 +1,4 @@
-﻿using JamBox.Core.Jellyfin;
-using System.Net.Http.Headers;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 
 namespace JamBox.Core.JellyFin
@@ -23,43 +21,34 @@ namespace JamBox.Core.JellyFin
         public JellyfinApiService()
         {
             _httpClient = new HttpClient();
-            // Optional: Configure default request headers if needed globally
-            _httpClient.DefaultRequestHeaders.Add("X-Emby-Client", ClientName);
-            _httpClient.DefaultRequestHeaders.Add("X-Emby-Device-Name", DeviceName);
-            _httpClient.DefaultRequestHeaders.Add("X-Emby-Device-Id", DeviceId);
-            _httpClient.DefaultRequestHeaders.Add("X-Emby-Client-Version", ClientVersion);
+
+            var authHeader =
+                $"MediaBrowser Client=\"{ClientName}\", Device=\"{DeviceName}\", DeviceId=\"{DeviceId}\", Version=\"{ClientVersion}\"";
+
+            _httpClient.DefaultRequestHeaders.Add("X-Emby-Authorization", authHeader);
         }
 
         /// <summary>
         /// Sets the base URL for the Jellyfin server.
         /// </summary>
-        /// <param name="url">The base URL of the Jellyfin server (e.g., "http://192.168.68.100:8096").</param>
         public void SetServerUrl(string url)
         {
             _jellyfinServerUrl = url.TrimEnd('/');
         }
 
-        /// <summary>
-        /// Gets public information about the Jellyfin server.
-        /// Does not require authentication.
-        /// </summary>
-        /// <returns>A PublicSystemInfo object if successful, null otherwise.</returns>
         public async Task<PublicSystemInfo> GetPublicSystemInfoAsync()
         {
             if (string.IsNullOrEmpty(_jellyfinServerUrl))
-            {
-                Console.WriteLine("Server URL is not set.");
                 return null;
-            }
 
             try
             {
                 var response = await _httpClient.GetAsync($"{_jellyfinServerUrl}/System/Info/Public");
-                response.EnsureSuccessStatusCode(); // Throws if not a success status code
+                response.EnsureSuccessStatusCode();
                 var jsonString = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<PublicSystemInfo>(jsonString);
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"Error getting public system info: {ex.Message}");
                 return null;
@@ -69,111 +58,87 @@ namespace JamBox.Core.JellyFin
         /// <summary>
         /// Authenticates a user with the Jellyfin server.
         /// </summary>
-        /// <param name="username">The Jellyfin username.</param>
-        /// <param name="password">The Jellyfin password.</param>
-        /// <returns>True if authentication is successful, false otherwise.</returns>
         public async Task<bool> AuthenticateUserAsync(string username, string password)
         {
             if (string.IsNullOrEmpty(_jellyfinServerUrl))
-            {
-                Console.WriteLine("Server URL is not set. Cannot authenticate.");
                 return false;
-            }
 
             try
             {
                 var authPayload = new
                 {
                     Username = username,
-                    Pw = password // Jellyfin API expects 'Pw' for password in this endpoint
+                    Pw = password
                 };
-                var jsonPayload = JsonSerializer.Serialize(authPayload);
-                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
+                var content = new StringContent(JsonSerializer.Serialize(authPayload), Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync($"{_jellyfinServerUrl}/Users/AuthenticateByName", content);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var authResult = JsonSerializer.Deserialize<AuthenticationResult>(jsonString);
-
-                    _accessToken = authResult.AccessToken;
-                    _userId = authResult.User.Id;
-
-                    // Set Authorization header for subsequent authenticated requests
-                    _httpClient.DefaultRequestHeaders.Authorization =
-                        new AuthenticationHeaderValue("MediaBrowser",
-                            $"Token=\"{_accessToken}\", Client=\"{ClientName}\", Device=\"{DeviceName}\", DeviceId=\"{DeviceId}\", Version=\"{ClientVersion}\"");
-
-                    Console.WriteLine($"Authenticated successfully. User: {authResult.User.Name}, Access Token: {_accessToken.Substring(0, 8)}...");
-                    return true;
-                }
-                else
+                if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
                     Console.WriteLine($"Authentication failed: {response.StatusCode} - {errorContent}");
-                    _accessToken = null;
-                    _userId = null;
-                    _httpClient.DefaultRequestHeaders.Authorization = null; // Clear token on failure
                     return false;
                 }
+
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var authResult = JsonSerializer.Deserialize<AuthenticationResult>(jsonString);
+
+                _accessToken = authResult.AccessToken;
+                _userId = authResult.User.Id;
+
+                // Add token header for subsequent requests
+                if (_httpClient.DefaultRequestHeaders.Contains("X-Emby-Token"))
+                    _httpClient.DefaultRequestHeaders.Remove("X-Emby-Token");
+
+                _httpClient.DefaultRequestHeaders.Add("X-Emby-Token", _accessToken);
+
+                Console.WriteLine($"Authenticated successfully. User: {authResult.User.Name}, Token: {_accessToken.Substring(0, 8)}...");
+                return true;
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Network error during authentication: {ex.Message}");
-                return false;
-            }
-            catch (JsonException ex)
-            {
-                Console.WriteLine($"JSON deserialization error during authentication: {ex.Message}");
+                Console.WriteLine($"Authentication error: {ex.Message}");
                 return false;
             }
         }
 
         /// <summary>
         /// Fetches the current user's media libraries (views).
-        /// Requires prior authentication.
         /// </summary>
-        /// <returns>A list of BaseItemDto representing the user's libraries, or null if not authenticated or an error occurs.</returns>
         public async Task<List<BaseItemDto>> GetUserMediaViewsAsync()
         {
             if (!IsAuthenticated || string.IsNullOrEmpty(_userId))
             {
-                Console.WriteLine("Not authenticated. Please authenticate first to get user views.");
-                return null;
-            }
-            if (string.IsNullOrEmpty(_jellyfinServerUrl))
-            {
-                Console.WriteLine("Server URL is not set. Cannot get user views.");
+                Console.WriteLine("Not authenticated. Please authenticate first.");
                 return null;
             }
 
             try
             {
                 var response = await _httpClient.GetAsync($"{_jellyfinServerUrl}/Users/{_userId}/Views");
-                response.EnsureSuccessStatusCode();
                 var jsonString = await response.Content.ReadAsStringAsync();
+
+                response.EnsureSuccessStatusCode();
+
                 var userViewsResult = JsonSerializer.Deserialize<UserViewsResult>(jsonString);
                 return userViewsResult?.Items;
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Error getting user media views: {ex.Message}");
-                return null;
-            }
-            catch (JsonException ex)
-            {
-                Console.WriteLine($"JSON deserialization error getting user media views: {ex.Message}");
+                Console.WriteLine($"Error getting user views: {ex.Message}");
                 return null;
             }
         }
 
-        // You might want a logout method to clear the token
         public void Logout()
         {
             _accessToken = null;
             _userId = null;
-            _httpClient.DefaultRequestHeaders.Authorization = null;
+
+            if (_httpClient.DefaultRequestHeaders.Contains("X-Emby-Token"))
+                _httpClient.DefaultRequestHeaders.Remove("X-Emby-Token");
+
             Console.WriteLine("Logged out.");
         }
     }
