@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 
 namespace JamBox.Core.JellyFin
@@ -141,5 +142,64 @@ namespace JamBox.Core.JellyFin
 
             Console.WriteLine("Logged out.");
         }
+
+        public async Task<List<Artist>> GetArtistsAsync()
+        {
+            var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Artist>>(
+                "Artists?IncludeItemTypes=MusicArtist&Recursive=true"
+            );
+            return response.Items;
+        }
+
+        public async Task<List<Album>> GetAlbumsByArtistAsync(string artistId)
+        {
+            var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Album>>(
+                $"Items?IncludeItemTypes=MusicAlbum&ParentId={artistId}"
+            );
+            return response.Items;
+        }
+
+        public async Task<List<Track>> GetTracksByAlbumAsync(string albumId)
+        {
+            var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
+                $"Items?IncludeItemTypes=Audio&ParentId={albumId}&SortBy=IndexNumber"
+            );
+            return response.Items;
+        }
+
+        public async Task<List<SessionInfo>> GetSessionsAsync()
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<SessionInfo>>(
+                $"{_jellyfinServerUrl}/Sessions"
+            );
+            return response;
+        }
+
+        public async Task PlayTrackAsync(string sessionId, string trackId)
+        {
+            var payload = new
+            {
+                ItemIds = new[] { trackId },
+                PlayCommand = "PlayNow"
+            };
+
+            var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"{_jellyfinServerUrl}/Sessions/{sessionId}/Playing", content);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public string GetTrackStreamUrl(string trackId, string container = "mp3")
+        {
+            return $"{_jellyfinServerUrl}/Audio/{trackId}/universal?UserId={_userId}&DeviceId={DeviceId}&Container={container}&api_key={_accessToken}";
+        }
+
+        public async Task<List<Track>> SearchTracksAsync(string query)
+        {
+            var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
+                $"Items?IncludeItemTypes=Audio&Recursive=true&SearchTerm={Uri.EscapeDataString(query)}"
+            );
+            return response.Items;
+        }
+
     }
 }

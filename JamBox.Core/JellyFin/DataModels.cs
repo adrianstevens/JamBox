@@ -57,5 +57,130 @@ namespace JamBox.Core.JellyFin
         public List<BaseItemDto> Items { get; set; }
     }
 
+    public class Artist
+    {
+        [JsonPropertyName("Id")]
+        public string Id { get; set; }
+
+        [JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("ImageTags")]
+        public Dictionary<string, string> ImageTags { get; set; }
+
+        [JsonPropertyName("Genres")]
+        public List<string> Genres { get; set; }
+
+        [JsonPropertyName("ProductionYear")]
+        public int? ProductionYear { get; set; }
+
+        public string PrimaryImageUrl { get; private set; }
+
+        public string GetPrimaryImageUrl(string serverUrl, string accessToken, int width = 300, int height = 300)
+        {
+            if (ImageTags != null && ImageTags.TryGetValue("Primary", out var tag))
+            {
+                PrimaryImageUrl = $"{serverUrl}/Items/{Id}/Images/Primary?tag={tag}&quality=90&fillWidth={width}&fillHeight={height}&cropWhitespace=true&api_key={accessToken}";
+                return PrimaryImageUrl;
+            }
+            return null;
+        }
+    }
+
+    public class Album
+    {
+        [JsonPropertyName("Id")]
+        public string Id { get; set; }
+
+        [JsonPropertyName("Name")]
+        public string Title { get; set; }
+
+        [JsonPropertyName("AlbumArtists")]
+        public List<string> AlbumArtists { get; set; }
+
+        public string AlbumArtistsString => AlbumArtists == null ? "" : string.Join(", ", AlbumArtists);
+
+
+
+        [JsonPropertyName("ImageTags")]
+        public Dictionary<string, string> ImageTags { get; set; }
+
+        [JsonIgnore]
+        public string AlbumArtist => AlbumArtists?.FirstOrDefault() ?? "Unknown Artist";
+
+        /// <summary>
+        /// Returns the URL for the primary album cover.
+        /// </summary>
+        public string GetPrimaryImageUrl(string serverUrl, string accessToken, int width = 300, int height = 300)
+        {
+            if (!string.IsNullOrEmpty(Id) && ImageTags != null && ImageTags.TryGetValue("Primary", out var tag))
+            {
+                return $"{serverUrl}/Items/{Id}/Images/Primary" +
+                       $"?tag={tag}&quality=90&fillWidth={width}&fillHeight={height}" +
+                       $"&cropWhitespace=true&api_key={accessToken}";
+            }
+
+            return null;
+        }
+    }
+
+    public class ArtistInfo
+    {
+        [JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("Id")]
+        public string Id { get; set; }
+    }
+
+
+    public class Track
+    {
+        [JsonPropertyName("Id")]
+        public string Id { get; set; }
+
+        [JsonPropertyName("Name")]
+        public string Title { get; set; }
+
+        [JsonPropertyName("AlbumId")]
+        public string AlbumId { get; set; }
+
+        [JsonPropertyName("IndexNumber")]
+        public int IndexNumber { get; set; }
+
+        [JsonPropertyName("RunTimeTicks")]
+        public long RunTimeTicks { get; set; }
+
+        public TimeSpan Duration => TimeSpan.FromTicks(RunTimeTicks);
+    }
+
+    public class ItemResult<T>
+    {
+        [JsonPropertyName("Items")]
+        public List<T> Items { get; set; }
+
+        [JsonPropertyName("TotalRecordCount")]
+        public int TotalRecordCount { get; set; }
+    }
+
+    public class JellyfinResponse<T>
+    {
+        public List<T> Items { get; set; }
+        public int TotalRecordCount { get; set; }
+    }
+
+    public class SessionInfo
+    {
+        public string Id { get; set; }
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public string Client { get; set; }       // e.g., "Jellyfin Web", "Android TV"
+        public string DeviceName { get; set; }   // e.g., "Living Room TV"
+        public string NowPlayingItemId { get; set; }
+
+        // Extra info if you want
+        public string RemoteEndPoint { get; set; }
+        public bool SupportsRemoteControl { get; set; }
+    }
 
 }

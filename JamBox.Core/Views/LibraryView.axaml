@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 x:Class="JamBox.Core.Views.LibraryView">
+	<Grid ColumnDefinitions="*,*,*">
+		<StackPanel>
+			<TextBlock Text="Artists" FontWeight="Bold" Margin="0,0,0,5"/>
+			<ListBox ItemsSource="{Binding Artists}" SelectedItem="{Binding SelectedArtist}">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Name}"/>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</StackPanel>
+
+		<StackPanel Grid.Column="1">
+			<TextBlock Text="Albums" FontWeight="Bold" Margin="0,0,0,5"/>
+			<ListBox ItemsSource="{Binding Albums}" SelectedItem="{Binding SelectedAlbum}">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<StackPanel>
+							<TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+							<TextBlock Text="{Binding AlbumArtistsString}" FontStyle="Italic" FontSize="12"/>
+						</StackPanel>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</StackPanel>
+
+		<StackPanel Grid.Column="2">
+			<TextBlock Text="Tracks" FontWeight="Bold" Margin="0,0,0,5"/>
+			<ListBox ItemsSource="{Binding Tracks}" SelectedItem="{Binding SelectedTrack}">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Name}"/>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+			<Button Content="Play" Command="{Binding PlaySelectedTrackCommand}" Margin="0,5,0,0"/>
+		</StackPanel>
+	</Grid>
+</UserControl>

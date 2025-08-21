@@ -56,9 +56,9 @@ namespace JamBox.Core.ViewModels
         // Command for the Connect button
         public ReactiveCommand<Unit, Unit> ConnectCommand { get; }
 
-        public MainViewModel()
+        public MainViewModel(JellyfinApiService jellyfinService)
         {
-            _jellyfinApiService = new JellyfinApiService();
+            _jellyfinApiService = jellyfinService;
 
             // Connect Command: Enabled when inputs are valid and not loading
             ConnectCommand = ReactiveCommand.CreateFromTask(ConnectToJellyfinAsync, Observable.Return(true));
