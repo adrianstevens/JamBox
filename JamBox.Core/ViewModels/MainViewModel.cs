@@ -11,20 +11,15 @@ public class MainViewModel : ReactiveObject
     public ViewModelBase CurrentContent
     {
         get => _currentContent;
-        private set => this.RaiseAndSetIfChanged(ref _currentContent, value);
+        // The setter is now public to allow other view models to update it
+        set => this.RaiseAndSetIfChanged(ref _currentContent, value);
     }
 
     public MainViewModel(JellyfinApiService jellyfinService)
     {
         _jellyfinApiService = jellyfinService;
 
-        // Set the initial content to the LoginViewModel
+        // Set the initial content to the LoginViewModel, passing 'this' for navigation.
         CurrentContent = new LoginViewModel(_jellyfinApiService, this);
-    }
-
-    // Method to handle navigation to the library view
-    public void NavigateToLibrary()
-    {
-        CurrentContent = new LibraryViewModel(_jellyfinApiService);
     }
 }

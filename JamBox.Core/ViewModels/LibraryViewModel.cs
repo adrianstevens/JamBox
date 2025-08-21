@@ -8,6 +8,7 @@ namespace JamBox.Core.ViewModels;
 public class LibraryViewModel : ViewModelBase
 {
     private readonly JellyfinApiService _jellyfinService;
+    private readonly BaseItemDto _selectedLibrary;
 
     // Artist list
     public ObservableCollection<Artist> Artists { get; } = new();
@@ -54,23 +55,23 @@ public class LibraryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> LoadTracksCommand { get; }
     public ReactiveCommand<Unit, Unit> PlaySelectedTrackCommand { get; }
 
-    public LibraryViewModel(JellyfinApiService jellyfinService)
+    public LibraryViewModel(JellyfinApiService jellyfinService, BaseItemDto selectedLibrary)
     {
         _jellyfinService = jellyfinService;
+        _selectedLibrary = selectedLibrary;
 
         LoadArtistsCommand = ReactiveCommand.CreateFromTask(LoadArtistsAsync);
         LoadAlbumsCommand = ReactiveCommand.CreateFromTask(LoadAlbumsAsync);
         LoadTracksCommand = ReactiveCommand.CreateFromTask(LoadTracksAsync);
         PlaySelectedTrackCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync);
 
-        // Optionally load artists on startup
         LoadArtistsCommand.Execute().Subscribe();
     }
 
     private async Task LoadArtistsAsync()
     {
         Artists.Clear();
-        var artists = await _jellyfinService.GetArtistsAsync();
+        var artists = await _jellyfinService.GetArtistsAsync(_selectedLibrary.Id);
         foreach (var artist in artists)
             Artists.Add(artist);
     }

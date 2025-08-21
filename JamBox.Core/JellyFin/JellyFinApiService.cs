@@ -9,7 +9,6 @@ namespace JamBox.Core.JellyFin
         private readonly HttpClient _httpClient;
         private string _accessToken;
         private string _userId;
-        private string _jellyfinServerUrl;
 
         private const string ClientName = "JamBoxAvalonia";
         private const string ClientVersion = "0.1.0";
@@ -34,17 +33,20 @@ namespace JamBox.Core.JellyFin
         /// </summary>
         public void SetServerUrl(string url)
         {
-            _jellyfinServerUrl = url.TrimEnd('/');
+            // The core fix: Set the BaseAddress on the HttpClient
+            // This is the source of the "invalid URI" error.
+            _httpClient.BaseAddress = new Uri(url.TrimEnd('/') + "/");
         }
 
         public async Task<PublicSystemInfo> GetPublicSystemInfoAsync()
         {
-            if (string.IsNullOrEmpty(_jellyfinServerUrl))
+            if (_httpClient.BaseAddress == null)
                 return null;
 
             try
             {
-                var response = await _httpClient.GetAsync($"{_jellyfinServerUrl}/System/Info/Public");
+                // Now you can use a relative URI here
+                var response = await _httpClient.GetAsync("System/Info/Public");
                 response.EnsureSuccessStatusCode();
                 var jsonString = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<PublicSystemInfo>(jsonString);
@@ -61,7 +63,7 @@ namespace JamBox.Core.JellyFin
         /// </summary>
         public async Task<bool> AuthenticateUserAsync(string username, string password)
         {
-            if (string.IsNullOrEmpty(_jellyfinServerUrl))
+            if (_httpClient.BaseAddress == null)
                 return false;
 
             try
@@ -73,7 +75,7 @@ namespace JamBox.Core.JellyFin
                 };
 
                 var content = new StringContent(JsonSerializer.Serialize(authPayload), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"{_jellyfinServerUrl}/Users/AuthenticateByName", content);
+                var response = await _httpClient.PostAsync("Users/AuthenticateByName", content);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -117,10 +119,10 @@ namespace JamBox.Core.JellyFin
 
             try
             {
-                var response = await _httpClient.GetAsync($"{_jellyfinServerUrl}/Users/{_userId}/Views");
-                var jsonString = await response.Content.ReadAsStringAsync();
-
+                // Simplified URI
+                var response = await _httpClient.GetAsync($"Users/{_userId}/Views");
                 response.EnsureSuccessStatusCode();
+                var jsonString = await response.Content.ReadAsStringAsync();
 
                 var userViewsResult = JsonSerializer.Deserialize<UserViewsResult>(jsonString);
                 return userViewsResult?.Items;
@@ -143,10 +145,10 @@ namespace JamBox.Core.JellyFin
             Console.WriteLine("Logged out.");
         }
 
-        public async Task<List<Artist>> GetArtistsAsync()
+        public async Task<List<Artist>> GetArtistsAsync(string libraryId)
         {
             var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Artist>>(
-                "Artists?IncludeItemTypes=MusicArtist&Recursive=true"
+                $"Artists?ParentId={libraryId}&IncludeItemTypes=MusicArtist&Recursive=true"
             );
             return response.Items;
         }
@@ -170,7 +172,7 @@ namespace JamBox.Core.JellyFin
         public async Task<List<SessionInfo>> GetSessionsAsync()
         {
             var response = await _httpClient.GetFromJsonAsync<List<SessionInfo>>(
-                $"{_jellyfinServerUrl}/Sessions"
+                "Sessions"
             );
             return response;
         }
@@ -184,13 +186,13 @@ namespace JamBox.Core.JellyFin
             };
 
             var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync($"{_jellyfinServerUrl}/Sessions/{sessionId}/Playing", content);
+            var response = await _httpClient.PostAsync($"Sessions/{sessionId}/Playing", content);
             response.EnsureSuccessStatusCode();
         }
 
         public string GetTrackStreamUrl(string trackId, string container = "mp3")
         {
-            return $"{_jellyfinServerUrl}/Audio/{trackId}/universal?UserId={_userId}&DeviceId={DeviceId}&Container={container}&api_key={_accessToken}";
+            return $"{_httpClient.BaseAddress.AbsoluteUri}Audio/{trackId}/universal?UserId={_userId}&DeviceId={DeviceId}&Container={container}&api_key={_accessToken}";
         }
 
         public async Task<List<Track>> SearchTracksAsync(string query)
@@ -200,6 +202,5 @@ namespace JamBox.Core.JellyFin
             );
             return response.Items;
         }
-
     }
 }

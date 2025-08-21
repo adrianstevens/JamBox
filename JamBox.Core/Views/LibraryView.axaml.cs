@@ -1,6 +1,5 @@
 ﻿using Avalonia.Controls;
 using JamBox.Core.JellyFin;
-using JamBox.Core.ViewModels;
 
 namespace JamBox.Core.Views
 {
@@ -9,7 +8,6 @@ namespace JamBox.Core.Views
         public LibraryView(JellyfinApiService jellyfinApiService)
         {
             InitializeComponent();
-            DataContext = new LibraryViewModel(jellyfinApiService);
         }
     }
 }

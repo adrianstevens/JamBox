@@ -11,7 +11,6 @@ public class LoginViewModel : ViewModelBase
     private readonly JellyfinApiService _jellyfinApiService;
     private readonly MainViewModel _mainViewModel;
 
-    // UI Bound Properties
     private string _serverUrl = "http://192.168.68.100:8096";
     public string ServerUrl
     {
@@ -54,16 +53,36 @@ public class LoginViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _userLibraries, value);
     }
 
-    // Command for the Connect button
+    private BaseItemDto _selectedLibrary;
+    public BaseItemDto SelectedLibrary
+    {
+        get => _selectedLibrary;
+        set => this.RaiseAndSetIfChanged(ref _selectedLibrary, value);
+    }
+
     public ReactiveCommand<Unit, Unit> ConnectCommand { get; }
+    public ReactiveCommand<Unit, Unit> NavigateToLibraryCommand { get; }
 
     public LoginViewModel(JellyfinApiService jellyfinService, MainViewModel mainViewModel)
     {
         _jellyfinApiService = jellyfinService;
         _mainViewModel = mainViewModel;
 
-        // Connect Command: Enabled when inputs are valid and not loading
-        ConnectCommand = ReactiveCommand.CreateFromTask(ConnectToJellyfinAsync, Observable.Return(true));
+        var canConnect = this.WhenAnyValue(x => x.ServerUrl, x => x.Username, (server, user) => !string.IsNullOrWhiteSpace(server) && !string.IsNullOrWhiteSpace(user));
+        ConnectCommand = ReactiveCommand.CreateFromTask(ConnectToJellyfinAsync, canConnect);
+
+        ConnectCommand.ThrownExceptions.Subscribe(ex =>
+        {
+            Console.WriteLine($"An unhandled error occurred in the ConnectCommand: {ex.Message}");
+            ConnectionStatus = $"Connection failed: {ex.Message}";
+        });
+
+        this.WhenAnyValue(x => x.SelectedLibrary)
+            .Where(selected => selected != null)
+            .Subscribe(selected =>
+            {
+                _mainViewModel.CurrentContent = new LibraryViewModel(_jellyfinApiService, selected);
+            });
     }
 
     private async Task ConnectToJellyfinAsync()
@@ -109,12 +128,20 @@ public class LoginViewModel : ViewModelBase
                 UserLibraries.Add(lib);
             }
 
-            ConnectionStatus = "Successfully connected and loaded libraries!";
+            ConnectionStatus = "Successfully connected and loaded libraries! Select a library to begin.";
         }
         catch (Exception ex)
         {
             Console.WriteLine($"An unexpected error occurred during Jellyfin connection: {ex}");
             ConnectionStatus = $"An unexpected error occurred: {ex.Message}";
+        }
+    }
+
+    private async Task NavigateToLibraryAsync()
+    {
+        if (_selectedLibrary != null)
+        {
+            _mainViewModel.CurrentContent = new LibraryViewModel(_jellyfinApiService, _selectedLibrary);
         }
     }
 }
