@@ -148,7 +148,7 @@ namespace JamBox.Core.JellyFin
         public async Task<List<Artist>> GetArtistsAsync(string libraryId)
         {
             var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Artist>>(
-                $"Artists?ParentId={libraryId}&IncludeItemTypes=MusicArtist&Recursive=true"
+                $"Items?IncludeItemTypes=MusicArtist&ParentId={libraryId}&Recursive=true"
             );
             return response.Items;
         }
