@@ -1,15 +1,12 @@
-using Avalonia.Controls;
-using JamBox.Core.JellyFin;
-using JamBox.Core.ViewModels;
+﻿using Avalonia.Controls;
 
 namespace JamBox.Core.Views
 {
     public partial class MainWindow : Window
     {
-        public MainWindow(JellyfinApiService jellyfinApiService)
+        public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel(jellyfinApiService);
         }
     }
 }

@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using JamBox.Core.JellyFin;
+using JamBox.Core.ViewModels;
 using JamBox.Core.Views;
 
 namespace JamBox.Core
@@ -15,15 +16,16 @@ namespace JamBox.Core
 
         public override void OnFrameworkInitializationCompleted()
         {
-            var jellyfinService = new JellyfinApiService(); // Only one instance
-            jellyfinService.SetServerUrl("http://192.168.68.100:8096");
-
-            var mainWindow = new MainWindow(jellyfinService);
-
-
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = mainWindow;
+                var jellyfinService = new JellyfinApiService();
+
+                var mainViewModel = new MainViewModel(jellyfinService);
+
+                desktop.MainWindow = new MainWindow
+                {
+                    DataContext = mainViewModel
+                };
             }
 
             base.OnFrameworkInitializationCompleted();
