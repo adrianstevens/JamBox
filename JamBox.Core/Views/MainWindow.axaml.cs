@@ -1,12 +1,11 @@
 ﻿using Avalonia.Controls;
 
-namespace JamBox.Core.Views
+namespace JamBox.Core.Views;
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
