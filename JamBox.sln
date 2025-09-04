@@ -5,7 +5,7 @@ VisualStudioVersion = 17.14.36401.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamBox.Core", "JamBox.Core\JamBox.Core.csproj", "{4DD9FC0D-38BD-4B67-972B-AE992FB7D249}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamBox.Winodws", "JamBox.Windows\JamBox.Winodws.csproj", "{EAB1B3CB-DF41-A732-FBA1-3E8B551A9C4F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamBox.Windows", "JamBox.Windows\JamBox.Windows.csproj", "{EAB1B3CB-DF41-A732-FBA1-3E8B551A9C4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,13 +1,12 @@
 ﻿using Avalonia.Controls;
 using JamBox.Core.JellyFin;
 
-namespace JamBox.Core.Views
+namespace JamBox.Core.Views;
+
+public partial class LibraryView : UserControl
 {
-    public partial class LibraryView : UserControl
+    public LibraryView(JellyfinApiService jellyfinApiService)
     {
-        public LibraryView(JellyfinApiService jellyfinApiService)
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

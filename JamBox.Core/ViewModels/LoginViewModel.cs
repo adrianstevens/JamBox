@@ -11,7 +11,7 @@ public class LoginViewModel : ViewModelBase
     private readonly JellyfinApiService _jellyfinApiService;
     private readonly MainViewModel _mainViewModel;
 
-    private string _serverUrl = "http://192.168.68.100:8096";
+    private string _serverUrl = "http://192.168.50.157:8096";
     public string ServerUrl
     {
         get => _serverUrl;

@@ -5,30 +5,29 @@ using JamBox.Core.JellyFin;
 using JamBox.Core.ViewModels;
 using JamBox.Core.Views;
 
-namespace JamBox.Core
+namespace JamBox.Core;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public override void Initialize()
     {
-        public override void Initialize()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+        AvaloniaXamlLoader.Load(this);
+    }
 
-        public override void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
+    {
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            var jellyfinService = new JellyfinApiService();
+
+            var mainViewModel = new MainViewModel(jellyfinService);
+
+            desktop.MainWindow = new MainWindow
             {
-                var jellyfinService = new JellyfinApiService();
-
-                var mainViewModel = new MainViewModel(jellyfinService);
-
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = mainViewModel
-                };
-            }
-
-            base.OnFrameworkInitializationCompleted();
+                DataContext = mainViewModel
+            };
         }
+
+        base.OnFrameworkInitializationCompleted();
     }
 }
