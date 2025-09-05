@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=JamBox
+Exec=/absolute/path/to/JamBox.Linux
+Icon=/absolute/path/to/icon.png
+Comment=JamBox Music Application
+Categories=Audio;Music;
+Terminal=false
