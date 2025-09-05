@@ -9,6 +9,14 @@
     <UserControl.Content>
         <Grid
             Background="#1a202c">
+            
+            <Image
+                Source="avares://JamBox.Core/Assets/icon-koi.png"
+                Opacity="0.02"
+                Width="800"
+                Margin="0,0,-150,-150"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom" />
         
             <!--<StackPanel>
                 <TextBlock Text="Artists" FontWeight="Bold" Margin="0,0,0,5"/>
