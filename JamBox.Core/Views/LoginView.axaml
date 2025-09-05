@@ -10,14 +10,16 @@
         <converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
     </UserControl.Resources>
 
-    <Design.DataContext>
+    <!--<Design.DataContext>
         <vm:LoginViewModel />
-    </Design.DataContext>
+    </Design.DataContext>-->
 
     <Grid 
         RowDefinitions="Auto, Auto, Auto, *" 
-        Background="#1a202c">
-        <TextBlock 
+        Background="Red">
+        
+        
+        <!--<TextBlock 
             Grid.Row="0" 
             Text="🎶 Jam Box 🎶"
             HorizontalAlignment="Center" 
@@ -134,6 +136,6 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </StackPanel>
-        </ScrollViewer>
+        </ScrollViewer>-->
     </Grid>
 </UserControl>

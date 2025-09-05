@@ -18,8 +18,6 @@ public class MainViewModel : ReactiveObject
     public MainViewModel(JellyfinApiService jellyfinService)
     {
         _jellyfinApiService = jellyfinService;
-
-        // Set the initial content to the LoginViewModel, passing 'this' for navigation.
         CurrentContent = new LoginViewModel(_jellyfinApiService, this);
     }
 }
