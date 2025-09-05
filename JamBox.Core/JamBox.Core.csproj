@@ -8,10 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.4" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.4" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
-    <PackageReference Include="System.Text.Json" Version="9.0.8" />
+    <PackageReference Include="Avalonia" Version="11.3.5" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.5" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.5" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.5" />
+    <PackageReference Include="System.Text.Json" Version="10.0.0-preview.7.25380.108" />
   </ItemGroup>
 
   <ItemGroup>

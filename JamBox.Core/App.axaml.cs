@@ -16,6 +16,10 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+#if DEBUG
+        this.AttachDevTools();
+#endif
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var jellyfinService = new JellyfinApiService();
