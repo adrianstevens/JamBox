@@ -1,12 +1,17 @@
 ﻿using JamBox.Core.JellyFin;
+using JamBox.Core.Models;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Text.Json;
 
 namespace JamBox.Core.ViewModels;
 
 public class LoginViewModel : ViewModelBase
 {
+    private static string CredentialsPath =>
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "JamBox", "credentials.json");
+
     private readonly JellyfinApiService _jellyfinApiService;
     private readonly MainViewModel _mainViewModel;
 
@@ -31,7 +36,7 @@ public class LoginViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _password, value);
     }
 
-    private string _connectionStatus = "Enter server details and connect.";
+    private string _connectionStatus = string.Empty;
     public string ConnectionStatus
     {
         get => _connectionStatus;
@@ -67,10 +72,51 @@ public class LoginViewModel : ViewModelBase
             Console.WriteLine($"An unhandled error occurred in the ConnectCommand: {ex.Message}");
             ConnectionStatus = $"Connection failed: {ex.Message}";
         });
+
+        //LoadCredentials();
+        ConnectCommand.Execute().Subscribe();
+    }
+
+    private void SaveCredentials()
+    {
+        var creds = new UserCredentials
+        {
+            ServerUrl = ServerUrl,
+            Username = Username,
+            Password = Password
+        };
+
+        var dir = Path.GetDirectoryName(CredentialsPath);
+
+        if (!Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir!);
+        }
+
+        File.WriteAllText(CredentialsPath, JsonSerializer.Serialize(creds));
+    }
+
+    private void LoadCredentials()
+    {
+        if (File.Exists(CredentialsPath))
+        {
+            var creds = JsonSerializer.Deserialize<UserCredentials>(File.ReadAllText(CredentialsPath));
+
+            if (creds != null)
+            {
+                ServerUrl = creds.ServerUrl;
+                Username = creds.Username;
+                Password = creds.Password;
+            }
+
+            ConnectCommand.Execute().Subscribe();
+        }
     }
 
     private async Task ConnectToJellyfinAsync()
     {
+        IsBusy = true;
+
         ConnectionStatus = "Attempting to connect...";
         ServerInfo = null;
 
@@ -79,10 +125,10 @@ public class LoginViewModel : ViewModelBase
         try
         {
             var publicInfo = await _jellyfinApiService.GetPublicSystemInfoAsync();
-
             if (publicInfo == null)
             {
                 ConnectionStatus = "Connection failed: Could not get public server info. Check URL or connectivity.";
+                IsBusy = false;
                 return;
             }
 
@@ -93,9 +139,11 @@ public class LoginViewModel : ViewModelBase
             if (!isAuthenticated)
             {
                 ConnectionStatus = "Authentication failed. Check username and password.";
+                IsBusy = false;
                 return;
             }
 
+            SaveCredentials();
             ConnectionStatus = "Authentication successful!";
 
             await Task.Delay(1000);
@@ -106,6 +154,10 @@ public class LoginViewModel : ViewModelBase
         {
             Console.WriteLine($"An unexpected error occurred during Jellyfin connection: {ex}");
             ConnectionStatus = $"An unexpected error occurred: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 }

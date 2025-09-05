@@ -56,6 +56,25 @@
             <Setter Property="Background" Value="#1a202c"/>
         </Style>
 
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <!-- Target the main template border -->
+        <Style Selector="ListBox /template/ Border">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <!-- Target the ScrollViewer background -->
+        <Style Selector="ListBox /template/ ScrollViewer">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <!-- Target specific template parts that FluentTheme might use -->
+        <Style Selector="ListBox /template/ Border#PART_Border">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
         <Style Selector="Application">
             <Style.Resources>
                 <converters:BooleanToTextConverter x:Key="BooleanToTextConverter"/>
