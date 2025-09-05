@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<IsAotCompatible>true</IsAotCompatible>
+    <IsAotCompatible>true</IsAotCompatible>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -16,13 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <AvaloniaResource Include="Assets\**" />
+      <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Views\LoginView.axaml.cs">
-      <DependentUpon>LoginView.axaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
 </Project>

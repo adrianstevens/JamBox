@@ -10,7 +10,6 @@ public class LibraryViewModel : ViewModelBase
     private readonly JellyfinApiService _jellyfinService;
     private readonly BaseItemDto _selectedLibrary;
 
-    // Artist list
     public ObservableCollection<Artist> Artists { get; } = new();
 
     private Artist _selectedArtist;
@@ -25,7 +24,6 @@ public class LibraryViewModel : ViewModelBase
         }
     }
 
-    // Album list
     public ObservableCollection<Album> Albums { get; } = new();
 
     private Album _selectedAlbum;
@@ -40,7 +38,6 @@ public class LibraryViewModel : ViewModelBase
         }
     }
 
-    // Track list
     public ObservableCollection<Track> Tracks { get; } = new();
     private Track _selectedTrack;
     public Track SelectedTrack
@@ -49,23 +46,25 @@ public class LibraryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedTrack, value);
     }
 
-    // Commands
     public ReactiveCommand<Unit, Unit> LoadArtistsCommand { get; }
+
     public ReactiveCommand<Unit, Unit> LoadAlbumsCommand { get; }
+
     public ReactiveCommand<Unit, Unit> LoadTracksCommand { get; }
+
     public ReactiveCommand<Unit, Unit> PlaySelectedTrackCommand { get; }
 
-    public LibraryViewModel(JellyfinApiService jellyfinService, BaseItemDto selectedLibrary)
+    public LibraryViewModel(JellyfinApiService jellyfinService)
     {
         _jellyfinService = jellyfinService;
-        _selectedLibrary = selectedLibrary;
+        //_selectedLibrary = selectedLibrary;
 
         LoadArtistsCommand = ReactiveCommand.CreateFromTask(LoadArtistsAsync);
         LoadAlbumsCommand = ReactiveCommand.CreateFromTask(LoadAlbumsAsync);
         LoadTracksCommand = ReactiveCommand.CreateFromTask(LoadTracksAsync);
         PlaySelectedTrackCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync);
 
-        LoadArtistsCommand.Execute().Subscribe();
+        //LoadArtistsCommand.Execute().Subscribe();
     }
 
     private async Task LoadArtistsAsync()

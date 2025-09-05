@@ -26,47 +26,30 @@
             <Setter Property="Foreground" Value="#99CCCC"/>
             <Setter Property="Margin" Value="0,5,0,2"/>
         </Style>
-
-        <Style Selector="TextBox">
-            <Setter Property="Background" Value="#2d3748"/>
-            <Setter Property="BorderBrush" Value="#4a5568"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Foreground" Value="#e2e8f0"/>
-            <Setter Property="CaretBrush" Value="#66CCCC"/>
-            <Setter Property="Padding" Value="10"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-        </Style>
-
-        <Style Selector="TextBox:focus">
-            <Setter Property="BorderBrush" Value="#4299e1"/>
-        </Style>
-
-        <Style Selector="Button">
-            <Setter Property="Background" Value="#4299e1"/>
+        
+        <Style Selector="TextBox.custom-textbox">
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#4299e1"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Padding" Value="10 15"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderBrush" Value="#03A3DC"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="8"/>
         </Style>
 
-        <Style Selector="Button:pointerover">
-            <Setter Property="Background" Value="#3182ce"/>
+        <Style Selector="TextBox.custom-textbox/template/Border#PART_BorderElement">
+            <Setter Property="Background" Value="Transparent"/>
         </Style>
 
-        <Style Selector="Button:pressed">
-            <Setter Property="Background" Value="#2b6cb0"/>
-            <Setter Property="RenderTransform" Value="scale(0.98)"/>
+        <Style Selector="Button.custom-button">
+            <Setter Property="Background" Value="#03A3DC"/>
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Foreground" Value="White"/>
         </Style>
 
-        <Style Selector="Button:disabled">
-            <Setter Property="Opacity" Value="0.6"/>
-            <Setter Property="Cursor" Value="No"/>
+        <Style Selector="Button.custom-button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#03A3DC"/>
+            <Setter Property="Opacity" Value="0.6" />
+            <Setter Property="Foreground" Value="White"/>
         </Style>
 
         <Style Selector="ScrollViewer">
