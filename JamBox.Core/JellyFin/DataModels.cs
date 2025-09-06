@@ -18,7 +18,6 @@ public class User
 
     [JsonPropertyName("Name")]
     public string Name { get; set; }
-
 }
 
 public class PublicSystemInfo
@@ -34,7 +33,6 @@ public class PublicSystemInfo
 
     [JsonPropertyName("DeviceName")]
     public string DeviceName { get; set; }
-
 }
 
 public class BaseItemDto
@@ -87,6 +85,13 @@ public class Artist
     }
 }
 
+public class AlbumArtistInfo
+{
+    [JsonPropertyName("Name")]
+    public string Name { get; set; }
+    // Add other properties if needed
+}
+
 public class Album
 {
     [JsonPropertyName("Id")]
@@ -96,17 +101,15 @@ public class Album
     public string Title { get; set; }
 
     [JsonPropertyName("AlbumArtists")]
-    public List<string> AlbumArtists { get; set; }
+    public List<AlbumArtistInfo> AlbumArtists { get; set; }
 
     public string AlbumArtistsString => AlbumArtists == null ? "" : string.Join(", ", AlbumArtists);
-
-
 
     [JsonPropertyName("ImageTags")]
     public Dictionary<string, string> ImageTags { get; set; }
 
     [JsonIgnore]
-    public string AlbumArtist => AlbumArtists?.FirstOrDefault() ?? "Unknown Artist";
+    public string AlbumArtist => AlbumArtists?.FirstOrDefault().Name ?? "Unknown Artist";
 
     /// <summary>
     /// Returns the URL for the primary album cover.
