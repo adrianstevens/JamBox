@@ -18,6 +18,10 @@ public class JellyfinApiService
     public bool IsAuthenticated => !string.IsNullOrEmpty(_accessToken);
     public string CurrentUserId => _userId;
 
+    public string CurrentAccessToken => _accessToken;
+
+    public string ServerUrl => _httpClient.BaseAddress?.ToString();
+
     public JellyfinApiService()
     {
         _httpClient = new HttpClient();

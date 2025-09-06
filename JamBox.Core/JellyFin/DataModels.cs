@@ -111,6 +111,9 @@ public class Album
     [JsonIgnore]
     public string AlbumArtist => AlbumArtists?.FirstOrDefault().Name ?? "Unknown Artist";
 
+    [JsonIgnore]
+    public string AlbumArtUrl { get; set; }
+
     /// <summary>
     /// Returns the URL for the primary album cover.
     /// </summary>
@@ -118,9 +121,12 @@ public class Album
     {
         if (!string.IsNullOrEmpty(Id) && ImageTags != null && ImageTags.TryGetValue("Primary", out var tag))
         {
-            return $"{serverUrl}/Items/{Id}/Images/Primary" +
-                   $"?tag={tag}&quality=90&fillWidth={width}&fillHeight={height}" +
-                   $"&cropWhitespace=true&api_key={accessToken}";
+            var baseUrl = serverUrl.TrimEnd('/');
+            var url = $"{baseUrl}/Items/{Id}/Images/Primary" +
+                      $"?tag={tag}&quality=90&fillWidth={width}&fillHeight={height}" +
+                      $"&cropWhitespace=true&api_key={accessToken}";
+            Console.WriteLine($"AlbumArtUrl: {url}");
+            return url;
         }
 
         return null;

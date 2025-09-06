@@ -147,18 +147,28 @@ public class LibraryViewModel : ViewModelBase
         var albums = await _jellyfinService.GetAlbumsByArtistAsync(SelectedArtist.Id);
         foreach (var album in albums)
         {
+            album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinService.ServerUrl, _jellyfinService.CurrentAccessToken, 140, 140);
             Albums.Add(album);
         }
+
+        AlbumCount = $"{Albums.Count} ALBUMS";
     }
 
     private async Task LoadTracksAsync()
     {
-        if (SelectedAlbum == null) return;
+        if (SelectedAlbum == null)
+        {
+            return;
+        }
 
         Tracks.Clear();
         var tracks = await _jellyfinService.GetTracksByAlbumAsync(SelectedAlbum.Id);
         foreach (var track in tracks)
+        {
             Tracks.Add(track);
+        }
+
+        TrackCount = $"{Tracks.Count} TRACKS";
     }
 
     private async Task PlaySelectedTrackAsync()

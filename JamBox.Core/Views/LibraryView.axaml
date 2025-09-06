@@ -12,7 +12,7 @@
             
             <Image
                 Source="avares://JamBox.Core/Assets/icon-koi.png"
-                Opacity="0.02"
+                Opacity="0.03"
                 Width="800"
                 Margin="0,0,-150,-150"
                 HorizontalAlignment="Right"
@@ -73,7 +73,7 @@
                     <Grid 
                         Grid.Column="0" 
                         RowSpacing="10"
-                        Margin="10">
+                        Margin="10,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
@@ -96,8 +96,6 @@
                             <ListBox
                                 ItemsSource="{Binding Artists}"
                                 SelectedItem="{Binding SelectedArtist}"
-                                Background="Transparent"
-                                BorderThickness="0"
                                 SelectionMode="Single">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -123,59 +121,66 @@
                     <Rectangle Grid.Column="1" Fill="#EDF3F9" Width="1" />
 
                     <!-- Albums -->
-                    <Grid Grid.Column="2" RowSpacing="10" Margin="0">
+                    <Grid 
+                        Grid.Column="2" 
+                        RowSpacing="10" 
+                        Margin="5,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <StackPanel 
-                            Grid.Row="0" 
-                            Orientation="Horizontal" 
-                            Spacing="10" 
-                            Margin="20,0">
+                        <Grid 
+                            Grid.Row="0">
                             <Button 
                                 Content="{Binding AlbumCount}" 
-                                Command="{Binding ShowAllAlbumsCmd}" 
-                                Foreground="#EDF3F9" 
-                                FontWeight="Bold" 
-                                Padding="0" 
-                                Background="Transparent" />
+                                Command="{Binding ShowAllAlbumsCmd}"
+                                Classes="transparent-button" />
                             <Button 
                                 Content="{Binding AlbumSortStatus}" 
-                                Command="{Binding ToggleAlbumSortCmd}" 
-                                Foreground="#EDF3F9" 
-                                FontWeight="Bold" 
-                                Padding="0" 
-                                Opacity="0.5" 
-                                Background="Transparent" />
-                        </StackPanel>
+                                Command="{Binding ToggleAlbumSortCmd}"
+                                Classes="transparent-button"
+                                HorizontalAlignment="Right"/>
+                        </Grid>
 
                         <Grid Grid.Row="1">
                             <ListBox
                                 ItemsSource="{Binding Albums}"
-                                SelectionMode="Single"
-                                Margin="10,0">
-                                <!--Use WrapGrid for horizontal wrapping
-                                <ListView.ItemsPanel>
+                                SelectedItem="{Binding SelectedAlbum}"
+                                SelectionMode="Single">
+                                <ListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <ItemsWrapGrid Orientation="Horizontal" ItemWidth="140" ItemHeight="170" />
+                                        <WrapPanel Orientation="Horizontal" />
                                     </ItemsPanelTemplate>
-                                </ListView.ItemsPanel>-->
+                                </ListBox.ItemsPanel>
 
-                                <!--Define how each item (album cover) should look-->
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <StackPanel Margin="0">
-                                            <Border Width="120" Height="120" Padding="10" Opacity="0.75">
-                                                <Viewbox>
-                                                    <Image Source="avares://JamBox.Core/Assets/icon-album.png" Stretch="Uniform" />
-                                                    <!--<Image Source="{Binding AlbumArt}" Stretch="Uniform" />-->
-                                                </Viewbox>
-                                            </Border>
-                                            <TextBlock Text="{Binding Title}" Foreground="#EDF3F9" />
-                                            <TextBlock Text="{Binding Artist}" Foreground="#EDF3F9" Opacity="0.5" />
-                                        </StackPanel>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <Image 
+                                                Source="{Binding AlbumArtUrl, Converter={StaticResource UrlToBitmapConverter}}" 
+                                                Width="120" 
+                                                Height="120"
+                                                Stretch="Uniform" />
+                                            
+                                            <TextBlock 
+                                                Grid.Row="1" 
+                                                Text="{Binding Title}" 
+                                                Foreground="#EDF3F9"
+                                                Margin="0,5,0,0" />
+                                            
+                                            <TextBlock 
+                                                Grid.Row="2" 
+                                                Text="{Binding AlbumArtist}"
+                                                Foreground="#EDF3F9"
+                                                Opacity="0.5" />
+                                        </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
@@ -186,96 +191,124 @@
                     <Rectangle Grid.Column="3" Fill="#EDF3F9" Width="1" />
 
                     <!-- Tracks -->
-                    <Grid Grid.Column="4" RowSpacing="10" >
+                    <Grid 
+                        Grid.Column="4" 
+                        RowSpacing="10"
+                        Margin="5,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <StackPanel 
-                            Grid.Row="0" 
-                            Orientation="Horizontal" 
-                            Spacing="10" 
-                            Margin="20,0,40,0">
-                            <TextBlock 
-                                Text="{Binding TrackCount}" 
-                                Foreground="#EDF3F9" 
-                                FontWeight="Bold"
-                                VerticalAlignment="Center" />
+                        <Grid 
+                            Grid.Row="0">
+                            <Button
+                                Content="{Binding TrackCount}"
+                                Command="{Binding ShowAllAlbumsCmd}"
+                                Classes="transparent-button" />
                             <Button 
                                 Content="{Binding TrackSortStatus}"
-                                Command="{Binding ToggleSongSortCmd}" 
-                                Foreground="#EDF3F9" 
-                                FontWeight="Bold" 
-                                Padding="0" 
-                                Opacity="0.5" 
-                                Background="Transparent" />
-                        </StackPanel>
+                                Command="{Binding ToggleSongSortCmd}"
+                                Classes="transparent-button"
+                                HorizontalAlignment="Right" />
+                        </Grid>
 
-                        <Grid Grid.Row="1" Margin="15,0,40,0">
-                            <!--<ListView
-                                ItemsSource="{Binding Songs}"
-                                SelectionMode="Single"
-                                IsItemClickEnabled="True"
-                                ItemClick="SongItemClicked">
-                                <ListView.ItemContainerStyle>
-                                    <Style TargetType="ListViewItem">
-                                        <Setter Property="Padding" Value="5,0"/>
-                                        <Setter Property="Margin" Value="0"/>
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                    </Style>
-                                </ListView.ItemContainerStyle>
-
-                                <ListView.ItemTemplate>
+                        <Grid Grid.Row="1">
+                            <ListBox
+                                ItemsSource="{Binding Tracks}"
+                                SelectionMode="Single">
+                                <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Title}" />
                                     </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>-->
+                                </ListBox.ItemTemplate>
+                            </ListBox>
                         </Grid>
                     </Grid>
                 </Grid>
 
                 <!-- Volume, Now Playing and Playback Controls -->
-                <Grid Grid.Row="2">
+                <Grid 
+                    Grid.Row="2">
 
                     <!-- Volume Controls -->
-                    <Grid ColumnSpacing="12" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="40,0">
+                    <Grid 
+                        ColumnSpacing="12"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Margin="40,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="12" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="20" />
                         </Grid.ColumnDefinitions>
 
-                        <Image Grid.Column="0" Source="avares://JamBox.Core/Assets/icon-volume-min.png" VerticalAlignment="Center" />
-                        <Slider Grid.Column="1" Minimum="0" Maximum="100" Width="128" />
-                        <Image Grid.Column="2" Source="avares://JamBox.Core/Assets/icon-volume-max.png" VerticalAlignment="Center" />
+                        <Image 
+                            Grid.Column="0" 
+                            Source="avares://JamBox.Core/Assets/icon-volume-min.png" 
+                            VerticalAlignment="Center" />
+                        <Slider 
+                            Grid.Column="1" 
+                            Minimum="0" 
+                            Maximum="100" 
+                            Width="128" />
+                        <Image 
+                            Grid.Column="2" 
+                            Source="avares://JamBox.Core/Assets/icon-volume-max.png" 
+                            VerticalAlignment="Center" />
                     </Grid>
 
                     <!-- Now Playing -->
-                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid Grid.Column="0" Width="60" Height="60">
-                            <Image Source="avares://JamBox.Core/Assets/cover.jpg" Stretch="UniformToFill"/>
+                        <Grid 
+                            Grid.Column="0" 
+                            Width="60" 
+                            Height="60">
+                            <Image 
+                                Source="avares://JamBox.Core/Assets/cover.jpg" 
+                                Stretch="UniformToFill"/>
                         </Grid>
 
-                        <StackPanel Grid.Column="1" Margin="12,0">
-                            <TextBlock Grid.Column="0" Text="{Binding NowPlayingSongTitle}" Foreground="#EDF3F9" />
-                            <Slider Minimum="0" Maximum="100" Width="256" />
+                        <StackPanel 
+                            Grid.Column="1" 
+                            Margin="12,0">
+                            
+                            <TextBlock 
+                                Grid.Column="0" 
+                                Text="{Binding NowPlayingSongTitle}" 
+                                Foreground="#EDF3F9" />
+                            <Slider 
+                                Minimum="0" 
+                                Maximum="100" 
+                                Width="256" />
                             <Grid>
-                                <TextBlock Text="{Binding NowPlayingElapsedTime}" FontSize="10" Foreground="#EDF3F9" HorizontalAlignment="Left" />
-                                <TextBlock Text="{Binding NowPlayingRemainingTime}" FontSize="10" Foreground="#EDF3F9" HorizontalAlignment="Right" />
+                                <TextBlock 
+                                    Text="{Binding NowPlayingElapsedTime}" 
+                                    FontSize="10" 
+                                    Foreground="#EDF3F9" 
+                                    HorizontalAlignment="Left" />
+                                <TextBlock 
+                                    Text="{Binding NowPlayingRemainingTime}" 
+                                    FontSize="10" 
+                                    Foreground="#EDF3F9" 
+                                    HorizontalAlignment="Right" />
                             </Grid>
                         </StackPanel>
                     </Grid>
 
                     <!-- Playback Controls -->
-                    <Grid HorizontalAlignment="Right" VerticalAlignment="Center" ColumnSpacing="12" Margin="40,0">
+                    <Grid 
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Center" 
+                        ColumnSpacing="12" 
+                        Margin="40,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="20" />
@@ -285,69 +318,69 @@
                             <ColumnDefinition Width="20" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Padding="0" Background="Transparent" CornerRadius="50">
-                            <Image Source="avares://JamBox.Core/Assets/icon-repeat.png" Stretch="Uniform" />
+                        <Button 
+                            Grid.Column="0" 
+                            Padding="0" 
+                            Background="Transparent" 
+                            CornerRadius="50">
+                            <Image 
+                                Source="avares://JamBox.Core/Assets/icon-repeat.png" 
+                                Stretch="Uniform" />
                         </Button>
 
-                        <Button Grid.Column="1" Padding="0" Background="Transparent" CornerRadius="50">
-                            <Image Source="avares://JamBox.Core/Assets/icon-shuffle.png" Stretch="Uniform" />
+                        <Button 
+                            Grid.Column="1" 
+                            Padding="0" 
+                            Background="Transparent" 
+                            CornerRadius="50">
+                            <Image 
+                                Source="avares://JamBox.Core/Assets/icon-shuffle.png" 
+                                Stretch="Uniform" />
                         </Button>
 
-                        <Button Grid.Column="2" Padding="0" Background="Transparent" CornerRadius="50">
-                            <Image Source="avares://JamBox.Core/Assets/icon-previous.png" Stretch="Uniform" />
+                        <Button 
+                            Grid.Column="2" 
+                            Padding="0" 
+                            Background="Transparent" 
+                            CornerRadius="50">
+                            <Image 
+                                Source="avares://JamBox.Core/Assets/icon-previous.png"
+                                Stretch="Uniform" />
                         </Button>
 
-                        <Button Grid.Column="3" Padding="0" Background="Transparent" CornerRadius="50" Command="{Binding PlaySongCmd}">
-                            <Image Source="avares://JamBox.Core/Assets/icon-play.png" Stretch="Uniform" />
+                        <Button 
+                            Grid.Column="3" 
+                            Padding="0" 
+                            Background="Transparent" 
+                            CornerRadius="50" 
+                            Command="{Binding PlaySongCmd}">
+                            <Image 
+                                Source="avares://JamBox.Core/Assets/icon-play.png" 
+                                Stretch="Uniform" />
                         </Button>
 
-                        <Button Grid.Column="4" Padding="0" Background="Transparent" CornerRadius="50">
-                            <Image Source="avares://JamBox.Core/Assets/icon-next.png" Stretch="Uniform" />
+                        <Button 
+                            Grid.Column="4" 
+                            Padding="0" 
+                            Background="Transparent" 
+                            CornerRadius="50">
+                            <Image 
+                                Source="avares://JamBox.Core/Assets/icon-next.png" 
+                                Stretch="Uniform" />
                         </Button>
 
-                        <Button Grid.Column="5" Padding="0" Background="Transparent" CornerRadius="50">
-                            <Image Source="avares://JamBox.Core/Assets/icon-graph.png" Stretch="Uniform" />
+                        <Button 
+                            Grid.Column="5" 
+                            Padding="0" 
+                            Background="Transparent" 
+                            CornerRadius="50">
+                            <Image 
+                                Source="avares://JamBox.Core/Assets/icon-graph.png" 
+                                Stretch="Uniform" />
                         </Button>
                     </Grid>
                 </Grid>
             </Grid>
-        
-            <!--<StackPanel>
-                <TextBlock Text="Artists" FontWeight="Bold" Margin="0,0,0,5"/>
-                <ListBox ItemsSource="{Binding Artists}" SelectedItem="{Binding SelectedArtist}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-
-            <StackPanel Grid.Column="1">
-                <TextBlock Text="Albums" FontWeight="Bold" Margin="0,0,0,5"/>
-                <ListBox ItemsSource="{Binding Albums}" SelectedItem="{Binding SelectedAlbum}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                                <TextBlock Text="{Binding AlbumArtistsString}" FontStyle="Italic" FontSize="12"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-
-            <StackPanel Grid.Column="2">
-                <TextBlock Text="Tracks" FontWeight="Bold" Margin="0,0,0,5"/>
-                <ListBox ItemsSource="{Binding Tracks}" SelectedItem="{Binding SelectedTrack}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <Button Content="Play" Command="{Binding PlaySelectedTrackCommand}" Margin="0,5,0,0"/>
-            </StackPanel>-->
         </Grid>
     </UserControl.Content>
 </UserControl>
