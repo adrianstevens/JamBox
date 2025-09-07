@@ -175,13 +175,19 @@
                                                 Grid.Row="1" 
                                                 Text="{Binding Title}" 
                                                 Foreground="#EDF3F9"
-                                                Margin="0,5,0,0" />
+                                                Margin="0,5,0,0"
+                                                MaxWidth="120"
+                                                TextTrimming="CharacterEllipsis"
+                                                TextWrapping="NoWrap"/>
                                             
                                             <TextBlock 
                                                 Grid.Row="2" 
                                                 Text="{Binding AlbumArtist}"
                                                 Foreground="#EDF3F9"
-                                                Opacity="0.5" />
+                                                Opacity="0.5"
+                                                MaxWidth="120"
+                                                TextTrimming="CharacterEllipsis"
+                                                TextWrapping="NoWrap"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
