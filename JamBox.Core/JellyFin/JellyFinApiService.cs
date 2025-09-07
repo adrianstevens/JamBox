@@ -7,7 +7,7 @@ namespace JamBox.Core.JellyFin;
 public class JellyfinApiService
 {
     private readonly HttpClient _httpClient;
-    private string _accessToken;
+    private string? _accessToken;
     private string _userId;
 
     private const string ClientName = "JamBoxAvalonia";
@@ -18,9 +18,9 @@ public class JellyfinApiService
     public bool IsAuthenticated => !string.IsNullOrEmpty(_accessToken);
     public string CurrentUserId => _userId;
 
-    public string CurrentAccessToken => _accessToken;
+    public string? CurrentAccessToken => _accessToken;
 
-    public string ServerUrl => _httpClient.BaseAddress?.ToString();
+    public string? ServerUrl => _httpClient.BaseAddress?.ToString();
 
     public JellyfinApiService()
     {
@@ -42,7 +42,7 @@ public class JellyfinApiService
         _httpClient.BaseAddress = new Uri(url.TrimEnd('/') + "/");
     }
 
-    public async Task<PublicSystemInfo> GetPublicSystemInfoAsync()
+    public async Task<PublicSystemInfo?> GetPublicSystemInfoAsync()
     {
         if (_httpClient.BaseAddress == null)
             return null;
@@ -75,7 +75,7 @@ public class JellyfinApiService
             var authPayload = new
             {
                 Username = username,
-                Pw = password
+                Password = password
             };
 
             var content = new StringContent(JsonSerializer.Serialize(authPayload), Encoding.UTF8, "application/json");
@@ -118,7 +118,7 @@ public class JellyfinApiService
         if (!IsAuthenticated || string.IsNullOrEmpty(_userId))
         {
             Console.WriteLine("Not authenticated. Please authenticate first.");
-            return null;
+            return new List<BaseItemDto>();
         }
 
         try

@@ -2,6 +2,7 @@
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Linq;
 
 namespace JamBox.Core.ViewModels;
 
@@ -10,7 +11,7 @@ public class LibraryViewModel : ViewModelBase
     private readonly JellyfinApiService _jellyfinService;
     private BaseItemDto _selectedLibrary;
 
-    public ObservableCollection<Artist> Artists { get; } = new();
+    public ObservableCollection<Artist> Artists { get; } = [];
 
     private Artist _selectedArtist;
     public Artist SelectedArtist
@@ -40,7 +41,7 @@ public class LibraryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _artistSortStatus, value);
     }
 
-    public ObservableCollection<Album> Albums { get; } = new();
+    public ObservableCollection<Album> Albums { get; } = [];
 
     private Album _selectedAlbum;
     public Album SelectedAlbum
@@ -70,7 +71,7 @@ public class LibraryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _albumSortStatus, value);
     }
 
-    public ObservableCollection<Track> Tracks { get; } = new();
+    public ObservableCollection<Track> Tracks { get; } = [];
     private Track _selectedTrack;
     public Track SelectedTrack
     {
@@ -107,17 +108,19 @@ public class LibraryViewModel : ViewModelBase
         LoadArtistsCommand = ReactiveCommand.CreateFromTask(LoadArtistsAsync);
         LoadAlbumsCommand = ReactiveCommand.CreateFromTask(LoadAlbumsAsync);
         LoadTracksCommand = ReactiveCommand.CreateFromTask(LoadTracksAsync);
-        PlaySelectedTrackCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync);
+        var canPlay = this.WhenAnyValue(vm => vm.SelectedTrack).Select(t => t != null);
+        PlaySelectedTrackCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
 
         //LoadArtistsCommand.Execute().Subscribe();
 
-        LoadLibraryAsync();
+        _ = LoadLibraryAsync();
     }
 
     private async Task LoadLibraryAsync()
     {
         var libraries = await _jellyfinService.GetUserMediaViewsAsync();
         _selectedLibrary = libraries.FirstOrDefault(lib => lib.CollectionType == "music");
+
         if (_selectedLibrary != null)
         {
             await LoadArtistsAsync();
@@ -128,7 +131,10 @@ public class LibraryViewModel : ViewModelBase
     {
         Artists.Clear();
         var artists = await _jellyfinService.GetArtistsAsync(_selectedLibrary.Id);
-        foreach (var artist in artists)
+
+        var sortedArtists = artists.OrderBy(a => a.Name).ToList();
+
+        foreach (var artist in sortedArtists)
         {
             Artists.Add(artist);
         }
@@ -156,10 +162,7 @@ public class LibraryViewModel : ViewModelBase
 
     private async Task LoadTracksAsync()
     {
-        if (SelectedAlbum == null)
-        {
-            return;
-        }
+        if (SelectedAlbum == null) { return; }
 
         Tracks.Clear();
         var tracks = await _jellyfinService.GetTracksByAlbumAsync(SelectedAlbum.Id);
@@ -173,9 +176,8 @@ public class LibraryViewModel : ViewModelBase
 
     private async Task PlaySelectedTrackAsync()
     {
-        if (SelectedTrack == null) return;
+        if (SelectedTrack == null) { return; }
 
-        // Example: play on first session
         var sessions = await _jellyfinService.GetSessionsAsync();
         if (sessions.Count > 0)
         {
