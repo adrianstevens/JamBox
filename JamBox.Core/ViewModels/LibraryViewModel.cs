@@ -93,6 +93,13 @@ public class LibraryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _trackSortStatus, value);
     }
 
+    private bool _isTrackPlaying = false;
+    public bool IsTrackPlaying
+    {
+        get => _isTrackPlaying;
+        set => this.RaiseAndSetIfChanged(ref _isTrackPlaying, value);
+    }
+
     public ReactiveCommand<Unit, Unit> LoadArtistsCommand { get; }
 
     public ReactiveCommand<Unit, Unit> LoadAlbumsCommand { get; }

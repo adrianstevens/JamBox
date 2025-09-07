@@ -22,7 +22,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="80" />
                 </Grid.RowDefinitions>
 
                 <!-- Header -->
@@ -64,11 +64,11 @@
                 <Grid 
                     Grid.Row="1">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="3*" MinWidth="200" MaxWidth="400"/>
                         <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="9*"/>
                         <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="4*" MinWidth="200" MaxWidth="400"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Artists -->
@@ -262,6 +262,7 @@
 
                     <!-- Now Playing -->
                     <Grid 
+                        IsVisible="{Binding IsTrackPlaying}"
                         HorizontalAlignment="Center" 
                         VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
