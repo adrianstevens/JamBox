@@ -75,7 +75,7 @@ public class JellyfinApiService
             var authPayload = new
             {
                 Username = username,
-                Password = password
+                Pw = password
             };
 
             var content = new StringContent(JsonSerializer.Serialize(authPayload), Encoding.UTF8, "application/json");

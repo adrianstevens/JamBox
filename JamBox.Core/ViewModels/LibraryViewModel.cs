@@ -106,6 +106,8 @@ public class LibraryViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> LoadTracksCommand { get; }
 
+    public ReactiveCommand<Unit, Unit> ToggleArtistSortCommand { get; }
+
     public ReactiveCommand<Unit, Unit> PlaySelectedTrackCommand { get; }
 
     public LibraryViewModel(JellyfinApiService jellyfinService)
@@ -115,6 +117,8 @@ public class LibraryViewModel : ViewModelBase
         LoadArtistsCommand = ReactiveCommand.CreateFromTask(LoadArtistsAsync);
         LoadAlbumsCommand = ReactiveCommand.CreateFromTask(LoadAlbumsAsync);
         LoadTracksCommand = ReactiveCommand.CreateFromTask(LoadTracksAsync);
+        ToggleArtistSortCommand = ReactiveCommand.CreateFromTask(SortArtistsAsync);
+
         var canPlay = this.WhenAnyValue(vm => vm.SelectedTrack).Select(t => t != null);
         PlaySelectedTrackCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
 
@@ -139,9 +143,16 @@ public class LibraryViewModel : ViewModelBase
         Artists.Clear();
         var artists = await _jellyfinService.GetArtistsAsync(_selectedLibrary.Id);
 
-        var sortedArtists = artists.OrderBy(a => a.Name).ToList();
+        if (ArtistSortStatus == "A-Z")
+        {
+            artists = artists.OrderBy(a => a.Name).ToList();
+        }
+        else if (ArtistSortStatus == "Z-A")
+        {
+            artists = artists.OrderByDescending(a => a.Name).ToList();
+        }
 
-        foreach (var artist in sortedArtists)
+        foreach (var artist in artists)
         {
             Artists.Add(artist);
         }
@@ -179,6 +190,12 @@ public class LibraryViewModel : ViewModelBase
         }
 
         TrackCount = $"{Tracks.Count} TRACKS";
+    }
+
+    private async Task SortArtistsAsync()
+    {
+        ArtistSortStatus = ArtistSortStatus == "A-Z" ? "Z-A" : "A-Z";
+        await LoadArtistsAsync();
     }
 
     private async Task PlaySelectedTrackAsync()

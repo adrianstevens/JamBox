@@ -89,7 +89,7 @@
                                 Classes="transparent-button" />
                             <Button 
                                 Content="{Binding ArtistSortStatus}" 
-                                Command="{Binding ToggleArtistSortCmd}"
+                                Command="{Binding ToggleArtistSortCommand}"
                                 Classes="transparent-button"
                                 HorizontalAlignment="Right" />
                         </Grid>
