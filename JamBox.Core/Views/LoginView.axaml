@@ -36,10 +36,6 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 
                 <Image 
@@ -47,56 +43,53 @@
                     Width="350"
                     Source="avares://JamBox.Core/Assets/icon-logo-text.png" />
 
-                <TextBlock
-                    Grid.Row="1"
-                    Text="Enter your JellyFin server and credentials:"
-                    HorizontalAlignment="Center"
-                    Margin="0 15 0 5"
-                    FontSize="16"
-                    FontWeight="SemiBold"
-                    Foreground="White" />
-
-                <TextBox
-                    Grid.Row="2"
-                    Watermark="Server URL"
-                    Text="{Binding ServerUrl}"
-                    Classes="custom-textbox"  />
-
-                <TextBox
-                    Grid.Row="3"
-                    Watermark="Username"
-                    Text="{Binding Username}"
-                    Classes="custom-textbox" />
-
-                <TextBox
-                    Grid.Row="4"
-                    Watermark="Password"
-                    PasswordChar="*"
-                    Text="{Binding Password}"
-                    Classes="custom-textbox" />
-
-                <Button
-                    Grid.Row="5"
-                    Content="Connect"
-                    Command="{Binding ConnectCommand}"
-                    HorizontalContentAlignment="Center"
-                    HorizontalAlignment="Stretch"
-                    Classes="custom-button" />
-            </Grid>
-
-            <Grid
-                IsVisible="{Binding IsBusy}"
-                Background="#AA000000">
                 <StackPanel
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Orientation="Vertical"
-                    Spacing="20">
+                    IsVisible="{Binding IsBusy, Converter={StaticResource BooleanInverseConverter}}"
+                    Grid.Row="1"
+                    Spacing="10">
+                    <TextBlock
+                        Text="Enter your JellyFin server and credentials:"
+                        HorizontalAlignment="Center"
+                        Margin="0 8"
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Foreground="White" />
+
+                    <TextBox
+                        Watermark="Server URL"
+                        Text="{Binding ServerUrl}"
+                        Classes="custom-textbox"  />
+
+                    <TextBox
+                        Watermark="Username"
+                        Text="{Binding Username}"
+                        Classes="custom-textbox" />
+
+                    <TextBox
+                        Watermark="Password"
+                        PasswordChar="*"
+                        Text="{Binding Password}"
+                        Classes="custom-textbox" />
+
+                    <Button
+                        Content="Connect"
+                        Command="{Binding ConnectCommand}"
+                        HorizontalContentAlignment="Center"
+                        HorizontalAlignment="Stretch"
+                        Classes="custom-button" />
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Row="1"
+                    Spacing="10"
+                    IsVisible="{Binding IsBusy}">
+                    <ProgressBar IsIndeterminate="True" />
                     <TextBlock
                         Text="{Binding ConnectionStatus}"
                         Foreground="White"
-                        FontSize="16" />
-                    <ProgressBar IsIndeterminate="True" />
+                        FontSize="16"
+                        HorizontalAlignment="Center"
+                        TextWrapping="Wrap" />
                 </StackPanel>
             </Grid>
         </Grid>

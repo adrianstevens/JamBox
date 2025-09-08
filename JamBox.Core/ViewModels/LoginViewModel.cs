@@ -15,21 +15,21 @@ public class LoginViewModel : ViewModelBase
     private readonly JellyfinApiService _jellyfinApiService;
     private readonly MainViewModel _mainViewModel;
 
-    private string _serverUrl = "http://192.168.50.157:8096/jellyfin/";
+    private string _serverUrl = string.Empty;
     public string ServerUrl
     {
         get => _serverUrl;
         set => this.RaiseAndSetIfChanged(ref _serverUrl, value);
     }
 
-    private string _username = "jorgedevs";
+    private string _username = string.Empty;
     public string Username
     {
         get => _username;
         set => this.RaiseAndSetIfChanged(ref _username, value);
     }
 
-    private string _password = "pass";
+    private string _password = string.Empty;
     public string Password
     {
         get => _password;
@@ -60,11 +60,9 @@ public class LoginViewModel : ViewModelBase
         var canConnect = this.WhenAnyValue(
             x => x.ServerUrl,
             x => x.Username,
-            x => x.Password,
-            (server, user, password) =>
+            (server, user) =>
                 !string.IsNullOrWhiteSpace(server) &&
-                !string.IsNullOrWhiteSpace(user) &&
-                !string.IsNullOrWhiteSpace(password));
+                !string.IsNullOrWhiteSpace(user));
         ConnectCommand = ReactiveCommand.CreateFromTask(ConnectToJellyfinAsync, canConnect);
 
         ConnectCommand.ThrownExceptions.Subscribe(ex =>
@@ -73,8 +71,7 @@ public class LoginViewModel : ViewModelBase
             ConnectionStatus = $"Connection failed: {ex.Message}";
         });
 
-        //LoadCredentials();
-        ConnectCommand.Execute().Subscribe();
+        LoadCredentials();
     }
 
     private void SaveCredentials()
@@ -111,13 +108,17 @@ public class LoginViewModel : ViewModelBase
 
             ConnectCommand.Execute().Subscribe();
         }
+        else
+        {
+            IsBusy = false;
+        }
     }
 
     private async Task ConnectToJellyfinAsync()
     {
         IsBusy = true;
 
-        ConnectionStatus = "Attempting to connect...";
+        //ConnectionStatus = "Attempting to connect...";
         ServerInfo = null;
 
         _jellyfinApiService.SetServerUrl(ServerUrl);
@@ -133,7 +134,7 @@ public class LoginViewModel : ViewModelBase
             }
 
             ServerInfo = publicInfo;
-            ConnectionStatus = $"Found Jellyfin server: {publicInfo.ServerName} (v{publicInfo.Version}). Authenticating...";
+            //ConnectionStatus = $"Found Jellyfin server: {publicInfo.ServerName} (v{publicInfo.Version}). Authenticating...";
 
             var isAuthenticated = await _jellyfinApiService.AuthenticateUserAsync(Username, Password);
             if (!isAuthenticated)
@@ -144,10 +145,7 @@ public class LoginViewModel : ViewModelBase
             }
 
             SaveCredentials();
-            ConnectionStatus = "Authentication successful!";
-
-            await Task.Delay(1000);
-
+            //ConnectionStatus = "Authentication successful!";
             _mainViewModel.CurrentContent = new LibraryViewModel(_jellyfinApiService);
         }
         catch (Exception ex)
