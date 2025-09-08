@@ -157,10 +157,26 @@ public class JellyfinApiService
         return response.Items;
     }
 
+    public async Task<List<Album>> GetAlbumsAsync(string libraryId)
+    {
+        var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Album>>(
+            $"Items?IncludeItemTypes=MusicAlbum&ParentId={libraryId}&Recursive=true"
+        );
+        return response.Items;
+    }
+
     public async Task<List<Album>> GetAlbumsByArtistAsync(string artistId)
     {
         var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Album>>(
             $"Items?IncludeItemTypes=MusicAlbum&ParentId={artistId}"
+        );
+        return response.Items;
+    }
+
+    public async Task<List<Track>> GetTracksAsync(string libraryId)
+    {
+        var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
+            $"Items?IncludeItemTypes=Audio&ParentId={libraryId}&Recursive=true"
         );
         return response.Items;
     }

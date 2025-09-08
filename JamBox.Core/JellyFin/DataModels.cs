@@ -20,6 +20,27 @@ public class User
     public string Name { get; set; }
 }
 
+public class UserData
+{
+    [JsonPropertyName("PlaybackPositionTicks")]
+    public long PlaybackPositionTicks { get; set; }
+
+    [JsonPropertyName("PlayCount")]
+    public int PlayCount { get; set; }
+
+    [JsonPropertyName("IsFavorite")]
+    public bool IsFavorite { get; set; }
+
+    [JsonPropertyName("Played")]
+    public bool Played { get; set; }
+
+    [JsonPropertyName("Key")]
+    public string Key { get; set; }
+
+    [JsonPropertyName("ItemId")]
+    public string ItemId { get; set; }
+}
+
 public class PublicSystemInfo
 {
     [JsonPropertyName("ServerName")]
@@ -100,8 +121,14 @@ public class Album
     [JsonPropertyName("Name")]
     public string Title { get; set; }
 
+    [JsonPropertyName("ProductionYear")]
+    public int ProductionYear { get; set; }
+
     [JsonPropertyName("AlbumArtists")]
     public List<AlbumArtistInfo> AlbumArtists { get; set; }
+
+    [JsonPropertyName("UserData")]
+    public UserData UserData { get; set; }
 
     public string AlbumArtistsString => AlbumArtists == null ? "" : string.Join(", ", AlbumArtists);
 
@@ -141,7 +168,6 @@ public class ArtistInfo
     [JsonPropertyName("Id")]
     public string Id { get; set; }
 }
-
 
 public class Track
 {

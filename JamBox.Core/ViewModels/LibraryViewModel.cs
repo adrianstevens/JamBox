@@ -72,6 +72,7 @@ public class LibraryViewModel : ViewModelBase
     }
 
     public ObservableCollection<Track> Tracks { get; } = [];
+
     private Track _selectedTrack;
     public Track SelectedTrack
     {
@@ -108,21 +109,25 @@ public class LibraryViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> ToggleArtistSortCommand { get; }
 
+    public ReactiveCommand<Unit, Unit> ToggleAlbumSortCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> ToggleTrackSortCommand { get; }
+
     public ReactiveCommand<Unit, Unit> PlaySelectedTrackCommand { get; }
 
     public LibraryViewModel(JellyfinApiService jellyfinService)
     {
         _jellyfinService = jellyfinService;
 
-        LoadArtistsCommand = ReactiveCommand.CreateFromTask(LoadArtistsAsync);
-        LoadAlbumsCommand = ReactiveCommand.CreateFromTask(LoadAlbumsAsync);
-        LoadTracksCommand = ReactiveCommand.CreateFromTask(LoadTracksAsync);
+        LoadArtistsCommand = ReactiveCommand.CreateFromTask(() => LoadArtistsAsync(true));
+        LoadAlbumsCommand = ReactiveCommand.CreateFromTask(() => LoadAlbumsAsync(true));
+        LoadTracksCommand = ReactiveCommand.CreateFromTask(() => LoadTracksAsync(true));
         ToggleArtistSortCommand = ReactiveCommand.CreateFromTask(SortArtistsAsync);
+        ToggleAlbumSortCommand = ReactiveCommand.CreateFromTask(SortAlbumAsync);
+        ToggleTrackSortCommand = ReactiveCommand.CreateFromTask(SortTrackAsync);
 
         var canPlay = this.WhenAnyValue(vm => vm.SelectedTrack).Select(t => t != null);
         PlaySelectedTrackCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
-
-        //LoadArtistsCommand.Execute().Subscribe();
 
         _ = LoadLibraryAsync();
     }
@@ -134,13 +139,18 @@ public class LibraryViewModel : ViewModelBase
 
         if (_selectedLibrary != null)
         {
-            await LoadArtistsAsync();
+            await LoadArtistsAsync(true);
+
+            await LoadAlbumsAsync(true);
+
+            await LoadTracksAsync(true);
         }
     }
 
-    private async Task LoadArtistsAsync()
+    private async Task LoadArtistsAsync(bool clearList)
     {
-        Artists.Clear();
+        if (clearList) { Artists.Clear(); }
+
         var artists = await _jellyfinService.GetArtistsAsync(_selectedLibrary.Id);
 
         if (ArtistSortStatus == "A-Z")
@@ -160,15 +170,34 @@ public class LibraryViewModel : ViewModelBase
         ArtistCount = $"{Artists.Count} ARTISTS";
     }
 
-    private async Task LoadAlbumsAsync()
+    private async Task LoadAlbumsAsync(bool clearList)
     {
+        List<Album>? albums = [];
+
+        if (clearList) { Albums.Clear(); }
+
         if (SelectedArtist == null)
         {
-            return;
+            albums = await _jellyfinService.GetAlbumsAsync(_selectedLibrary.Id);
+        }
+        else
+        {
+            albums = await _jellyfinService.GetAlbumsByArtistAsync(SelectedArtist.Id);
         }
 
-        Albums.Clear();
-        var albums = await _jellyfinService.GetAlbumsByArtistAsync(SelectedArtist.Id);
+        if (AlbumSortStatus == "A-Z")
+        {
+            albums = albums.OrderBy(a => a.Title).ToList();
+        }
+        else if (AlbumSortStatus == "Release Year")
+        {
+            albums = albums.OrderByDescending(a => a.ProductionYear).ToList();
+        }
+        else if (AlbumSortStatus == "Rating")
+        {
+            albums = albums.OrderByDescending(a => a.UserData.IsFavorite).ToList();
+        }
+
         foreach (var album in albums)
         {
             album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinService.ServerUrl, _jellyfinService.CurrentAccessToken, 140, 140);
@@ -178,12 +207,34 @@ public class LibraryViewModel : ViewModelBase
         AlbumCount = $"{Albums.Count} ALBUMS";
     }
 
-    private async Task LoadTracksAsync()
+    private async Task LoadTracksAsync(bool clearList)
     {
-        if (SelectedAlbum == null) { return; }
+        List<Track>? tracks = [];
 
-        Tracks.Clear();
-        var tracks = await _jellyfinService.GetTracksByAlbumAsync(SelectedAlbum.Id);
+        if (clearList) { Tracks.Clear(); }
+
+        if (SelectedAlbum == null)
+        {
+            tracks = await _jellyfinService.GetTracksAsync(_selectedLibrary.Id);
+        }
+        else
+        {
+            tracks = await _jellyfinService.GetTracksByAlbumAsync(SelectedAlbum.Id);
+        }
+
+        if (TrackSortStatus == "A-Z")
+        {
+            tracks = tracks.OrderBy(t => t.Title).ToList();
+        }
+        else if (TrackSortStatus == "Album Order")
+        {
+            tracks = tracks.OrderBy(t => t.IndexNumber).ToList();
+        }
+        //else if (TrackSortStatus == "Rating")
+        //{
+        //    tracks = tracks.OrderByDescending(t => t.CommunityRating).ToList();
+        //}
+
         foreach (var track in tracks)
         {
             Tracks.Add(track);
@@ -195,7 +246,28 @@ public class LibraryViewModel : ViewModelBase
     private async Task SortArtistsAsync()
     {
         ArtistSortStatus = ArtistSortStatus == "A-Z" ? "Z-A" : "A-Z";
-        await LoadArtistsAsync();
+        await LoadArtistsAsync(true);
+    }
+
+    private async Task SortAlbumAsync()
+    {
+        AlbumSortStatus = AlbumSortStatus == "A-Z" ? "Release Year" : AlbumSortStatus == "Release Year" ? "Rating" : "A-Z";
+        await LoadAlbumsAsync(true);
+    }
+
+    private async Task SortTrackAsync()
+    {
+        if (SelectedAlbum == null)
+        {
+            TrackSortStatus = TrackSortStatus == "A-Z" ? "Rating" : "A-Z";
+        }
+        else
+        {
+            TrackSortStatus = TrackSortStatus == "A-Z" ? "By Album" : TrackSortStatus == "By Album" ? "Rating" : "A-Z";
+        }
+
+
+        await LoadTracksAsync(true);
     }
 
     private async Task PlaySelectedTrackAsync()
