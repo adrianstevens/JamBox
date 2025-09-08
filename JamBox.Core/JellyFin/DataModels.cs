@@ -136,6 +136,9 @@ public class Album
     public Dictionary<string, string> ImageTags { get; set; }
 
     [JsonIgnore]
+    public string AlbumSubtitle { get; set; }
+
+    [JsonIgnore]
     public string AlbumArtist => AlbumArtists?.FirstOrDefault().Name ?? "Unknown Artist";
 
     [JsonIgnore]

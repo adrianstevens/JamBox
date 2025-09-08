@@ -182,7 +182,7 @@
                                             
                                             <TextBlock 
                                                 Grid.Row="2" 
-                                                Text="{Binding AlbumArtist}"
+                                                Text="{Binding AlbumSubtitle}"
                                                 Foreground="#EDF3F9"
                                                 Opacity="0.5"
                                                 MaxWidth="120"

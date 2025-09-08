@@ -189,11 +189,11 @@ public class LibraryViewModel : ViewModelBase
         {
             albums = albums.OrderBy(a => a.Title).ToList();
         }
-        else if (AlbumSortStatus == "Release Year")
+        else if (AlbumSortStatus == "BY RELEASE YEAR")
         {
             albums = albums.OrderByDescending(a => a.ProductionYear).ToList();
         }
-        else if (AlbumSortStatus == "Rating")
+        else if (AlbumSortStatus == "BY RATING")
         {
             albums = albums.OrderByDescending(a => a.UserData.IsFavorite).ToList();
         }
@@ -201,6 +201,7 @@ public class LibraryViewModel : ViewModelBase
         foreach (var album in albums)
         {
             album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinService.ServerUrl, _jellyfinService.CurrentAccessToken, 140, 140);
+            album.AlbumSubtitle = SelectedArtist == null ? album.AlbumArtist : album.ProductionYear.ToString();
             Albums.Add(album);
         }
 
@@ -226,11 +227,11 @@ public class LibraryViewModel : ViewModelBase
         {
             tracks = tracks.OrderBy(t => t.Title).ToList();
         }
-        else if (TrackSortStatus == "Album Order")
+        else if (TrackSortStatus == "BY ALBUM")
         {
             tracks = tracks.OrderBy(t => t.IndexNumber).ToList();
         }
-        //else if (TrackSortStatus == "Rating")
+        //else if (TrackSortStatus == "BY RATING")
         //{
         //    tracks = tracks.OrderByDescending(t => t.CommunityRating).ToList();
         //}
@@ -251,7 +252,7 @@ public class LibraryViewModel : ViewModelBase
 
     private async Task SortAlbumAsync()
     {
-        AlbumSortStatus = AlbumSortStatus == "A-Z" ? "Release Year" : AlbumSortStatus == "Release Year" ? "Rating" : "A-Z";
+        AlbumSortStatus = AlbumSortStatus == "A-Z" ? "BY RELEASE YEAR" : AlbumSortStatus == "BY RELEASE YEAR" ? "BY RATING" : "A-Z";
         await LoadAlbumsAsync(true);
     }
 
@@ -259,11 +260,11 @@ public class LibraryViewModel : ViewModelBase
     {
         if (SelectedAlbum == null)
         {
-            TrackSortStatus = TrackSortStatus == "A-Z" ? "Rating" : "A-Z";
+            TrackSortStatus = TrackSortStatus == "A-Z" ? "BY RATING" : "A-Z";
         }
         else
         {
-            TrackSortStatus = TrackSortStatus == "A-Z" ? "By Album" : TrackSortStatus == "By Album" ? "Rating" : "A-Z";
+            TrackSortStatus = TrackSortStatus == "A-Z" ? "BY ALBUM" : TrackSortStatus == "BY ALBUM" ? "BY RATING" : "A-Z";
         }
 
 
