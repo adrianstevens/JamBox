@@ -189,6 +189,14 @@ public class JellyfinApiService
         return response.Items;
     }
 
+    public async Task<List<Track>> GetTracksByArtistAsync(string artistId)
+    {
+        var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
+            $"Items?IncludeItemTypes=Audio&ArtistIds={artistId}&Recursive=true"
+        );
+        return response.Items;
+    }
+
     public async Task<List<SessionInfo>> GetSessionsAsync()
     {
         var response = await _httpClient.GetFromJsonAsync<List<SessionInfo>>(

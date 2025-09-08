@@ -23,6 +23,7 @@ public class LibraryViewModel : ViewModelBase
             if (_selectedArtist != null)
             {
                 LoadAlbumsCommand.Execute().Subscribe();
+                LoadTracksCommand.Execute().Subscribe();
             }
         }
     }
@@ -214,13 +215,20 @@ public class LibraryViewModel : ViewModelBase
 
         if (clearList) { Tracks.Clear(); }
 
-        if (SelectedAlbum == null)
+        if (SelectedArtist != null)
         {
-            tracks = await _jellyfinService.GetTracksAsync(_selectedLibrary.Id);
+            if (SelectedAlbum != null)
+            {
+                tracks = await _jellyfinService.GetTracksByAlbumAsync(SelectedAlbum.Id);
+            }
+            else
+            {
+                tracks = await _jellyfinService.GetTracksByArtistAsync(SelectedArtist.Id);
+            }
         }
         else
         {
-            tracks = await _jellyfinService.GetTracksByAlbumAsync(SelectedAlbum.Id);
+            tracks = await _jellyfinService.GetTracksAsync(_selectedLibrary.Id);
         }
 
         if (TrackSortStatus == "A-Z")
