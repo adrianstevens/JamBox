@@ -85,7 +85,7 @@
                             Grid.Row="0">
                             <Button 
                                 Content="{Binding ArtistCount}" 
-                                Command="{Binding ShowAllArtistCmd}" 
+                                Command="{Binding ResetArtistsSelectionCommand}" 
                                 Classes="transparent-button" />
                             <Button 
                                 Content="{Binding ArtistSortStatus}" 
@@ -136,7 +136,7 @@
                             Grid.Row="0">
                             <Button 
                                 Content="{Binding AlbumCount}" 
-                                Command="{Binding ShowAllAlbumsCmd}"
+                                Command="{Binding ResetAlbumSelectionCommand}"
                                 Classes="transparent-button" />
                             <Button 
                                 Content="{Binding AlbumSortStatus}" 

@@ -22,6 +22,7 @@ public class LibraryViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _selectedArtist, value);
             if (_selectedArtist != null)
             {
+                AlbumSortStatus = "BY RELEASE YEAR";
                 LoadAlbumsCommand.Execute().Subscribe();
                 LoadTracksCommand.Execute().Subscribe();
             }
@@ -53,6 +54,7 @@ public class LibraryViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _selectedAlbum, value);
             if (_selectedAlbum != null)
             {
+                TrackSortStatus = "BY ALBUM";
                 LoadTracksCommand.Execute().Subscribe();
             }
         }
@@ -114,18 +116,25 @@ public class LibraryViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> SortTracksCommand { get; }
 
+    public ReactiveCommand<Unit, Unit> ResetArtistsSelectionCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> ResetAlbumSelectionCommand { get; }
+
     public ReactiveCommand<Unit, Unit> PlaySelectedTrackCommand { get; }
 
     public LibraryViewModel(JellyfinApiService jellyfinService)
     {
         _jellyfinService = jellyfinService;
 
-        LoadArtistsCommand = ReactiveCommand.CreateFromTask(() => LoadArtistsAsync(true));
-        LoadAlbumsCommand = ReactiveCommand.CreateFromTask(() => LoadAlbumsAsync(true));
-        LoadTracksCommand = ReactiveCommand.CreateFromTask(() => LoadTracksAsync(true));
+        LoadArtistsCommand = ReactiveCommand.CreateFromTask(LoadArtistsAsync);
+        LoadAlbumsCommand = ReactiveCommand.CreateFromTask(LoadAlbumsAsync);
+        LoadTracksCommand = ReactiveCommand.CreateFromTask(LoadTracksAsync);
         SortArtistsCommand = ReactiveCommand.CreateFromTask(SortArtistsAsync);
         SortAlbumsCommand = ReactiveCommand.CreateFromTask(SortAlbumsAsync);
         SortTracksCommand = ReactiveCommand.CreateFromTask(SortTracksAsync);
+
+        ResetArtistsSelectionCommand = ReactiveCommand.CreateFromTask(ResetArtistsSelectionAsync);
+        ResetAlbumSelectionCommand = ReactiveCommand.CreateFromTask(ResetAlbumSelectionAsync);
 
         var canPlay = this.WhenAnyValue(vm => vm.SelectedTrack).Select(t => t != null);
         PlaySelectedTrackCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
@@ -140,17 +149,15 @@ public class LibraryViewModel : ViewModelBase
 
         if (_selectedLibrary != null)
         {
-            await LoadArtistsAsync(true);
-
-            await LoadAlbumsAsync(true);
-
-            await LoadTracksAsync(true);
+            await LoadArtistsAsync();
+            await LoadAlbumsAsync();
+            await LoadTracksAsync();
         }
     }
 
-    private async Task LoadArtistsAsync(bool clearList)
+    private async Task LoadArtistsAsync()
     {
-        if (clearList) { Artists.Clear(); }
+        Artists.Clear();
 
         var artists = await _jellyfinService.GetArtistsAsync(_selectedLibrary.Id);
 
@@ -171,11 +178,11 @@ public class LibraryViewModel : ViewModelBase
         ArtistCount = $"{Artists.Count} ARTISTS";
     }
 
-    private async Task LoadAlbumsAsync(bool clearList)
+    private async Task LoadAlbumsAsync()
     {
         List<Album>? albums = [];
 
-        if (clearList) { Albums.Clear(); }
+        Albums.Clear();
 
         if (SelectedArtist == null)
         {
@@ -209,22 +216,19 @@ public class LibraryViewModel : ViewModelBase
         AlbumCount = $"{Albums.Count} ALBUMS";
     }
 
-    private async Task LoadTracksAsync(bool clearList)
+    private async Task LoadTracksAsync()
     {
         List<Track>? tracks = [];
 
-        if (clearList) { Tracks.Clear(); }
+        Tracks.Clear();
 
         if (SelectedArtist != null)
         {
-            if (SelectedAlbum != null)
-            {
-                tracks = await _jellyfinService.GetTracksByAlbumAsync(SelectedAlbum.Id);
-            }
-            else
-            {
-                tracks = await _jellyfinService.GetTracksByArtistAsync(SelectedArtist.Id);
-            }
+            tracks = await _jellyfinService.GetTracksByArtistAsync(SelectedArtist.Id);
+        }
+        else if (SelectedAlbum != null)
+        {
+            tracks = await _jellyfinService.GetTracksByAlbumAsync(SelectedAlbum.Id);
         }
         else
         {
@@ -255,13 +259,13 @@ public class LibraryViewModel : ViewModelBase
     private async Task SortArtistsAsync()
     {
         ArtistSortStatus = ArtistSortStatus == "A-Z" ? "Z-A" : "A-Z";
-        await LoadArtistsAsync(true);
+        await LoadArtistsAsync();
     }
 
     private async Task SortAlbumsAsync()
     {
         AlbumSortStatus = AlbumSortStatus == "A-Z" ? "BY RELEASE YEAR" : AlbumSortStatus == "BY RELEASE YEAR" ? "BY RATING" : "A-Z";
-        await LoadAlbumsAsync(true);
+        await LoadAlbumsAsync();
     }
 
     private async Task SortTracksAsync()
@@ -276,7 +280,26 @@ public class LibraryViewModel : ViewModelBase
         }
 
 
-        await LoadTracksAsync(true);
+        await LoadTracksAsync();
+    }
+
+    private async Task ResetArtistsSelectionAsync()
+    {
+        SelectedArtist = null;
+        await LoadArtistsAsync();
+        AlbumSortStatus = "A-Z";
+        await LoadAlbumsAsync();
+        TrackSortStatus = "A-Z";
+        await LoadTracksAsync();
+    }
+
+    private async Task ResetAlbumSelectionAsync()
+    {
+        SelectedAlbum = null;
+        AlbumSortStatus = "A-Z";
+        await LoadAlbumsAsync();
+        TrackSortStatus = "A-Z";
+        await LoadTracksAsync();
     }
 
     private async Task PlaySelectedTrackAsync()
