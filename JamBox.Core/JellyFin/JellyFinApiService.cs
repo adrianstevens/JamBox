@@ -6,7 +6,7 @@ namespace JamBox.Core.JellyFin;
 
 public class JellyfinApiService
 {
-    private readonly HttpClient _httpClient;
+    private HttpClient _httpClient;
     private string? _accessToken;
     private string _userId;
 
@@ -24,11 +24,18 @@ public class JellyfinApiService
 
     public JellyfinApiService()
     {
-        _httpClient = new HttpClient();
 
+    }
+
+    private void CreateHttpClient(string baseUrl)
+    {
+        _httpClient?.Dispose();
+        _httpClient = new HttpClient
+        {
+            BaseAddress = new Uri(baseUrl)
+        };
         var authHeader =
             $"MediaBrowser Client=\"{ClientName}\", Device=\"{DeviceName}\", DeviceId=\"{DeviceId}\", Version=\"{ClientVersion}\"";
-
         _httpClient.DefaultRequestHeaders.Add("X-Emby-Authorization", authHeader);
     }
 
@@ -39,7 +46,7 @@ public class JellyfinApiService
     {
         // The core fix: Set the BaseAddress on the HttpClient
         // This is the source of the "invalid URI" error.
-        _httpClient.BaseAddress = new Uri(url.TrimEnd('/') + "/");
+        CreateHttpClient(url.TrimEnd('/') + "/");
     }
 
     public async Task<PublicSystemInfo?> GetPublicSystemInfoAsync()

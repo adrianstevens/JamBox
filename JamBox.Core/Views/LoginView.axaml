@@ -31,6 +31,7 @@
 
             <Grid
                 RowSpacing="15"
+                Width="350"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
                 <Grid.RowDefinitions>
@@ -40,7 +41,6 @@
                 
                 <Image 
                     Grid.Row="0"
-                    Width="350"
                     Source="avares://JamBox.Core/Assets/icon-logo-text.png" />
 
                 <StackPanel
@@ -77,6 +77,13 @@
                         HorizontalContentAlignment="Center"
                         HorizontalAlignment="Stretch"
                         Classes="custom-button" />
+                    
+                    <TextBlock
+                        Text="{Binding ConnectionStatus}"
+                        HorizontalAlignment="Center"
+                        FontWeight="SemiBold"
+                        Foreground="#FF6969"
+                        TextWrapping="Wrap" />
                 </StackPanel>
 
                 <StackPanel
@@ -84,12 +91,6 @@
                     Spacing="10"
                     IsVisible="{Binding IsBusy}">
                     <ProgressBar IsIndeterminate="True" />
-                    <TextBlock
-                        Text="{Binding ConnectionStatus}"
-                        Foreground="White"
-                        FontSize="16"
-                        HorizontalAlignment="Center"
-                        TextWrapping="Wrap" />
                 </StackPanel>
             </Grid>
         </Grid>

@@ -69,6 +69,7 @@ public class LoginViewModel : ViewModelBase
         {
             Console.WriteLine($"An unhandled error occurred in the ConnectCommand: {ex.Message}");
             ConnectionStatus = $"Connection failed: {ex.Message}";
+            IsBusy = false;
         });
 
         LoadCredentials();
