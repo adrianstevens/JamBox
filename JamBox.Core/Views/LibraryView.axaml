@@ -160,12 +160,13 @@
                                     <DataTemplate>
                                         <Grid>
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="200" />
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
 
                                             <Image 
+                                                Grid.Row="0"
                                                 Source="{Binding AlbumArtUrl, Converter={StaticResource UrlToBitmapConverter}}" 
                                                 Width="200" 
                                                 Height="200"
@@ -178,7 +179,8 @@
                                                 Margin="0,5,0,0"
                                                 MaxWidth="200"
                                                 TextTrimming="CharacterEllipsis"
-                                                TextWrapping="NoWrap"/>
+                                                TextWrapping="Wrap"
+                                                MaxLines="2" />
                                             
                                             <TextBlock 
                                                 Grid.Row="2" 
