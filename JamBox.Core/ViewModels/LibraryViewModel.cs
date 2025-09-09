@@ -108,11 +108,11 @@ public class LibraryViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> LoadTracksCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> ToggleArtistSortCommand { get; }
+    public ReactiveCommand<Unit, Unit> SortArtistsCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> ToggleAlbumSortCommand { get; }
+    public ReactiveCommand<Unit, Unit> SortAlbumsCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> ToggleTrackSortCommand { get; }
+    public ReactiveCommand<Unit, Unit> SortTracksCommand { get; }
 
     public ReactiveCommand<Unit, Unit> PlaySelectedTrackCommand { get; }
 
@@ -123,9 +123,9 @@ public class LibraryViewModel : ViewModelBase
         LoadArtistsCommand = ReactiveCommand.CreateFromTask(() => LoadArtistsAsync(true));
         LoadAlbumsCommand = ReactiveCommand.CreateFromTask(() => LoadAlbumsAsync(true));
         LoadTracksCommand = ReactiveCommand.CreateFromTask(() => LoadTracksAsync(true));
-        ToggleArtistSortCommand = ReactiveCommand.CreateFromTask(SortArtistsAsync);
-        ToggleAlbumSortCommand = ReactiveCommand.CreateFromTask(SortAlbumAsync);
-        ToggleTrackSortCommand = ReactiveCommand.CreateFromTask(SortTrackAsync);
+        SortArtistsCommand = ReactiveCommand.CreateFromTask(SortArtistsAsync);
+        SortAlbumsCommand = ReactiveCommand.CreateFromTask(SortAlbumsAsync);
+        SortTracksCommand = ReactiveCommand.CreateFromTask(SortTracksAsync);
 
         var canPlay = this.WhenAnyValue(vm => vm.SelectedTrack).Select(t => t != null);
         PlaySelectedTrackCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
@@ -201,7 +201,7 @@ public class LibraryViewModel : ViewModelBase
 
         foreach (var album in albums)
         {
-            album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinService.ServerUrl, _jellyfinService.CurrentAccessToken, 140, 140);
+            album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinService.ServerUrl, _jellyfinService.CurrentAccessToken);
             album.AlbumSubtitle = SelectedArtist == null ? album.AlbumArtist : album.ProductionYear.ToString();
             Albums.Add(album);
         }
@@ -258,13 +258,13 @@ public class LibraryViewModel : ViewModelBase
         await LoadArtistsAsync(true);
     }
 
-    private async Task SortAlbumAsync()
+    private async Task SortAlbumsAsync()
     {
         AlbumSortStatus = AlbumSortStatus == "A-Z" ? "BY RELEASE YEAR" : AlbumSortStatus == "BY RELEASE YEAR" ? "BY RATING" : "A-Z";
         await LoadAlbumsAsync(true);
     }
 
-    private async Task SortTrackAsync()
+    private async Task SortTracksAsync()
     {
         if (SelectedAlbum == null)
         {

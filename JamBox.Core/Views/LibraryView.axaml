@@ -89,7 +89,7 @@
                                 Classes="transparent-button" />
                             <Button 
                                 Content="{Binding ArtistSortStatus}" 
-                                Command="{Binding ToggleArtistSortCommand}"
+                                Command="{Binding SortArtistsCommand}"
                                 Classes="transparent-button"
                                 HorizontalAlignment="Right" />
                         </Grid>
@@ -140,7 +140,7 @@
                                 Classes="transparent-button" />
                             <Button 
                                 Content="{Binding AlbumSortStatus}" 
-                                Command="{Binding ToggleAlbumSortCommand}"
+                                Command="{Binding SortAlbumsCommand}"
                                 Classes="transparent-button"
                                 HorizontalAlignment="Right"/>
                         </Grid>
@@ -167,8 +167,8 @@
 
                                             <Image 
                                                 Source="{Binding AlbumArtUrl, Converter={StaticResource UrlToBitmapConverter}}" 
-                                                Width="120" 
-                                                Height="120"
+                                                Width="200" 
+                                                Height="200"
                                                 Stretch="Uniform" />
                                             
                                             <TextBlock 
@@ -176,7 +176,7 @@
                                                 Text="{Binding Title}" 
                                                 Foreground="#EDF3F9"
                                                 Margin="0,5,0,0"
-                                                MaxWidth="120"
+                                                MaxWidth="200"
                                                 TextTrimming="CharacterEllipsis"
                                                 TextWrapping="NoWrap"/>
                                             
@@ -185,7 +185,7 @@
                                                 Text="{Binding AlbumSubtitle}"
                                                 Foreground="#EDF3F9"
                                                 Opacity="0.5"
-                                                MaxWidth="120"
+                                                MaxWidth="200"
                                                 TextTrimming="CharacterEllipsis"
                                                 TextWrapping="NoWrap"/>
                                         </Grid>
@@ -216,7 +216,7 @@
                                 Classes="transparent-button" />
                             <Button 
                                 Content="{Binding TrackSortStatus}"
-                                Command="{Binding ToggleTrackSortCommand}"
+                                Command="{Binding SortTracksCommand}"
                                 Classes="transparent-button"
                                 HorizontalAlignment="Right" />
                         </Grid>
@@ -224,6 +224,7 @@
                         <Grid Grid.Row="1">
                             <ListBox
                                 ItemsSource="{Binding Tracks}"
+                                SelectedItem="{Binding SelectedTrack}"
                                 SelectionMode="Single">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -362,7 +363,7 @@
                             Padding="0" 
                             Background="Transparent" 
                             CornerRadius="50" 
-                            Command="{Binding PlaySongCmd}">
+                            Command="{Binding PlaySelectedTrackCommand}">
                             <Image 
                                 Source="avares://JamBox.Core/Assets/icon-play.png" 
                                 Stretch="Uniform" />

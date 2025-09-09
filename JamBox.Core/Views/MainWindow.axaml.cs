@@ -1,15 +1,35 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
+using JamBox.Core.Settings;
 
 namespace JamBox.Core.Views;
 
 public partial class MainWindow : Window
 {
+    private readonly WindowSettings _settings;
+
     public MainWindow()
     {
         InitializeComponent();
-        Width = 1200;   // Set your preferred width
-        Height = 800;   // Set your preferred height
+        _settings = WindowSettings.Load();
 
-        //this.Icon = new WindowIcon("/Assets/appicon.ico");
+        Width = _settings.Width;
+        Height = _settings.Height;
+
+        if (_settings.X.HasValue && _settings.Y.HasValue)
+        {
+            Position = new PixelPoint((int)_settings.X.Value, (int)_settings.Y.Value);
+        }
+
+        this.Closing += OnClosing;
+    }
+
+    private void OnClosing(object? sender, WindowClosingEventArgs e)
+    {
+        _settings.Width = Width;
+        _settings.Height = Height;
+        _settings.X = Position.X;
+        _settings.Y = Position.Y;
+        _settings.Save();
     }
 }
