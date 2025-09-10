@@ -60,7 +60,8 @@
                                 MaxWidth="200"
                                 TextTrimming="CharacterEllipsis"
                                 TextWrapping="Wrap"
-                                MaxLines="2" />
+                                MaxLines="2"
+                                ToolTip.Tip="{Binding Title}"/>
 
                             <TextBlock
                                 Grid.Row="2"

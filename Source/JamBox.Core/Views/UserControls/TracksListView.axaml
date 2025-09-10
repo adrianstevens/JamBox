@@ -36,7 +36,8 @@
                             Text="{Binding Title}"
                             TextTrimming="CharacterEllipsis"
                             TextWrapping="Wrap"
-                            MaxLines="2" />
+                            MaxLines="2"
+                            ToolTip.Tip="{Binding Title}" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
