@@ -1,0 +1,52 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="JamBox.Core.Views.UserControls.ArtistsListView">
+    
+    <Grid 
+        RowSpacing="10" 
+        Margin="5,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid 
+            Grid.Row="0">
+            <Button
+                Content="{Binding ArtistCount}"
+                Command="{Binding ResetArtistsSelectionCommand}"
+                Classes="transparent-button" />
+            <Button
+                Content="{Binding ArtistSortStatus}"
+                Command="{Binding SortArtistsCommand}"
+                Classes="transparent-button"
+                HorizontalAlignment="Right" />
+        </Grid>
+
+        <Grid 
+            Grid.Row="1">
+            <ListBox
+                ItemsSource="{Binding Artists}"
+                SelectedItem="{Binding SelectedArtist}"
+                SelectionMode="Single">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            BorderBrush="Transparent"
+                            BorderThickness="1"
+                            CornerRadius="5"
+                            Padding="0"
+                            Margin="0">
+                            <TextBlock
+                                Text="{Binding Name}"
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Foreground="#cbd5e0"/>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
+</UserControl>

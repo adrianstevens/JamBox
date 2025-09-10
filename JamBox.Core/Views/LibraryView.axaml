@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:userControls="clr-namespace:JamBox.Core.Views.UserControls"
     mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
     x:Class="JamBox.Core.Views.LibraryView">
 
@@ -72,170 +73,19 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Artists -->
-                    <Grid 
-                        Grid.Column="0" 
-                        RowSpacing="10"
-                        Margin="5,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                        <Grid 
-                            Grid.Row="0">
-                            <Button 
-                                Content="{Binding ArtistCount}" 
-                                Command="{Binding ResetArtistsSelectionCommand}" 
-                                Classes="transparent-button" />
-                            <Button 
-                                Content="{Binding ArtistSortStatus}" 
-                                Command="{Binding SortArtistsCommand}"
-                                Classes="transparent-button"
-                                HorizontalAlignment="Right" />
-                        </Grid>
-
-                        <Grid Grid.Row="1">
-                            <ListBox
-                                ItemsSource="{Binding Artists}"
-                                SelectedItem="{Binding SelectedArtist}"
-                                SelectionMode="Single">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border
-                                            BorderBrush="Transparent"
-                                            BorderThickness="1"
-                                            CornerRadius="5"
-                                            Padding="0"
-                                            Margin="0">
-                                            <TextBlock
-                                                Text="{Binding Name}"
-                                                FontSize="14" 
-                                                FontWeight="SemiBold"
-                                                Foreground="#cbd5e0"/>
-                                        </Border>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </Grid>
-                    </Grid>
+                    <userControls:ArtistsListView Grid.Column="0" />
 
                     <GridSplitter Grid.Column="1" Width="1" Background="#EDF3F9" Opacity="0.1" />
                     <Rectangle Grid.Column="1" Fill="#EDF3F9" Width="1" />
 
                     <!-- Albums -->
-                    <Grid 
-                        Grid.Column="2" 
-                        RowSpacing="10" 
-                        Margin="5,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                        <Grid 
-                            Grid.Row="0">
-                            <Button 
-                                Content="{Binding AlbumCount}" 
-                                Command="{Binding ResetAlbumSelectionCommand}"
-                                Classes="transparent-button" />
-                            <Button 
-                                Content="{Binding AlbumSortStatus}" 
-                                Command="{Binding SortAlbumsCommand}"
-                                Classes="transparent-button"
-                                HorizontalAlignment="Right"/>
-                        </Grid>
-
-                        <Grid Grid.Row="1">
-                            <ListBox
-                                ItemsSource="{Binding Albums}"
-                                SelectedItem="{Binding SelectedAlbum}"
-                                SelectionMode="Single">
-                                <ListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
-
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="200" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-
-                                            <Image 
-                                                Grid.Row="0"
-                                                Source="{Binding AlbumArtUrl, Converter={StaticResource UrlToBitmapConverter}}" 
-                                                Width="200" 
-                                                Height="200"
-                                                Stretch="Uniform" />
-                                            
-                                            <TextBlock 
-                                                Grid.Row="1" 
-                                                Text="{Binding Title}" 
-                                                Foreground="#EDF3F9"
-                                                Margin="0,5,0,0"
-                                                MaxWidth="200"
-                                                TextTrimming="CharacterEllipsis"
-                                                TextWrapping="Wrap"
-                                                MaxLines="2" />
-                                            
-                                            <TextBlock 
-                                                Grid.Row="2" 
-                                                Text="{Binding AlbumSubtitle}"
-                                                Foreground="#EDF3F9"
-                                                Opacity="0.5"
-                                                MaxWidth="200"
-                                                TextTrimming="CharacterEllipsis"
-                                                TextWrapping="NoWrap"/>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </Grid>
-                    </Grid>
+                    <userControls:AlbumsListView Grid.Column="2" />
 
                     <GridSplitter Grid.Column="3" Width="1" Background="#EDF3F9" Opacity="0.1" />
                     <Rectangle Grid.Column="3" Fill="#EDF3F9" Width="1" />
 
                     <!-- Tracks -->
-                    <Grid 
-                        Grid.Column="4" 
-                        RowSpacing="10"
-                        Margin="5,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                        <Grid 
-                            Grid.Row="0">
-                            <Button
-                                Content="{Binding TrackCount}"
-                                Command="{Binding ShowAllAlbumsCmd}"
-                                Classes="transparent-button" />
-                            <Button 
-                                Content="{Binding TrackSortStatus}"
-                                Command="{Binding SortTracksCommand}"
-                                Classes="transparent-button"
-                                HorizontalAlignment="Right" />
-                        </Grid>
-
-                        <Grid Grid.Row="1">
-                            <ListBox
-                                ItemsSource="{Binding Tracks}"
-                                SelectedItem="{Binding SelectedTrack}"
-                                SelectionMode="Single">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Title}" />
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </Grid>
-                    </Grid>
+                    <userControls:TracksListView Grid.Column="4" />
                 </Grid>
 
                 <!-- Volume, Now Playing and Playback Controls -->

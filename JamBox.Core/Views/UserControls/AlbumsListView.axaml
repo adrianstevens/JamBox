@@ -1,0 +1,79 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="JamBox.Core.Views.UserControls.AlbumsListView">
+
+    <Grid
+        RowSpacing="10"
+        Margin="5,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid
+            Grid.Row="0">
+            <Button
+                Content="{Binding AlbumCount}"
+                Command="{Binding ResetAlbumSelectionCommand}"
+                Classes="transparent-button" />
+            <Button
+                Content="{Binding AlbumSortStatus}"
+                Command="{Binding SortAlbumsCommand}"
+                Classes="transparent-button"
+                HorizontalAlignment="Right"/>
+        </Grid>
+
+        <Grid 
+            Grid.Row="1">
+            <ListBox
+                ItemsSource="{Binding Albums}"
+                SelectedItem="{Binding SelectedAlbum}"
+                SelectionMode="Single">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="200" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Image
+                                Grid.Row="0"
+                                Source="{Binding AlbumArtUrl, Converter={StaticResource UrlToBitmapConverter}}"
+                                Width="200"
+                                Height="200"
+                                Stretch="Uniform" />
+
+                            <TextBlock
+                                Grid.Row="1"
+                                Text="{Binding Title}"
+                                Foreground="#EDF3F9"
+                                Margin="0,5,0,0"
+                                MaxWidth="200"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="Wrap"
+                                MaxLines="2" />
+
+                            <TextBlock
+                                Grid.Row="2"
+                                Text="{Binding AlbumSubtitle}"
+                                Foreground="#EDF3F9"
+                                Opacity="0.5"
+                                MaxWidth="200"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
+</UserControl>

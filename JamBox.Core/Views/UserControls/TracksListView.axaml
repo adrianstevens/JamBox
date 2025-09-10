@@ -1,0 +1,41 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="JamBox.Core.Views.UserControls.TracksListView">
+
+    <Grid
+        RowSpacing="10"
+        Margin="5,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid
+            Grid.Row="0">
+            <Button
+                Content="{Binding TrackCount}"
+                Command="{Binding ShowAllAlbumsCmd}"
+                Classes="transparent-button" />
+            <Button
+                Content="{Binding TrackSortStatus}"
+                Command="{Binding SortTracksCommand}"
+                Classes="transparent-button"
+                HorizontalAlignment="Right" />
+        </Grid>
+
+        <Grid 
+            Grid.Row="1">
+            <ListBox
+                ItemsSource="{Binding Tracks}"
+                SelectedItem="{Binding SelectedTrack}"
+                SelectionMode="Single">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Title}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
+</UserControl>
