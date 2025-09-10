@@ -32,7 +32,11 @@
                 SelectionMode="Single">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Title}" />
+                        <TextBlock 
+                            Text="{Binding Title}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="Wrap"
+                            MaxLines="2" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
