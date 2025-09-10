@@ -13,10 +13,6 @@
         <converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
     </UserControl.Resources>
 
-    <!--<Design.DataContext>
-        <vm:LoginViewModel />
-    </Design.DataContext>-->
-
     <UserControl.Content>
         <Grid 
             Background="#1a202c">

@@ -222,7 +222,7 @@ public class LibraryViewModel : ViewModelBase
 
         Tracks.Clear();
 
-        if (SelectedArtist != null)
+        if (SelectedArtist != null && SelectedAlbum == null)
         {
             tracks = await _jellyfinService.GetTracksByArtistAsync(SelectedArtist.Id);
         }
