@@ -9,9 +9,9 @@
         <ApplicationIcon>Assets\appicon.ico</ApplicationIcon>
     </PropertyGroup>
     
-    <Target Name="InstallAppIcons" AfterTargets="Build">
-        <Exec Command="bash install-icons.sh" />
-    </Target>
+<!--    <Target Name="InstallAppIcons" AfterTargets="Build">-->
+<!--        <Exec Command="bash install-icons.sh" />-->
+<!--    </Target>-->
 
     <ItemGroup>
         <Content Include="Assets\appicon.ico">
