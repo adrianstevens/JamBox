@@ -1,17 +1,19 @@
-﻿using JamBox.Core.JellyFin;
+﻿using JamBox.Core.Audio;
+using JamBox.Core.JellyFin;
 using ReactiveUI;
 
 namespace JamBox.Core.ViewModels;
 
-public class MainViewModel : ReactiveObject
+public class MainViewModel : ReactiveObject, IDisposable
 {
     private readonly JellyfinApiService _jellyfinApiService;
     private ViewModelBase _currentContent;
 
+    public IAudioPlayer Player { get; } = new LibVlcAudioPlayer();
+
     public ViewModelBase CurrentContent
     {
         get => _currentContent;
-        // The setter is now public to allow other view models to update it
         set => this.RaiseAndSetIfChanged(ref _currentContent, value);
     }
 
@@ -19,5 +21,10 @@ public class MainViewModel : ReactiveObject
     {
         _jellyfinApiService = jellyfinService;
         CurrentContent = new LoginViewModel(_jellyfinApiService, this);
+    }
+
+    public void Dispose()
+    {
+        Player.Dispose();
     }
 }

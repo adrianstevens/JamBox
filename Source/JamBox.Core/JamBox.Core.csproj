@@ -13,6 +13,7 @@
     <PackageReference Include="Avalonia.ReactiveUI" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="System.Text.Json" />
+	<PackageReference Include="LibVLCSharp" />
   </ItemGroup>
 
   <ItemGroup>

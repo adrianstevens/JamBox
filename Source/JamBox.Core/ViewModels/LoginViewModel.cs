@@ -147,7 +147,7 @@ public class LoginViewModel : ViewModelBase
 
             SaveCredentials();
             //ConnectionStatus = "Authentication successful!";
-            _mainViewModel.CurrentContent = new LibraryViewModel(_jellyfinApiService);
+            _mainViewModel.CurrentContent = new LibraryViewModel(_jellyfinApiService, _mainViewModel.Player);
         }
         catch (Exception ex)
         {

@@ -1,4 +1,5 @@
-﻿using JamBox.Core.JellyFin;
+﻿using JamBox.Core.Audio;
+using JamBox.Core.JellyFin;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -9,6 +10,7 @@ namespace JamBox.Core.ViewModels;
 public class LibraryViewModel : ViewModelBase
 {
     private readonly JellyfinApiService _jellyfinService;
+    private readonly IAudioPlayer _player;
     private BaseItemDto _selectedLibrary;
 
     public ObservableCollection<Artist> Artists { get; } = [];
@@ -104,27 +106,105 @@ public class LibraryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isTrackPlaying, value);
     }
 
+    private PlaybackState _playback;
+    public PlaybackState Playback
+    {
+        get => _playback;
+        private set
+        {
+            this.RaiseAndSetIfChanged(ref _playback, value);
+            IsTrackPlaying = value == PlaybackState.Playing; // keep your existing flag in sync
+        }
+    }
+
+    private string _nowPlayingSongTitle = "";
+    public string NowPlayingSongTitle
+    {
+        get => _nowPlayingSongTitle;
+        set => this.RaiseAndSetIfChanged(ref _nowPlayingSongTitle, value);
+    }
+
+    private string _nowPlayingElapsedTime = "0:00";
+    public string NowPlayingElapsedTime
+    {
+        get => _nowPlayingElapsedTime;
+        set => this.RaiseAndSetIfChanged(ref _nowPlayingElapsedTime, value);
+    }
+
+    private string _nowPlayingRemainingTime = "-0:00";
+    public string NowPlayingRemainingTime
+    {
+        get => _nowPlayingRemainingTime;
+        set => this.RaiseAndSetIfChanged(ref _nowPlayingRemainingTime, value);
+    }
+
+    // Volume proxy (0..100)
+    private int _volume;
+    public int Volume
+    {
+        get => _volume;
+        set
+        {
+            if (_volume != value)
+            {
+                this.RaiseAndSetIfChanged(ref _volume, value);
+                _player.Volume = value;
+            }
+        }
+    }
+
+    private double _seekPosition;
+    public double SeekPosition
+    {
+        get => _seekPosition;
+        set => this.RaiseAndSetIfChanged(ref _seekPosition, value);
+    }
+
+    private double _seekLength;
+    public double SeekLength
+    {
+        get => _seekLength;
+        set => this.RaiseAndSetIfChanged(ref _seekLength, value);
+    }
+
+    private bool _isUserSeeking;
+    public bool IsUserSeeking
+    {
+        get => _isUserSeeking;
+        set => this.RaiseAndSetIfChanged(ref _isUserSeeking, value);
+    }
+
+    public ReactiveCommand<Unit, Unit> PlayPauseCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> PauseCommand { get; }
+    public ReactiveCommand<Unit, Unit> ResumeCommand { get; }
+    public ReactiveCommand<Unit, Unit> StopCommand { get; }
+    public ReactiveCommand<Unit, Unit> PlaySelectedTrackCommand { get; }
     public ReactiveCommand<Unit, Unit> LoadArtistsCommand { get; }
-
     public ReactiveCommand<Unit, Unit> LoadAlbumsCommand { get; }
-
     public ReactiveCommand<Unit, Unit> LoadTracksCommand { get; }
-
     public ReactiveCommand<Unit, Unit> SortArtistsCommand { get; }
-
     public ReactiveCommand<Unit, Unit> SortAlbumsCommand { get; }
-
     public ReactiveCommand<Unit, Unit> SortTracksCommand { get; }
-
     public ReactiveCommand<Unit, Unit> ResetArtistsSelectionCommand { get; }
-
     public ReactiveCommand<Unit, Unit> ResetAlbumSelectionCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> PlaySelectedTrackCommand { get; }
-
-    public LibraryViewModel(JellyfinApiService jellyfinService)
+    public LibraryViewModel(JellyfinApiService jellyfinService, IAudioPlayer player)
     {
         _jellyfinService = jellyfinService;
+        _player = player;
+        _player.StateChanged += (_, state) => Playback = state;
+
+        _player.PositionChanged += (_, position) =>
+        {
+            if (!IsUserSeeking) { SeekPosition = position; }
+
+            NowPlayingElapsedTime = FormatMs(position);
+            var remaining = Math.Max(0, _player.LengthMs - position);
+            NowPlayingRemainingTime = "-" + FormatMs(remaining);
+
+            SeekLength = _player.LengthMs;
+        };
 
         LoadArtistsCommand = ReactiveCommand.CreateFromTask(LoadArtistsAsync);
         LoadAlbumsCommand = ReactiveCommand.CreateFromTask(LoadAlbumsAsync);
@@ -137,7 +217,29 @@ public class LibraryViewModel : ViewModelBase
         ResetAlbumSelectionCommand = ReactiveCommand.CreateFromTask(ResetAlbumSelectionAsync);
 
         var canPlay = this.WhenAnyValue(vm => vm.SelectedTrack).Select(t => t != null);
+        var canPause = this.WhenAnyValue(x => x.Playback).Select(s => s == PlaybackState.Playing);
+        var canResume = this.WhenAnyValue(x => x.Playback).Select(s => s == PlaybackState.Paused);
+        var canStop = this.WhenAnyValue(x => x.Playback).Select(s => s is PlaybackState.Playing or PlaybackState.Paused);
+        var canToggle = this.WhenAnyValue(x => x.SelectedTrack, x => x.Playback, (track, state) => state == PlaybackState.Playing || track != null);
+
+        PauseCommand = ReactiveCommand.Create(() => _player.Pause(), canPause);
+        ResumeCommand = ReactiveCommand.Create(() => _player.Resume(), canResume);
+        StopCommand = ReactiveCommand.Create(() => _player.Stop(), canStop);
         PlaySelectedTrackCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
+
+        PlayPauseCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (Playback == PlaybackState.Playing)
+            {
+                _player.Pause();
+            }
+            else
+            {
+                if (SelectedTrack is null) return;
+                NowPlayingSongTitle = SelectedTrack.Title;
+                await PlaySelectedTrackAsync();
+            }
+        }, canToggle);
 
         _ = LoadLibraryAsync();
     }
@@ -306,11 +408,44 @@ public class LibraryViewModel : ViewModelBase
     {
         if (SelectedTrack == null) { return; }
 
+        var headers = new Dictionary<string, string>
+        {
+            ["X-Emby-Token"] = _jellyfinService.CurrentAccessToken
+        };
+
+        //debug url to test playback without auth
+        // url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+
+        var baseUrl = _jellyfinService.ServerUrl.TrimEnd('/');
+
+        // Try the original file endpoint first (no transcoding):
+        var url = $"{baseUrl}/Items/{SelectedTrack.Id}/File?api_key={_jellyfinService.CurrentAccessToken}";
+
+        await _player.PlayAsync(url, headers);
+
+        /* old code to control a remote instance ... I think we can remove this
         var sessions = await _jellyfinService.GetSessionsAsync();
         if (sessions.Count > 0)
         {
             var session = sessions[0];
             await _jellyfinService.PlayTrackAsync(session.Id, SelectedTrack.Id);
         }
+        */
+    }
+
+    public void SeekTo(double positionMs)
+    {
+        _player.Seek((long)positionMs);
+    }
+
+    private static string FormatMs(long ms)
+    {
+        if (ms < 0) { ms = 0; }
+
+        var trackTime = TimeSpan.FromMilliseconds(ms);
+
+        return trackTime.Hours > 0
+            ? $"{(int)trackTime.TotalHours}:{trackTime.Minutes:D2}:{trackTime.Seconds:D2}"
+            : $"{trackTime.Minutes}:{trackTime.Seconds:D2}";
     }
 }

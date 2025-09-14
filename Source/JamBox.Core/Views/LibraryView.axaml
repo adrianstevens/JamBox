@@ -146,10 +146,14 @@
                                 Grid.Column="0" 
                                 Text="{Binding NowPlayingSongTitle}" 
                                 Foreground="#EDF3F9" />
-                            <Slider 
-                                Minimum="0" 
-                                Maximum="100" 
-                                Width="256" />
+							<Slider 
+								x:Name="SeekBar"
+							    Minimum="0"
+                                Maximum="{Binding SeekLength}"
+                                Value="{Binding SeekPosition, Mode=TwoWay}"
+                                Width="256"
+                                PointerPressed="Seek_OnPointerPressed"
+                                PointerReleased="Seek_OnPointerReleased" />
                             <Grid>
                                 <TextBlock 
                                     Text="{Binding NowPlayingElapsedTime}" 
@@ -215,7 +219,7 @@
                             Padding="0" 
                             Background="Transparent" 
                             CornerRadius="50" 
-                            Command="{Binding PlaySelectedTrackCommand}">
+                            Command="{Binding PlayPauseCommand}">
                             <Image 
                                 Source="avares://JamBox.Core/Assets/icon-play.png" 
                                 Stretch="Uniform" />

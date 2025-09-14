@@ -30,6 +30,8 @@ public partial class App : Application
             {
                 DataContext = mainViewModel
             };
+
+            desktop.Exit += (_, __) => mainViewModel.Dispose();
         }
 
         base.OnFrameworkInitializationCompleted();
