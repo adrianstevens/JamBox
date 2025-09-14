@@ -1,0 +1,10 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+  </Configurations>
+
+  <Project Path="JamBox.Core/JamBox.Core.csproj" />
+  <Project Path="JamBox.Windows/JamBox.Windows.csproj" />
+  <Project Path="JamBox.Linux/JamBox.Linux.csproj" />
+  <Project Path="JamBox.Mac/JamBox.Mac.csproj" />
+</Solution>
