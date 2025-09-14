@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamBox.Windows", "JamBox.Wi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamBox.Linux", "JamBox.Linux\JamBox.Linux.csproj", "{F371CCC6-76FE-1984-D1B6-DE8D62D0C561}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamBox.Mac", "JamBox.Mac\JamBox.Mac.csproj", "{DFDC9E1D-3F47-68A1-152F-265D8BB02F8B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{F371CCC6-76FE-1984-D1B6-DE8D62D0C561}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F371CCC6-76FE-1984-D1B6-DE8D62D0C561}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F371CCC6-76FE-1984-D1B6-DE8D62D0C561}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFDC9E1D-3F47-68A1-152F-265D8BB02F8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFDC9E1D-3F47-68A1-152F-265D8BB02F8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFDC9E1D-3F47-68A1-152F-265D8BB02F8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFDC9E1D-3F47-68A1-152F-265D8BB02F8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
