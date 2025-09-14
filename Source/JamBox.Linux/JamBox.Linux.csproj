@@ -4,7 +4,6 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <ApplicationIcon>Assets\appicon.ico</ApplicationIcon>
     </PropertyGroup>
@@ -18,10 +17,6 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-
-    <PropertyGroup>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
-    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.3.5" />
