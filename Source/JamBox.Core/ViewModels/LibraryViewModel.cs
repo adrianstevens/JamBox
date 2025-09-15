@@ -175,11 +175,10 @@ public class LibraryViewModel : ViewModelBase
     }
 
     public ReactiveCommand<Unit, Unit> PlayPauseCommand { get; }
-
     public ReactiveCommand<Unit, Unit> PauseCommand { get; }
     public ReactiveCommand<Unit, Unit> ResumeCommand { get; }
     public ReactiveCommand<Unit, Unit> StopCommand { get; }
-    public ReactiveCommand<Unit, Unit> PlaySelectedTrackCommand { get; }
+    public ReactiveCommand<Unit, Unit> PlayCommand { get; }
     public ReactiveCommand<Unit, Unit> LoadArtistsCommand { get; }
     public ReactiveCommand<Unit, Unit> LoadAlbumsCommand { get; }
     public ReactiveCommand<Unit, Unit> LoadTracksCommand { get; }
@@ -206,6 +205,9 @@ public class LibraryViewModel : ViewModelBase
             SeekLength = _player.LengthMs;
         };
 
+        _player.VolumeChanged += (_, volume) => Volume = volume;
+        Volume = _player.Volume;
+
         LoadArtistsCommand = ReactiveCommand.CreateFromTask(LoadArtistsAsync);
         LoadAlbumsCommand = ReactiveCommand.CreateFromTask(LoadAlbumsAsync);
         LoadTracksCommand = ReactiveCommand.CreateFromTask(LoadTracksAsync);
@@ -225,7 +227,7 @@ public class LibraryViewModel : ViewModelBase
         PauseCommand = ReactiveCommand.Create(() => _player.Pause(), canPause);
         ResumeCommand = ReactiveCommand.Create(() => _player.Resume(), canResume);
         StopCommand = ReactiveCommand.Create(() => _player.Stop(), canStop);
-        PlaySelectedTrackCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
+        PlayCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
 
         PlayPauseCommand = ReactiveCommand.CreateFromTask(async () =>
         {

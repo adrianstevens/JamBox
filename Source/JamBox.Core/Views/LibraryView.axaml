@@ -113,11 +113,9 @@
                             Grid.Column="0" 
                             Source="avares://JamBox.Core/Assets/icon-volume-min.png" 
                             VerticalAlignment="Center" />
-                        <Slider 
-                            Grid.Column="1" 
-                            Minimum="0" 
-                            Maximum="100" 
-                            Width="128" />
+						<Slider Grid.Column="1"
+                            Minimum="0" Maximum="100" Width="128"
+                            Value="{Binding Volume, Mode=TwoWay}" />
                         <Image 
                             Grid.Column="2" 
                             Source="avares://JamBox.Core/Assets/icon-volume-max.png" 
