@@ -75,7 +75,6 @@ public sealed class LibVlcAudioPlayer : IAudioPlayer
         _player.Media = _currentMedia;
 
         var ok = _player.Play();
-        System.Diagnostics.Debug.WriteLine($"[VLC] Play() returned: {ok} for {url}");
 
         if (!ok)
         {

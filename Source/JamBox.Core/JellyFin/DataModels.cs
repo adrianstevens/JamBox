@@ -155,7 +155,6 @@ public class Album
             var url = $"{baseUrl}/Items/{Id}/Images/Primary" +
                       $"?tag={tag}&quality=90&fillWidth={width}&fillHeight={height}" +
                       $"&cropWhitespace=true&api_key={accessToken}";
-            Console.WriteLine($"AlbumArtUrl: {url}");
             return url;
         }
 
