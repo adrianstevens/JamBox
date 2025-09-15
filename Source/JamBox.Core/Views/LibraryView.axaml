@@ -3,10 +3,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:conv="clr-namespace:JamBox.Core.Converters"
     xmlns:userControls="clr-namespace:JamBox.Core.Views.UserControls"
     mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
     x:Class="JamBox.Core.Views.LibraryView">
 
+	<UserControl.Resources>
+		<conv:UrlToBitmapConverter x:Key="UrlToBitmap" />
+	</UserControl.Resources>
+	
     <UserControl.Content>
         <Grid
             Background="#1a202c">
@@ -129,14 +134,14 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid 
-                            Grid.Column="0" 
-                            Width="60" 
-                            Height="60">
-                            <Image 
-                                Source="avares://JamBox.Core/Assets/cover.jpg" 
-                                Stretch="UniformToFill"/>
-                        </Grid>
+						<Grid Grid.Column="0" Width="60" Height="60">
+							<Image Stretch="UniformToFill">
+								<Image.Source>
+									<Binding Path="SelectedAlbum.AlbumArtUrl"
+											 Converter="{StaticResource UrlToBitmap}" />
+								</Image.Source>
+							</Image>
+						</Grid>
 
                         <StackPanel 
                             Grid.Column="1" 
