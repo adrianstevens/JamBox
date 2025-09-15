@@ -253,9 +253,7 @@ public class LibraryViewModel : ViewModelBase
 
         if (_selectedLibrary != null)
         {
-            await LoadArtistsAsync();
-            await LoadAlbumsAsync();
-            await LoadTracksAsync();
+            await Task.WhenAll(LoadArtistsAsync(), LoadAlbumsAsync());
         }
     }
 
@@ -326,11 +324,11 @@ public class LibraryViewModel : ViewModelBase
 
         Tracks.Clear();
 
-        if (SelectedArtist != null && SelectedAlbum == null)
+        if (SelectedArtist is not null && SelectedAlbum is null)
         {
             tracks = await _jellyfinService.GetTracksByArtistAsync(SelectedArtist.Id);
         }
-        else if (SelectedAlbum != null)
+        else if (SelectedAlbum is not null)
         {
             tracks = await _jellyfinService.GetTracksByAlbumAsync(SelectedAlbum.Id);
         }
@@ -420,19 +418,10 @@ public class LibraryViewModel : ViewModelBase
 
         var baseUrl = _jellyfinService.ServerUrl.TrimEnd('/');
 
-        // Try the original file endpoint first (no transcoding):
+        // The original file endpoint (no transcoding):
         var url = $"{baseUrl}/Items/{SelectedTrack.Id}/File?api_key={_jellyfinService.CurrentAccessToken}";
 
         await _player.PlayAsync(url, headers);
-
-        /* old code to control a remote instance ... I think we can remove this
-        var sessions = await _jellyfinService.GetSessionsAsync();
-        if (sessions.Count > 0)
-        {
-            var session = sessions[0];
-            await _jellyfinService.PlayTrackAsync(session.Id, SelectedTrack.Id);
-        }
-        */
     }
 
     public void SeekTo(double positionMs)
