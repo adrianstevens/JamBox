@@ -117,6 +117,13 @@ public class LibraryViewModel : ViewModelBase
         }
     }
 
+    private string _nowPlayingAlbumArtUrl = "";
+    public string NowPlayingAlbumArtUrl
+    {
+        get => _nowPlayingAlbumArtUrl;
+        set => this.RaiseAndSetIfChanged(ref _nowPlayingAlbumArtUrl, value);
+    }
+
     private string _nowPlayingSongTitle = "";
     public string NowPlayingSongTitle
     {
@@ -234,6 +241,7 @@ public class LibraryViewModel : ViewModelBase
             if (Playback == PlaybackState.Stopped)
             {
                 if (SelectedTrack is null) return;
+                NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
                 NowPlayingSongTitle = SelectedTrack.Title;
                 await PlaySelectedTrackAsync();
             }
@@ -425,6 +433,7 @@ public class LibraryViewModel : ViewModelBase
         // The original file endpoint (no transcoding):
         var url = $"{baseUrl}/Items/{SelectedTrack.Id}/File?api_key={_jellyfinService.CurrentAccessToken}";
 
+        NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
         NowPlayingSongTitle = SelectedTrack.Title;
         await _player.PlayAsync(url, headers);
     }

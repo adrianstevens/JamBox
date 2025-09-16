@@ -135,7 +135,7 @@
                         <Grid Grid.Column="0" Width="60" Height="60">
                             <Image Stretch="UniformToFill">
                                 <Image.Source>
-                                    <Binding Path="SelectedAlbum.AlbumArtUrl"
+                                    <Binding Path="NowPlayingAlbumArtUrl"
                                              Converter="{StaticResource UrlToBitmap}" />
                                 </Image.Source>
                             </Image>
