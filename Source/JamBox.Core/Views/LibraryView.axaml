@@ -28,7 +28,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="80" />
+                    <RowDefinition Height="110" />
                 </Grid.RowDefinitions>
 
                 <!-- Header -->
@@ -123,8 +123,9 @@
                     </Grid>
 
                     <!-- Now Playing -->
-                    <Grid 
+                    <Grid
                         IsVisible="{Binding IsTrackPlaying}"
+                        Margin="0,20"
                         HorizontalAlignment="Center" 
                         VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
@@ -143,10 +144,9 @@
 
                         <StackPanel 
                             Grid.Column="1" 
+                            Spacing="-8"
                             Margin="12,0">
-                            
                             <TextBlock 
-                                Grid.Column="0" 
                                 Text="{Binding NowPlayingSongTitle}" 
                                 Foreground="#EDF3F9" />
                             <Slider 
