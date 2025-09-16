@@ -186,6 +186,8 @@ public class LibraryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> ResumeCommand { get; }
     public ReactiveCommand<Unit, Unit> StopCommand { get; }
     public ReactiveCommand<Unit, Unit> PlayCommand { get; }
+    public ReactiveCommand<Unit, Unit> PlayNextCommand { get; }
+    public ReactiveCommand<Unit, Unit> PlayPreviousCommand { get; }
     public ReactiveCommand<Unit, Unit> LoadArtistsCommand { get; }
     public ReactiveCommand<Unit, Unit> LoadAlbumsCommand { get; }
     public ReactiveCommand<Unit, Unit> LoadTracksCommand { get; }
@@ -235,6 +237,8 @@ public class LibraryViewModel : ViewModelBase
         ResumeCommand = ReactiveCommand.Create(() => _player.Resume(), canResume);
         StopCommand = ReactiveCommand.Create(() => _player.Stop(), canStop);
         PlayCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
+        PlayNextCommand = ReactiveCommand.CreateFromTask(PlayNextTrackAsync, canPlay);
+        PlayPreviousCommand = ReactiveCommand.CreateFromTask(PlayPreviousTrackAsync, canPlay);
 
         PlayPauseCommand = ReactiveCommand.CreateFromTask(async () =>
         {
@@ -436,6 +440,34 @@ public class LibraryViewModel : ViewModelBase
         NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
         NowPlayingSongTitle = SelectedTrack.Title;
         await _player.PlayAsync(url, headers);
+    }
+
+    private async Task PlayPreviousTrackAsync()
+    {
+        if (Tracks.Count == 0
+            || SelectedTrack == null
+            || Tracks.IndexOf(SelectedTrack) == 0)
+        {
+            return;
+        }
+        var currentIndex = Tracks.IndexOf(SelectedTrack);
+        var previousIndex = currentIndex - 1;
+        SelectedTrack = Tracks[previousIndex];
+        await PlaySelectedTrackAsync();
+    }
+
+    private async Task PlayNextTrackAsync()
+    {
+        if (Tracks.Count == 0
+            || SelectedTrack == null
+            || Tracks.IndexOf(SelectedTrack) + 1 == Tracks.Count)
+        {
+            return;
+        }
+        var currentIndex = Tracks.IndexOf(SelectedTrack);
+        var nextIndex = currentIndex + 1;
+        SelectedTrack = Tracks[nextIndex];
+        await PlaySelectedTrackAsync();
     }
 
     public void SeekTo(double positionMs)

@@ -211,7 +211,8 @@
                             Grid.Column="2" 
                             Padding="0" 
                             Background="Transparent" 
-                            CornerRadius="50">
+                            CornerRadius="50"
+                            Command="{Binding PlayPreviousCommand}">
                             <Image 
                                 Source="avares://JamBox.Core/Assets/icon-previous.png"
                                 Stretch="Uniform" />
@@ -239,7 +240,8 @@
                             Grid.Column="4" 
                             Padding="0" 
                             Background="Transparent" 
-                            CornerRadius="50">
+                            CornerRadius="50"
+                            Command="{Binding PlayNextCommand}">
                             <Image 
                                 Source="avares://JamBox.Core/Assets/icon-next.png" 
                                 Stretch="Uniform" />
