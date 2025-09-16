@@ -29,7 +29,7 @@
             <ListBox
                 ItemsSource="{Binding Tracks}"
                 SelectedItem="{Binding SelectedTrack}"
-                SelectionMode="Single">
+                DoubleTapped="ListBox_DoubleTapped">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock 

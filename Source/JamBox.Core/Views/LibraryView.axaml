@@ -8,10 +8,10 @@
     mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
     x:Class="JamBox.Core.Views.LibraryView">
 
-	<UserControl.Resources>
-		<conv:UrlToBitmapConverter x:Key="UrlToBitmap" />
-	</UserControl.Resources>
-	
+    <UserControl.Resources>
+        <conv:UrlToBitmapConverter x:Key="UrlToBitmap" />
+    </UserControl.Resources>
+    
     <UserControl.Content>
         <Grid
             Background="#1a202c">
@@ -113,7 +113,7 @@
                             Grid.Column="0" 
                             Source="avares://JamBox.Core/Assets/icon-volume-min.png" 
                             VerticalAlignment="Center" />
-						<Slider Grid.Column="1"
+                        <Slider Grid.Column="1"
                             Minimum="0" Maximum="100" Width="128"
                             Value="{Binding Volume, Mode=TwoWay}" />
                         <Image 
@@ -132,14 +132,14 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-						<Grid Grid.Column="0" Width="60" Height="60">
-							<Image Stretch="UniformToFill">
-								<Image.Source>
-									<Binding Path="SelectedAlbum.AlbumArtUrl"
-											 Converter="{StaticResource UrlToBitmap}" />
-								</Image.Source>
-							</Image>
-						</Grid>
+                        <Grid Grid.Column="0" Width="60" Height="60">
+                            <Image Stretch="UniformToFill">
+                                <Image.Source>
+                                    <Binding Path="SelectedAlbum.AlbumArtUrl"
+                                             Converter="{StaticResource UrlToBitmap}" />
+                                </Image.Source>
+                            </Image>
+                        </Grid>
 
                         <StackPanel 
                             Grid.Column="1" 
@@ -149,9 +149,9 @@
                                 Grid.Column="0" 
                                 Text="{Binding NowPlayingSongTitle}" 
                                 Foreground="#EDF3F9" />
-							<Slider 
-								x:Name="SeekBar"
-							    Minimum="0"
+                            <Slider 
+                                x:Name="SeekBar"
+                                Minimum="0"
                                 Maximum="{Binding SeekLength}"
                                 Value="{Binding SeekPosition, Mode=TwoWay}"
                                 Width="256"
@@ -223,9 +223,16 @@
                             Background="Transparent" 
                             CornerRadius="50" 
                             Command="{Binding PlayPauseCommand}">
-                            <Image 
-                                Source="avares://JamBox.Core/Assets/icon-play.png" 
-                                Stretch="Uniform" />
+                            <Grid>
+                                <Image 
+                                    IsVisible="{Binding IsTrackPlaying, Converter={StaticResource BooleanInverseConverter}}"
+                                    Source="avares://JamBox.Core/Assets/icon-play.png" 
+                                    Stretch="Uniform" />
+                                <Image
+                                    IsVisible="{Binding IsTrackPlaying}"
+                                    Source="avares://JamBox.Core/Assets/icon-pause.png"
+                                    Stretch="Uniform" />
+                            </Grid>
                         </Button>
 
                         <Button 

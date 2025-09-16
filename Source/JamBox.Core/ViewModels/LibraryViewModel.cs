@@ -231,15 +231,19 @@ public class LibraryViewModel : ViewModelBase
 
         PlayPauseCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            if (Playback == PlaybackState.Playing)
-            {
-                _player.Pause();
-            }
-            else
+            if (Playback == PlaybackState.Stopped)
             {
                 if (SelectedTrack is null) return;
                 NowPlayingSongTitle = SelectedTrack.Title;
                 await PlaySelectedTrackAsync();
+            }
+            else if (Playback == PlaybackState.Playing)
+            {
+                _player.Pause();
+            }
+            else if (Playback == PlaybackState.Paused)
+            {
+                _player.Resume();
             }
         }, canToggle);
 
@@ -421,6 +425,7 @@ public class LibraryViewModel : ViewModelBase
         // The original file endpoint (no transcoding):
         var url = $"{baseUrl}/Items/{SelectedTrack.Id}/File?api_key={_jellyfinService.CurrentAccessToken}";
 
+        NowPlayingSongTitle = SelectedTrack.Title;
         await _player.PlayAsync(url, headers);
     }
 
