@@ -1,10 +1,12 @@
-﻿using System.Net.Http.Json;
+﻿using JamBox.Core.Models;
+using JamBox.Core.Services.Interfaces;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
-namespace JamBox.Core.JellyFin;
+namespace JamBox.Core.Services;
 
-public class JellyfinApiService
+public class JellyfinApiService : IJellyfinApiService
 {
     private HttpClient _httpClient;
     private string? _accessToken;

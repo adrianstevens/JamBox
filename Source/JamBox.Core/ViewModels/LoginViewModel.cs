@@ -1,5 +1,5 @@
-﻿using JamBox.Core.JellyFin;
-using JamBox.Core.Models;
+﻿using JamBox.Core.Models;
+using JamBox.Core.Services;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;

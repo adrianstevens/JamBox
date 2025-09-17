@@ -1,30 +1,32 @@
-﻿using JamBox.Core.Audio;
-using JamBox.Core.JellyFin;
+﻿using JamBox.Core.Services.Interfaces;
 using ReactiveUI;
 
 namespace JamBox.Core.ViewModels;
 
 public class MainViewModel : ReactiveObject, IDisposable
 {
-    private readonly JellyfinApiService _jellyfinApiService;
+    IAudioPlayer _player;
+    IJellyfinApiService _jellyfinApiService;
+
     private ViewModelBase _currentContent;
-
-    public IAudioPlayer Player { get; } = new LibVlcAudioPlayer();
-
     public ViewModelBase CurrentContent
     {
         get => _currentContent;
         set => this.RaiseAndSetIfChanged(ref _currentContent, value);
     }
 
-    public MainViewModel(JellyfinApiService jellyfinService)
+    public MainViewModel(
+        IAudioPlayer player,
+        IJellyfinApiService jellyfinApiService)
     {
-        _jellyfinApiService = jellyfinService;
-        CurrentContent = new LoginViewModel(_jellyfinApiService, this);
+        _player = player;
+        _jellyfinApiService = jellyfinApiService;
+
+        CurrentContent = new LoginViewModel(this);
     }
 
     public void Dispose()
     {
-        Player.Dispose();
+        _player.Dispose();
     }
 }

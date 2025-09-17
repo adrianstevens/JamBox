@@ -1,5 +1,6 @@
-﻿using JamBox.Core.Audio;
-using JamBox.Core.JellyFin;
+﻿using JamBox.Core.Models;
+using JamBox.Core.Services;
+using JamBox.Core.Services.Interfaces;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -243,7 +244,6 @@ public class LibraryViewModel : ViewModelBase
         PlayCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
         PlayNextCommand = ReactiveCommand.CreateFromTask(PlayNextTrackAsync, canPlayNext);
         PlayPreviousCommand = ReactiveCommand.CreateFromTask(PlayPreviousTrackAsync, canPlayPrevious);
-
         PlayPauseCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             if (Playback == PlaybackState.Stopped)
