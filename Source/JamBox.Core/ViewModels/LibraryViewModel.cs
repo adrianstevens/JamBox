@@ -232,13 +232,17 @@ public class LibraryViewModel : ViewModelBase
         var canResume = this.WhenAnyValue(x => x.Playback).Select(s => s == PlaybackState.Paused);
         var canStop = this.WhenAnyValue(x => x.Playback).Select(s => s is PlaybackState.Playing or PlaybackState.Paused);
         var canToggle = this.WhenAnyValue(x => x.SelectedTrack, x => x.Playback, (track, state) => state == PlaybackState.Playing || track != null);
+        var canPlayNext = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.Tracks)
+            .Select(t => t.Item1 != null && t.Item2.Count > 0 && t.Item2.IndexOf(t.Item1) + 1 < t.Item2.Count);
+        var canPlayPrevious = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.Tracks)
+            .Select(t => t.Item1 != null && t.Item2.Count > 0 && t.Item2.IndexOf(t.Item1) > 0);
 
         PauseCommand = ReactiveCommand.Create(() => _player.Pause(), canPause);
         ResumeCommand = ReactiveCommand.Create(() => _player.Resume(), canResume);
         StopCommand = ReactiveCommand.Create(() => _player.Stop(), canStop);
         PlayCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
-        PlayNextCommand = ReactiveCommand.CreateFromTask(PlayNextTrackAsync, canPlay);
-        PlayPreviousCommand = ReactiveCommand.CreateFromTask(PlayPreviousTrackAsync, canPlay);
+        PlayNextCommand = ReactiveCommand.CreateFromTask(PlayNextTrackAsync, canPlayNext);
+        PlayPreviousCommand = ReactiveCommand.CreateFromTask(PlayPreviousTrackAsync, canPlayPrevious);
 
         PlayPauseCommand = ReactiveCommand.CreateFromTask(async () =>
         {
@@ -444,12 +448,6 @@ public class LibraryViewModel : ViewModelBase
 
     private async Task PlayPreviousTrackAsync()
     {
-        if (Tracks.Count == 0
-            || SelectedTrack == null
-            || Tracks.IndexOf(SelectedTrack) == 0)
-        {
-            return;
-        }
         var currentIndex = Tracks.IndexOf(SelectedTrack);
         var previousIndex = currentIndex - 1;
         SelectedTrack = Tracks[previousIndex];
@@ -458,12 +456,6 @@ public class LibraryViewModel : ViewModelBase
 
     private async Task PlayNextTrackAsync()
     {
-        if (Tracks.Count == 0
-            || SelectedTrack == null
-            || Tracks.IndexOf(SelectedTrack) + 1 == Tracks.Count)
-        {
-            return;
-        }
         var currentIndex = Tracks.IndexOf(SelectedTrack);
         var nextIndex = currentIndex + 1;
         SelectedTrack = Tracks[nextIndex];
