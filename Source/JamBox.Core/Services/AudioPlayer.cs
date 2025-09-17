@@ -1,8 +1,9 @@
-﻿using LibVLCSharp.Shared;
+﻿using JamBox.Core.Services.Interfaces;
+using LibVLCSharp.Shared;
 
 namespace JamBox.Core.Audio;
 
-public sealed class LibVlcAudioPlayer : IAudioPlayer
+public sealed class AudioPlayer : IAudioPlayer
 {
     private readonly LibVLC _libvlc;
     private readonly MediaPlayer _player;
@@ -25,7 +26,7 @@ public sealed class LibVlcAudioPlayer : IAudioPlayer
 
     public event EventHandler<int>? VolumeChanged;
 
-    public LibVlcAudioPlayer()
+    public AudioPlayer()
     {
         global::LibVLCSharp.Shared.Core.Initialize();
 

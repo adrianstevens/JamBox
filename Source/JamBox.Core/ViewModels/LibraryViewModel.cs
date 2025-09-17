@@ -1,5 +1,5 @@
-﻿using JamBox.Core.Audio;
-using JamBox.Core.JellyFin;
+﻿using JamBox.Core.Models;
+using JamBox.Core.Services.Interfaces;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -9,8 +9,9 @@ namespace JamBox.Core.ViewModels;
 
 public class LibraryViewModel : ViewModelBase
 {
-    private readonly JellyfinApiService _jellyfinService;
-    private readonly IAudioPlayer _player;
+    private readonly IAudioPlayer _audioPlayer;
+    private readonly IJellyfinApiService _jellyfinService;
+
     private BaseItemDto _selectedLibrary;
 
     public ObservableCollection<Artist> Artists { get; } = [];
@@ -155,7 +156,7 @@ public class LibraryViewModel : ViewModelBase
             if (_volume != value)
             {
                 this.RaiseAndSetIfChanged(ref _volume, value);
-                _player.Volume = value;
+                _audioPlayer.Volume = value;
             }
         }
     }
@@ -197,25 +198,28 @@ public class LibraryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> ResetArtistsSelectionCommand { get; }
     public ReactiveCommand<Unit, Unit> ResetAlbumSelectionCommand { get; }
 
-    public LibraryViewModel(JellyfinApiService jellyfinService, IAudioPlayer player)
+    public LibraryViewModel(
+        IAudioPlayer audioPlayer,
+        IJellyfinApiService jellyfinService)
     {
+        _audioPlayer = audioPlayer;
         _jellyfinService = jellyfinService;
-        _player = player;
-        _player.StateChanged += (_, state) => Playback = state;
 
-        _player.PositionChanged += (_, position) =>
+        _audioPlayer.StateChanged += (_, state) => Playback = state;
+
+        _audioPlayer.PositionChanged += (_, position) =>
         {
             if (!IsUserSeeking) { SeekPosition = position; }
 
             NowPlayingElapsedTime = FormatMs(position);
-            var remaining = Math.Max(0, _player.LengthMs - position);
+            var remaining = Math.Max(0, _audioPlayer.LengthMs - position);
             NowPlayingRemainingTime = "-" + FormatMs(remaining);
 
-            SeekLength = _player.LengthMs;
+            SeekLength = _audioPlayer.LengthMs;
         };
 
-        _player.VolumeChanged += (_, volume) => Volume = volume;
-        Volume = _player.Volume;
+        _audioPlayer.VolumeChanged += (_, volume) => Volume = volume;
+        Volume = _audioPlayer.Volume;
 
         LoadArtistsCommand = ReactiveCommand.CreateFromTask(LoadArtistsAsync);
         LoadAlbumsCommand = ReactiveCommand.CreateFromTask(LoadAlbumsAsync);
@@ -237,13 +241,12 @@ public class LibraryViewModel : ViewModelBase
         var canPlayPrevious = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.Tracks)
             .Select(t => t.Item1 != null && t.Item2.Count > 0 && t.Item2.IndexOf(t.Item1) > 0);
 
-        PauseCommand = ReactiveCommand.Create(() => _player.Pause(), canPause);
-        ResumeCommand = ReactiveCommand.Create(() => _player.Resume(), canResume);
-        StopCommand = ReactiveCommand.Create(() => _player.Stop(), canStop);
+        PauseCommand = ReactiveCommand.Create(() => _audioPlayer.Pause(), canPause);
+        ResumeCommand = ReactiveCommand.Create(() => _audioPlayer.Resume(), canResume);
+        StopCommand = ReactiveCommand.Create(() => _audioPlayer.Stop(), canStop);
         PlayCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
         PlayNextCommand = ReactiveCommand.CreateFromTask(PlayNextTrackAsync, canPlayNext);
         PlayPreviousCommand = ReactiveCommand.CreateFromTask(PlayPreviousTrackAsync, canPlayPrevious);
-
         PlayPauseCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             if (Playback == PlaybackState.Stopped)
@@ -255,11 +258,11 @@ public class LibraryViewModel : ViewModelBase
             }
             else if (Playback == PlaybackState.Playing)
             {
-                _player.Pause();
+                _audioPlayer.Pause();
             }
             else if (Playback == PlaybackState.Paused)
             {
-                _player.Resume();
+                _audioPlayer.Resume();
             }
         }, canToggle);
 
@@ -443,7 +446,7 @@ public class LibraryViewModel : ViewModelBase
 
         NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
         NowPlayingSongTitle = SelectedTrack.Title;
-        await _player.PlayAsync(url, headers);
+        await _audioPlayer.PlayAsync(url, headers);
     }
 
     private async Task PlayPreviousTrackAsync()
@@ -464,7 +467,7 @@ public class LibraryViewModel : ViewModelBase
 
     public void SeekTo(double positionMs)
     {
-        _player.Seek((long)positionMs);
+        _audioPlayer.Seek((long)positionMs);
     }
 
     private static string FormatMs(long ms)

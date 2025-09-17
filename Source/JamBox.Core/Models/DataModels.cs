@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace JamBox.Core.JellyFin;
+namespace JamBox.Core.Models;
 
 public class AuthenticationResult
 {

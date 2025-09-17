@@ -1,4 +1,4 @@
-﻿namespace JamBox.Core.Audio;
+﻿namespace JamBox.Core.Services.Interfaces;
 
 public enum PlaybackState { Stopped, Playing, Paused }
 
