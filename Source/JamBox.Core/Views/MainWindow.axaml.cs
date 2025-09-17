@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using JamBox.Core.Settings;
+using JamBox.Core.ViewModels;
 
 namespace JamBox.Core.Views;
 
@@ -8,9 +9,10 @@ public partial class MainWindow : Window
 {
     private readonly WindowSettings _settings;
 
-    public MainWindow()
+    public MainWindow(MainViewModel mainViewModel)
     {
         InitializeComponent();
+        DataContext = mainViewModel;
         _settings = WindowSettings.Load();
 
         Width = _settings.Width;

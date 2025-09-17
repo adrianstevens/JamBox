@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using JamBox.Core.Services.Interfaces;
+using JamBox.Core.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JamBox.Core.Services;
@@ -7,38 +8,43 @@ namespace JamBox.Core.Services;
 public class NavigationService : INavigationService
 {
     private readonly IServiceProvider _serviceProvider;
-    private ContentControl _contentControl;
+    private MainViewModel _mainViewModel;
 
     public NavigationService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
 
-    public void SetContentControl(ContentControl contentControl)
+    public void SetMainViewModel(MainViewModel mainViewModel)
     {
-        _contentControl = contentControl;
+        _mainViewModel = mainViewModel;
     }
 
-    public void NavigateTo<TView>() where TView : UserControl
+    public void NavigateTo<TView>()
+        where TView : UserControl
     {
-        if (_contentControl == null)
-            throw new InvalidOperationException("ContentControl not set");
+        if (_mainViewModel == null)
+        {
+            throw new InvalidOperationException("MainViewModel not set");
+        }
 
         var view = _serviceProvider.GetRequiredService<TView>();
-        _contentControl.Content = view;
+        _mainViewModel.SetCurrentContent(view);
     }
 
     public void NavigateTo<TView, TViewModel>()
         where TView : UserControl
         where TViewModel : class
     {
-        if (_contentControl == null)
-            throw new InvalidOperationException("ContentControl not set");
+        if (_mainViewModel == null)
+        {
+            throw new InvalidOperationException("MainViewModel not set");
+        }
 
         var view = _serviceProvider.GetRequiredService<TView>();
         var viewModel = _serviceProvider.GetRequiredService<TViewModel>();
 
         view.DataContext = viewModel;
-        _contentControl.Content = view;
+        _mainViewModel.SetCurrentContent(view);
     }
 }

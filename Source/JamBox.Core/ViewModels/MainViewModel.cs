@@ -1,32 +1,35 @@
-﻿using JamBox.Core.Services.Interfaces;
+﻿using Avalonia.Controls;
+using JamBox.Core.Services.Interfaces;
+using JamBox.Core.Views;
 using ReactiveUI;
 
 namespace JamBox.Core.ViewModels;
 
-public class MainViewModel : ReactiveObject, IDisposable
+public class MainViewModel : ReactiveObject
 {
-    IAudioPlayer _player;
-    IJellyfinApiService _jellyfinApiService;
+    private readonly INavigationService _navigationService;
 
-    private ViewModelBase _currentContent;
-    public ViewModelBase CurrentContent
+    private UserControl _currentContent;
+    public UserControl CurrentContent
     {
         get => _currentContent;
         set => this.RaiseAndSetIfChanged(ref _currentContent, value);
     }
 
     public MainViewModel(
-        IAudioPlayer player,
+        IAudioPlayer audioPlayer,
+        INavigationService navigationService,
         IJellyfinApiService jellyfinApiService)
     {
-        _player = player;
-        _jellyfinApiService = jellyfinApiService;
+        _navigationService = navigationService;
 
-        CurrentContent = new LoginViewModel(this);
+        _navigationService.SetMainViewModel(this);
+
+        _navigationService.NavigateTo<LoginView, LoginViewModel>();
     }
 
-    public void Dispose()
+    public void SetCurrentContent(UserControl content)
     {
-        _player.Dispose();
+        CurrentContent = content;
     }
 }

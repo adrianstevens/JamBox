@@ -27,16 +27,15 @@ public partial class App : Application
 
         var services = new ServiceCollection();
 
-        services.AddSingleton<MainWindow>();
-
         services.AddSingleton<IAudioPlayer, AudioPlayer>();
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<IJellyfinApiService, JellyfinApiService>();
 
-        services.AddTransient<MainViewModel>();
+        services.AddSingleton<MainViewModel>();
         services.AddTransient<LoginViewModel>();
         services.AddTransient<LibraryViewModel>();
 
+        services.AddSingleton<MainWindow>();
         services.AddTransient<LoginView>();
         services.AddTransient<LibraryView>();
 

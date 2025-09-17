@@ -1,5 +1,6 @@
 ﻿using JamBox.Core.Models;
-using JamBox.Core.Services;
+using JamBox.Core.Services.Interfaces;
+using JamBox.Core.Views;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -9,10 +10,12 @@ namespace JamBox.Core.ViewModels;
 
 public class LoginViewModel : ViewModelBase
 {
+    private readonly INavigationService _navigationService;
+    private readonly IJellyfinApiService _jellyfinApiService;
+
     private static string CredentialsPath =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "JamBox", "credentials.json");
 
-    private readonly JellyfinApiService _jellyfinApiService;
     private readonly MainViewModel _mainViewModel;
 
     private string _serverUrl = string.Empty;
@@ -52,10 +55,12 @@ public class LoginViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> ConnectCommand { get; }
 
-    public LoginViewModel(JellyfinApiService jellyfinService, MainViewModel mainViewModel)
+    public LoginViewModel(
+        INavigationService navigationService,
+        IJellyfinApiService jellyfinApiService)
     {
-        _jellyfinApiService = jellyfinService;
-        _mainViewModel = mainViewModel;
+        _navigationService = navigationService;
+        _jellyfinApiService = jellyfinApiService;
 
         var canConnect = this.WhenAnyValue(
             x => x.ServerUrl,
@@ -147,7 +152,7 @@ public class LoginViewModel : ViewModelBase
 
             SaveCredentials();
             //ConnectionStatus = "Authentication successful!";
-            _mainViewModel.CurrentContent = new LibraryViewModel(_jellyfinApiService, _mainViewModel.Player);
+            _navigationService.NavigateTo<LibraryView, LibraryViewModel>();
         }
         catch (Exception ex)
         {

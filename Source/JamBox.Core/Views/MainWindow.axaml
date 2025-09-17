@@ -2,18 +2,10 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:JamBox.Core.ViewModels"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
     x:Class="JamBox.Core.Views.MainWindow"
     x:DataType="vm:MainViewModel"
     Icon="/Assets/appicon.ico"
-    Title="Jam Box">
-
-    <Design.DataContext>
-        <vm:MainViewModel/>
-    </Design.DataContext>
+    Title="JamBox">
 
     <ContentControl Content="{Binding CurrentContent}" />
-
 </Window>
