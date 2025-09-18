@@ -25,7 +25,7 @@ public class MainViewModel : ReactiveObject
 
         _navigationService.SetMainViewModel(this);
 
-        _navigationService.NavigateTo<LoginView, LoginViewModel>();
+        _navigationService.NavigateTo<LoginPage, LoginViewModel>();
     }
 
     public void SetCurrentContent(UserControl content)

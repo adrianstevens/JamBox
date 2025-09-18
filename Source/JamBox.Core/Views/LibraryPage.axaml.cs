@@ -4,9 +4,9 @@ using Avalonia.Interactivity;
 
 namespace JamBox.Core.Views;
 
-public partial class LibraryView : UserControl
+public partial class LibraryPage : UserControl
 {
-    public LibraryView()
+    public LibraryPage()
     {
         InitializeComponent();
 

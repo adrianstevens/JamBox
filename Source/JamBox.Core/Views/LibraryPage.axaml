@@ -6,7 +6,7 @@
     xmlns:conv="clr-namespace:JamBox.Core.Converters"
     xmlns:userControls="clr-namespace:JamBox.Core.Views.UserControls"
     mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
-    x:Class="JamBox.Core.Views.LibraryView">
+    x:Class="JamBox.Core.Views.LibraryPage">
 
     <UserControl.Resources>
         <conv:UrlToBitmapConverter x:Key="UrlToBitmap" />
@@ -251,7 +251,8 @@
                             Grid.Column="5" 
                             Padding="0" 
                             Background="Transparent" 
-                            CornerRadius="50">
+                            CornerRadius="50"
+                            Command="{Binding JukeBoxModeCommand}">
                             <Image 
                                 Source="avares://JamBox.Core/Assets/icon-graph.png" 
                                 Stretch="Uniform" />

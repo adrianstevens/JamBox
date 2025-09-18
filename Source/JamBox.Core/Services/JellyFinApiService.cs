@@ -18,6 +18,7 @@ public class JellyfinApiService : IJellyfinApiService
     private const string DeviceId = "jambox-avalonia-client-guid";
 
     public bool IsAuthenticated => !string.IsNullOrEmpty(_accessToken);
+
     public string CurrentUserId => _userId;
 
     public string? CurrentAccessToken => _accessToken;

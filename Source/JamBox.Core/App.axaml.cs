@@ -38,8 +38,9 @@ public partial class App : Application
         services.AddTransient<LibraryViewModel>();
 
         services.AddSingleton<MainWindow>();
-        services.AddTransient<LoginView>();
-        services.AddTransient<LibraryView>();
+        services.AddTransient<LoginPage>();
+        services.AddTransient<LibraryPage>();
+        services.AddTransient<JukeBoxPage>();
 
         _serviceProvider = services.BuildServiceProvider();
 

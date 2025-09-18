@@ -10,7 +10,8 @@ namespace JamBox.Core.ViewModels;
 public class LibraryViewModel : ViewModelBase
 {
     private readonly IAudioPlayer _audioPlayer;
-    private readonly IJellyfinApiService _jellyfinService;
+    private readonly INavigationService _navigationService;
+    private readonly IJellyfinApiService _jellyfinApiService;
 
     private BaseItemDto _selectedLibrary;
 
@@ -196,13 +197,16 @@ public class LibraryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> SortTracksCommand { get; }
     public ReactiveCommand<Unit, Unit> ResetArtistsSelectionCommand { get; }
     public ReactiveCommand<Unit, Unit> ResetAlbumSelectionCommand { get; }
+    public ReactiveCommand<Unit, Unit> JukeBoxModeCommand { get; }
 
     public LibraryViewModel(
         IAudioPlayer audioPlayer,
-        IJellyfinApiService jellyfinService)
+        INavigationService navigationService,
+        IJellyfinApiService jellyfinApiService)
     {
         _audioPlayer = audioPlayer;
-        _jellyfinService = jellyfinService;
+        _navigationService = navigationService;
+        _jellyfinApiService = jellyfinApiService;
 
         _audioPlayer.StateChanged += (_, state) => Playback = state;
 
@@ -246,24 +250,8 @@ public class LibraryViewModel : ViewModelBase
         PlayCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
         PlayNextCommand = ReactiveCommand.CreateFromTask(PlayNextTrackAsync, canPlayNext);
         PlayPreviousCommand = ReactiveCommand.CreateFromTask(PlayPreviousTrackAsync, canPlayPrevious);
-        PlayPauseCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            if (Playback == PlaybackState.Stopped)
-            {
-                if (SelectedTrack is null) return;
-                NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
-                NowPlayingSongTitle = SelectedTrack.Title;
-                await PlaySelectedTrackAsync();
-            }
-            else if (Playback == PlaybackState.Playing)
-            {
-                _audioPlayer.Pause();
-            }
-            else if (Playback == PlaybackState.Paused)
-            {
-                _audioPlayer.Resume();
-            }
-        }, canToggle);
+        PlayPauseCommand = ReactiveCommand.CreateFromTask(PlayPauseTrackAsync, canToggle);
+        JukeBoxModeCommand = ReactiveCommand.Create(() => _navigationService.NavigateTo<JukeBoxPage>());
 
         _ = LoadLibraryAsync();
     }
@@ -277,7 +265,7 @@ public class LibraryViewModel : ViewModelBase
 
     private async Task LoadLibraryAsync()
     {
-        var libraries = await _jellyfinService.GetUserMediaViewsAsync();
+        var libraries = await _jellyfinApiService.GetUserMediaViewsAsync();
         _selectedLibrary = libraries.FirstOrDefault(lib => lib.CollectionType == "music");
 
         if (_selectedLibrary != null)
@@ -290,7 +278,7 @@ public class LibraryViewModel : ViewModelBase
     {
         Artists.Clear();
 
-        var artists = await _jellyfinService.GetArtistsAsync(_selectedLibrary.Id);
+        var artists = await _jellyfinApiService.GetArtistsAsync(_selectedLibrary.Id);
 
         if (ArtistSortStatus == "A-Z")
         {
@@ -314,11 +302,11 @@ public class LibraryViewModel : ViewModelBase
 
         if (SelectedArtist == null)
         {
-            albums = await _jellyfinService.GetAlbumsAsync(_selectedLibrary.Id);
+            albums = await _jellyfinApiService.GetAlbumsAsync(_selectedLibrary.Id);
         }
         else
         {
-            albums = await _jellyfinService.GetAlbumsByArtistAsync(SelectedArtist.Id);
+            albums = await _jellyfinApiService.GetAlbumsByArtistAsync(SelectedArtist.Id);
         }
 
         if (AlbumSortStatus == "A-Z")
@@ -336,7 +324,7 @@ public class LibraryViewModel : ViewModelBase
 
         foreach (var album in albums)
         {
-            album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinService.ServerUrl, _jellyfinService.CurrentAccessToken);
+            album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinApiService.ServerUrl, _jellyfinApiService.CurrentAccessToken);
             album.AlbumSubtitle = SelectedArtist == null ? album.AlbumArtist : album.ProductionYear.ToString();
             Albums.Add(album);
         }
@@ -352,15 +340,15 @@ public class LibraryViewModel : ViewModelBase
 
         if (SelectedArtist is not null && SelectedAlbum is null)
         {
-            tracks = await _jellyfinService.GetTracksByArtistAsync(SelectedArtist.Id);
+            tracks = await _jellyfinApiService.GetTracksByArtistAsync(SelectedArtist.Id);
         }
         else if (SelectedAlbum is not null)
         {
-            tracks = await _jellyfinService.GetTracksByAlbumAsync(SelectedAlbum.Id);
+            tracks = await _jellyfinApiService.GetTracksByAlbumAsync(SelectedAlbum.Id);
         }
         else
         {
-            tracks = await _jellyfinService.GetTracksAsync(_selectedLibrary.Id);
+            tracks = await _jellyfinApiService.GetTracksAsync(_selectedLibrary.Id);
         }
 
         if (TrackSortStatus == "A-Z")
@@ -436,16 +424,16 @@ public class LibraryViewModel : ViewModelBase
 
         var headers = new Dictionary<string, string>
         {
-            ["X-Emby-Token"] = _jellyfinService.CurrentAccessToken
+            ["X-Emby-Token"] = _jellyfinApiService.CurrentAccessToken
         };
 
         //debug url to test playback without auth
         // url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 
-        var baseUrl = _jellyfinService.ServerUrl.TrimEnd('/');
+        var baseUrl = _jellyfinApiService.ServerUrl.TrimEnd('/');
 
         // The original file endpoint (no transcoding):
-        var url = $"{baseUrl}/Items/{SelectedTrack.Id}/File?api_key={_jellyfinService.CurrentAccessToken}";
+        var url = $"{baseUrl}/Items/{SelectedTrack.Id}/File?api_key={_jellyfinApiService.CurrentAccessToken}";
 
         NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
         NowPlayingSongTitle = SelectedTrack.Title;
@@ -466,6 +454,25 @@ public class LibraryViewModel : ViewModelBase
         var nextIndex = currentIndex + 1;
         SelectedTrack = Tracks[nextIndex];
         await PlaySelectedTrackAsync();
+    }
+
+    private async Task PlayPauseTrackAsync()
+    {
+        if (Playback == PlaybackState.Stopped)
+        {
+            if (SelectedTrack is null) return;
+            NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
+            NowPlayingSongTitle = SelectedTrack.Title;
+            await PlaySelectedTrackAsync();
+        }
+        else if (Playback == PlaybackState.Playing)
+        {
+            _audioPlayer.Pause();
+        }
+        else if (Playback == PlaybackState.Paused)
+        {
+            _audioPlayer.Resume();
+        }
     }
 
     public void SeekTo(double positionMs)

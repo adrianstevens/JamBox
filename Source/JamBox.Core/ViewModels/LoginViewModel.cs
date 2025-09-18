@@ -152,7 +152,7 @@ public class LoginViewModel : ViewModelBase
 
             SaveCredentials();
             //ConnectionStatus = "Authentication successful!";
-            _navigationService.NavigateTo<LibraryView, LibraryViewModel>();
+            _navigationService.NavigateTo<LibraryPage, LibraryViewModel>();
         }
         catch (Exception ex)
         {

@@ -1,0 +1,24 @@
+<UserControl 
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
+    x:Class="JamBox.Core.JukeBoxPage">
+
+    <UserControl.Content>
+        <Grid
+            Background="#1a202c">
+
+            <Image
+                Source="avares://JamBox.Core/Assets/icon-koi.png"
+                Opacity="0.03"
+                Width="900"
+                Margin="0,0,-150,-150"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom" />
+
+            <Grid></Grid>
+        </Grid>
+    </UserControl.Content>
+</UserControl>

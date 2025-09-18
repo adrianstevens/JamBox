@@ -7,6 +7,7 @@ public sealed class AudioPlayer : IAudioPlayer
 {
     private readonly LibVLC _libvlc;
     private readonly MediaPlayer _player;
+
     private Media? _currentMedia;
     private PlaybackState _state = PlaybackState.Stopped;
 
@@ -24,7 +25,17 @@ public sealed class AudioPlayer : IAudioPlayer
         }
     }
 
+    public PlaybackState State => _state;
+
+    public long PositionMs => _player.Time;
+
+    public long LengthMs => _player.Length;
+
     public event EventHandler<int>? VolumeChanged;
+
+    public event EventHandler<long>? PositionChanged;
+
+    public event EventHandler<PlaybackState>? StateChanged;
 
     public AudioPlayer()
     {
@@ -50,13 +61,6 @@ public sealed class AudioPlayer : IAudioPlayer
 
         if (_player.Volume == -1) { _player.Volume = 80; }
     }
-
-    public PlaybackState State => _state;
-    public long PositionMs => _player.Time;
-    public long LengthMs => _player.Length;
-
-    public event EventHandler<long>? PositionChanged;
-    public event EventHandler<PlaybackState>? StateChanged;
 
     public Task PlayAsync(string url, IDictionary<string, string>? headers = null)
     {
@@ -84,7 +88,6 @@ public sealed class AudioPlayer : IAudioPlayer
 
         return Task.CompletedTask;
     }
-
 
     public void Pause() => _player.Pause();
 
