@@ -16,8 +16,8 @@ public class LibraryViewModel : ViewModelBase
 
     public ObservableCollection<Artist> Artists { get; } = [];
 
-    private Artist _selectedArtist;
-    public Artist SelectedArtist
+    private Artist? _selectedArtist;
+    public Artist? SelectedArtist
     {
         get => _selectedArtist;
         set
