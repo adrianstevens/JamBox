@@ -108,6 +108,13 @@ public class LibraryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isTrackPlaying, value);
     }
 
+    private bool _showNowPlaying;
+    public bool ShowNowPlaying
+    {
+        get => _showNowPlaying;
+        set => this.RaiseAndSetIfChanged(ref _showNowPlaying, value);
+    }
+
     private PlaybackState _playback;
     public PlaybackState Playback
     {
@@ -116,6 +123,7 @@ public class LibraryViewModel : ViewModelBase
         {
             this.RaiseAndSetIfChanged(ref _playback, value);
             IsTrackPlaying = value == PlaybackState.Playing;
+            ShowNowPlaying = SelectedTrack != null;
         }
     }
 
