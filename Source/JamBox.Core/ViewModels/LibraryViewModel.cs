@@ -14,7 +14,7 @@ public class LibraryViewModel : ViewModelBase
 
     private BaseItemDto _selectedLibrary;
 
-    public ObservableCollection<Artist> Artists { get; } = [];
+    public ObservableCollection<Artist> Artists { get; private set; } = [];
 
     private Artist? _selectedArtist;
     public Artist? SelectedArtist
@@ -114,7 +114,7 @@ public class LibraryViewModel : ViewModelBase
         private set
         {
             this.RaiseAndSetIfChanged(ref _playback, value);
-            IsTrackPlaying = value == PlaybackState.Playing; // keep your existing flag in sync
+            IsTrackPlaying = value == PlaybackState.Playing;
         }
     }
 
@@ -146,7 +146,6 @@ public class LibraryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _nowPlayingRemainingTime, value);
     }
 
-    // Volume proxy (0..100)
     private int _volume;
     public int Volume
     {
@@ -269,6 +268,13 @@ public class LibraryViewModel : ViewModelBase
         _ = LoadLibraryAsync();
     }
 
+    private void SetArtists(IEnumerable<Artist> artists)
+    {
+        Artists = new ObservableCollection<Artist>(artists);
+        this.RaisePropertyChanged(nameof(Artists));
+        ArtistCount = $"{Artists.Count} ARTISTS";
+    }
+
     private async Task LoadLibraryAsync()
     {
         var libraries = await _jellyfinService.GetUserMediaViewsAsync();
@@ -295,10 +301,7 @@ public class LibraryViewModel : ViewModelBase
             artists = artists.OrderByDescending(a => a.Name).ToList();
         }
 
-        foreach (var artist in artists)
-        {
-            Artists.Add(artist);
-        }
+        SetArtists(artists);
 
         ArtistCount = $"{Artists.Count} ARTISTS";
     }
