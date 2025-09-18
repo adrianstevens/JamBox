@@ -36,6 +36,7 @@ public partial class App : Application
         services.AddSingleton<MainViewModel>();
         services.AddTransient<LoginViewModel>();
         services.AddTransient<LibraryViewModel>();
+        services.AddTransient<JukeBoxViewModel>();
 
         services.AddSingleton<MainWindow>();
         services.AddTransient<LoginPage>();

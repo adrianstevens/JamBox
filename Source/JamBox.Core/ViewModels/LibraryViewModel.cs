@@ -251,7 +251,7 @@ public class LibraryViewModel : ViewModelBase
         PlayNextCommand = ReactiveCommand.CreateFromTask(PlayNextTrackAsync, canPlayNext);
         PlayPreviousCommand = ReactiveCommand.CreateFromTask(PlayPreviousTrackAsync, canPlayPrevious);
         PlayPauseCommand = ReactiveCommand.CreateFromTask(PlayPauseTrackAsync, canToggle);
-        JukeBoxModeCommand = ReactiveCommand.Create(() => _navigationService.NavigateTo<JukeBoxPage>());
+        JukeBoxModeCommand = ReactiveCommand.Create(() => _navigationService.NavigateTo<JukeBoxPage, JukeBoxViewModel>());
 
         _ = LoadLibraryAsync();
     }
