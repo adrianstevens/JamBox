@@ -3,15 +3,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:conv="clr-namespace:JamBox.Core.Converters"
     xmlns:userControls="clr-namespace:JamBox.Core.Views.UserControls"
     mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
     x:Class="JamBox.Core.Views.LibraryPage">
 
-    <UserControl.Resources>
-        <conv:UrlToBitmapConverter x:Key="UrlToBitmap" />
-    </UserControl.Resources>
-    
     <UserControl.Content>
         <Grid
             Background="#1a202c">
@@ -122,55 +117,9 @@
                             VerticalAlignment="Center" />
                     </Grid>
 
-                    <!-- Now Playing -->
-                    <Grid
-                        IsVisible="{Binding ShowNowPlaying}"
-                        Margin="0,20"
-                        HorizontalAlignment="Center" 
-                        VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <Grid Grid.Column="0" Width="60" Height="60">
-                            <Image Stretch="UniformToFill">
-                                <Image.Source>
-                                    <Binding Path="NowPlayingAlbumArtUrl"
-                                             Converter="{StaticResource UrlToBitmap}" />
-                                </Image.Source>
-                            </Image>
-                        </Grid>
-
-                        <StackPanel 
-                            Grid.Column="1" 
-                            Spacing="-8"
-                            Margin="12,0">
-                            <TextBlock 
-                                Text="{Binding NowPlayingSongTitle}" 
-                                Foreground="#EDF3F9" />
-                            <Slider 
-                                x:Name="SeekBar"
-                                Minimum="0"
-                                Maximum="{Binding SeekLength}"
-                                Value="{Binding SeekPosition, Mode=TwoWay}"
-                                Width="256"
-                                PointerPressed="Seek_OnPointerPressed"
-                                PointerReleased="Seek_OnPointerReleased" />
-                            <Grid>
-                                <TextBlock 
-                                    Text="{Binding NowPlayingElapsedTime}" 
-                                    FontSize="10" 
-                                    Foreground="#EDF3F9" 
-                                    HorizontalAlignment="Left" />
-                                <TextBlock 
-                                    Text="{Binding NowPlayingRemainingTime}" 
-                                    FontSize="10" 
-                                    Foreground="#EDF3F9" 
-                                    HorizontalAlignment="Right" />
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
+                    <!-- Now Playing  -->
+                    <userControls:NowPlayingView
+                        IsVisible="{Binding ShowNowPlaying}" />
 
                     <!-- Playback Controls -->
                     <Grid 
