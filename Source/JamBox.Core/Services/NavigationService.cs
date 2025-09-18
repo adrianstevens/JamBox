@@ -8,6 +8,9 @@ namespace JamBox.Core.Services;
 public class NavigationService : INavigationService
 {
     private readonly IServiceProvider _serviceProvider;
+
+    private readonly Stack<UserControl> _navigationStack = [];
+
     private MainViewModel _mainViewModel;
 
     public NavigationService(IServiceProvider serviceProvider)
@@ -24,9 +27,10 @@ public class NavigationService : INavigationService
         where TView : UserControl
     {
         if (_mainViewModel == null)
-        {
             throw new InvalidOperationException("MainViewModel not set");
-        }
+
+        if (_mainViewModel.CurrentContent != null)
+            _navigationStack.Push(_mainViewModel.CurrentContent);
 
         var view = _serviceProvider.GetRequiredService<TView>();
         _mainViewModel.SetCurrentContent(view);
@@ -37,14 +41,27 @@ public class NavigationService : INavigationService
         where TViewModel : class
     {
         if (_mainViewModel == null)
-        {
             throw new InvalidOperationException("MainViewModel not set");
-        }
+
+        if (_mainViewModel.CurrentContent != null)
+            _navigationStack.Push(_mainViewModel.CurrentContent);
 
         var view = _serviceProvider.GetRequiredService<TView>();
         var viewModel = _serviceProvider.GetRequiredService<TViewModel>();
 
         view.DataContext = viewModel;
         _mainViewModel.SetCurrentContent(view);
+    }
+
+    public void NavigateBack()
+    {
+        if (_mainViewModel == null)
+            throw new InvalidOperationException("MainViewModel not set");
+
+        if (_navigationStack.Count > 0)
+        {
+            var previousView = _navigationStack.Pop();
+            _mainViewModel.SetCurrentContent(previousView);
+        }
     }
 }

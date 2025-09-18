@@ -18,7 +18,50 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom" />
 
-            <Grid></Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="110" />
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Grid
+                    Grid.Row="0">
+
+                    <!-- Title -->
+                    <StackPanel
+                        Spacing="5"
+                        Orientation="Horizontal"
+                        Margin="20"
+                        HorizontalAlignment="Left">
+                        <Button
+                            Background="Transparent"
+                            Command="{Binding GoBackCommand}">
+                            <Image
+                                Source="avares://JamBox.Core/Assets/icon-back.png"
+                                Height="32"
+                                VerticalAlignment="Center" />
+                        </Button>
+                        <Image
+                            Source="avares://JamBox.Core/Assets/icon-logo-text.png"
+                            Width="200"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Content -->
+                <Grid
+                    Grid.Row="1">
+                    
+                </Grid>
+
+
+                <!-- Playlist View -->
+                <Grid
+                    Grid.Row="2">
+
+                </Grid>
+            </Grid>
         </Grid>
     </UserControl.Content>
 </UserControl>
