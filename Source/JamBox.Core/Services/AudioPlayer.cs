@@ -1,7 +1,7 @@
 ﻿using JamBox.Core.Services.Interfaces;
 using LibVLCSharp.Shared;
 
-namespace JamBox.Core.Audio;
+namespace JamBox.Core.Services;
 
 public sealed class AudioPlayer : IAudioPlayer
 {

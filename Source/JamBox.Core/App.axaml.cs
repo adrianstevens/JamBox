@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
-using JamBox.Core.Audio;
 using JamBox.Core.Services;
 using JamBox.Core.Services.Interfaces;
 using JamBox.Core.ViewModels;

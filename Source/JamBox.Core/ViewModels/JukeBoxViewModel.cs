@@ -11,5 +11,4 @@ public class JukeBoxViewModel
     {
         _navigationService = navigationService;
     }
-
 }
