@@ -25,9 +25,7 @@ public class JellyfinApiService : IJellyfinApiService
     public string? ServerUrl => _httpClient.BaseAddress?.ToString();
 
     public JellyfinApiService()
-    {
-
-    }
+    { }
 
     private void CreateHttpClient(string baseUrl)
     {
@@ -100,12 +98,14 @@ public class JellyfinApiService : IJellyfinApiService
             var jsonString = await response.Content.ReadAsStringAsync();
             var authResult = JsonSerializer.Deserialize<AuthenticationResult>(jsonString);
 
-            _accessToken = authResult.AccessToken;
+            _accessToken = authResult!.AccessToken;
             _userId = authResult.User.Id;
 
             // Add token header for subsequent requests
             if (_httpClient.DefaultRequestHeaders.Contains("X-Emby-Token"))
+            {
                 _httpClient.DefaultRequestHeaders.Remove("X-Emby-Token");
+            }
 
             _httpClient.DefaultRequestHeaders.Add("X-Emby-Token", _accessToken);
 
@@ -127,7 +127,7 @@ public class JellyfinApiService : IJellyfinApiService
         if (!IsAuthenticated || string.IsNullOrEmpty(_userId))
         {
             Console.WriteLine("Not authenticated. Please authenticate first.");
-            return new List<BaseItemDto>();
+            return [];
         }
 
         try
@@ -138,19 +138,19 @@ public class JellyfinApiService : IJellyfinApiService
             var jsonString = await response.Content.ReadAsStringAsync();
 
             var userViewsResult = JsonSerializer.Deserialize<UserViewsResult>(jsonString);
-            return userViewsResult?.Items;
+            return userViewsResult?.Items ?? [];
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error getting user views: {ex.Message}");
-            return null;
+            return [];
         }
     }
 
     public void Logout()
     {
         _accessToken = null;
-        _userId = null;
+        _userId = string.Empty;
 
         if (_httpClient.DefaultRequestHeaders.Contains("X-Emby-Token"))
             _httpClient.DefaultRequestHeaders.Remove("X-Emby-Token");
@@ -163,7 +163,7 @@ public class JellyfinApiService : IJellyfinApiService
         var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Artist>>(
             $"Items?IncludeItemTypes=MusicArtist&ParentId={libraryId}&Recursive=true"
         );
-        return response.Items;
+        return response?.Items ?? [];
     }
 
     public async Task<List<Album>> GetAlbumsAsync(string libraryId)
@@ -171,7 +171,7 @@ public class JellyfinApiService : IJellyfinApiService
         var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Album>>(
             $"Items?IncludeItemTypes=MusicAlbum&ParentId={libraryId}&Recursive=true"
         );
-        return response.Items;
+        return response?.Items ?? [];
     }
 
     public async Task<List<Album>> GetAlbumsByArtistAsync(string artistId)
@@ -179,7 +179,7 @@ public class JellyfinApiService : IJellyfinApiService
         var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Album>>(
             $"Items?IncludeItemTypes=MusicAlbum&ParentId={artistId}"
         );
-        return response.Items;
+        return response?.Items ?? [];
     }
 
     public async Task<List<Track>> GetTracksAsync(string libraryId)
@@ -187,7 +187,7 @@ public class JellyfinApiService : IJellyfinApiService
         var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
             $"Items?IncludeItemTypes=Audio&ParentId={libraryId}&Recursive=true"
         );
-        return response.Items;
+        return response?.Items ?? [];
     }
 
     public async Task<List<Track>> GetTracksByAlbumAsync(string albumId)
@@ -195,7 +195,7 @@ public class JellyfinApiService : IJellyfinApiService
         var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
             $"Items?IncludeItemTypes=Audio&ParentId={albumId}&SortBy=IndexNumber"
         );
-        return response.Items;
+        return response?.Items ?? [];
     }
 
     public async Task<List<Track>> GetTracksByArtistAsync(string artistId)
@@ -203,15 +203,13 @@ public class JellyfinApiService : IJellyfinApiService
         var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
             $"Items?IncludeItemTypes=Audio&ArtistIds={artistId}&Recursive=true"
         );
-        return response.Items;
+        return response?.Items ?? [];
     }
 
     public async Task<List<SessionInfo>> GetSessionsAsync()
     {
-        var response = await _httpClient.GetFromJsonAsync<List<SessionInfo>>(
-            "Sessions"
-        );
-        return response;
+        var response = await _httpClient.GetFromJsonAsync<List<SessionInfo>>("Sessions");
+        return response ?? [];
     }
 
     public async Task PlayTrackAsync(string sessionId, string trackId)
@@ -237,6 +235,6 @@ public class JellyfinApiService : IJellyfinApiService
         var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
             $"Items?IncludeItemTypes=Audio&Recursive=true&SearchTerm={Uri.EscapeDataString(query)}"
         );
-        return response.Items;
+        return response?.Items ?? [];
     }
 }
