@@ -30,6 +30,12 @@
                 ItemsSource="{Binding Albums}"
                 SelectedItem="{Binding SelectedAlbum}"
                 SelectionMode="Single">
+                <ListBox.Styles>
+                    <Style Selector="ListBoxItem">
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="5"/>
+                    </Style>
+                </ListBox.Styles>
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Horizontal" />
@@ -38,10 +44,9 @@
 
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
+                        <Grid RowSpacing="0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="200" />
-                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
@@ -49,28 +54,31 @@
                                 Grid.Row="0"
                                 Source="{Binding AlbumArtUrl, Converter={StaticResource UrlToBitmapConverter}}"
                                 Width="200"
-                                Height="200"
-                                Stretch="Uniform" />
+                                Height="200" 
+                                Stretch="UniformToFill" />
 
-                            <TextBlock
+                            <StackPanel
                                 Grid.Row="1"
-                                Text="{Binding Title}"
-                                Foreground="#EDF3F9"
-                                Margin="0,5,0,0"
-                                MaxWidth="200"
-                                TextTrimming="CharacterEllipsis"
-                                TextWrapping="Wrap"
-                                MaxLines="2"
-                                ToolTip.Tip="{Binding Title}"/>
+                                Spacing="0"
+                                Margin="3">
+                                <TextBlock
+                                    Text="{Binding Title}"
+                                    Foreground="#EDF3F9"
+                                    MaxWidth="200"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="Wrap"
+                                    MaxLines="2"
+                                    ToolTip.Tip="{Binding Title}"/>
 
-                            <TextBlock
-                                Grid.Row="2"
-                                Text="{Binding AlbumSubtitle}"
-                                Foreground="#EDF3F9"
-                                Opacity="0.5"
-                                MaxWidth="200"
-                                TextTrimming="CharacterEllipsis"
-                                TextWrapping="NoWrap"/>
+                                <TextBlock
+                                    Text="{Binding AlbumSubtitle}"
+                                    Foreground="#EDF3F9"
+                                    Opacity="0.5"
+                                    MaxWidth="200"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap"/>
+                            </StackPanel>
+
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
