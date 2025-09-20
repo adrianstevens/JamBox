@@ -62,9 +62,24 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
+                        <!-- Albums -->
                         <Grid
                             Grid.Column="0">
-                            <ListBox
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid
+                                Grid.Row="0">
+                                <Label 
+                                    Content="Albums"
+                                    FontSize="20"
+                                    Foreground="White" />
+                            </Grid>
+                            
+                            <!--<ListBox
+                                Grid.Row="1"
                                 ItemsSource="{Binding Albums}">
                                 <ListBox.Styles>
                                     <Style Selector="ListBoxItem">
@@ -81,27 +96,71 @@
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
-                            </ListBox>
+                            </ListBox>-->
+
+                            <Border 
+                                Grid.Row="1"
+                                Padding="5">
+                                <Grid Margin="0">
+                                    <Image
+                                        Source="/Assets/cover.jpg"
+                                        Width="150"/>
+                                </Grid>
+                            </Border>
                         </Grid>
 
                         <GridSplitter Grid.Column="1" Width="1" Background="#EDF3F9" Opacity="0.1" />
                         <Rectangle Grid.Column="1" Fill="#EDF3F9" Width="1" />
 
+                        <!-- Selected Album -->
                         <Grid
                             Grid.Column="2"
                             Background="Blue">
-                            <Image
-                                Source="/Assets/cover.jpg"
-                                Width="256"/>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid
+                                Grid.Row="0">
+                                <Label
+                                    Content="Album Selected"
+                                    FontSize="20"
+                                    Foreground="White" />
+                            </Grid>
+
+                            <Grid
+                                Grid.Row="1">
+
+                                <Image
+                                    Source="/Assets/cover.jpg"
+                                    Width="256"/>
+                            </Grid>
+                            
                         </Grid>
 
                         <GridSplitter Grid.Column="3" Width="1" Background="#EDF3F9" Opacity="0.1" />
                         <Rectangle Grid.Column="3" Fill="#EDF3F9" Width="1" />
 
+                        <!-- Tracks -->
                         <Grid
                             Grid.Column="4"
                             Background="Blue">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid
+                                Grid.Row="0">
+                                <Label
+                                    Content="Tracks"
+                                    FontSize="20"
+                                    Foreground="White" />
+                            </Grid>
+                            
                             <ListBox
+                                Grid.Row="1"
                                 ItemsSource="{Binding Tracks}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
