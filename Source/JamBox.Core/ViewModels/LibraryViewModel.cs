@@ -456,6 +456,11 @@ public class LibraryViewModel : ViewModelBase
 
     private async Task PlayPreviousTrackAsync()
     {
+        if (SelectedTrack is null || !Tracks.Any())
+        {
+            return;
+        }
+
         var currentIndex = Tracks.IndexOf(SelectedTrack);
         var previousIndex = currentIndex - 1;
         SelectedTrack = Tracks[previousIndex];
@@ -464,6 +469,11 @@ public class LibraryViewModel : ViewModelBase
 
     private async Task PlayNextTrackAsync()
     {
+        if (SelectedTrack is null || !Tracks.Any())
+        {
+            return;
+        }
+
         var currentIndex = Tracks.IndexOf(SelectedTrack);
         var nextIndex = currentIndex + 1;
         SelectedTrack = Tracks[nextIndex];
