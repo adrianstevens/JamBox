@@ -5,8 +5,8 @@ namespace JamBox.Core.Models;
 public class AuthPayload
 {
     [JsonPropertyName("Username")]
-    public string Username { get; set; }
+    public required string Username { get; set; }
 
     [JsonPropertyName("Pw")]
-    public string Pw { get; set; }
+    public required string Pw { get; set; }
 }

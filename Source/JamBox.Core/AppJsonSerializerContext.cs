@@ -25,6 +25,7 @@ namespace JamBox.Core;
 [JsonSerializable(typeof(JellyfinResponse<Track>))]
 [JsonSerializable(typeof(SessionInfo))]
 [JsonSerializable(typeof(AuthPayload))]
+[JsonSerializable(typeof(PlaybackPayload))]
 public partial class AppJsonSerializerContext : JsonSerializerContext
 {
 }

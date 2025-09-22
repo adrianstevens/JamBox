@@ -5,19 +5,19 @@ namespace JamBox.Core.Models;
 public class AuthenticationResult
 {
     [JsonPropertyName("User")]
-    public User User { get; set; }
+    public required User User { get; set; }
 
     [JsonPropertyName("AccessToken")]
-    public string AccessToken { get; set; }
+    public required string AccessToken { get; set; }
 }
 
 public class User
 {
     [JsonPropertyName("Id")]
-    public string Id { get; set; }
+    public required string Id { get; set; }
 
     [JsonPropertyName("Name")]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 }
 
 public class UserData

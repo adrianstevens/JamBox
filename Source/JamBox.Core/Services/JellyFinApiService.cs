@@ -69,7 +69,7 @@ public class JellyfinApiService : IJellyfinApiService
                 return null;
             }
 
-            return JsonSerializer.Deserialize<PublicSystemInfo>(jsonString);
+            return JsonSerializer.Deserialize(jsonString, AppJsonSerializerContext.Default.PublicSystemInfo);
         }
         catch (Exception ex)
         {
@@ -96,7 +96,11 @@ public class JellyfinApiService : IJellyfinApiService
                 Pw = password
             };
 
-            var content = new StringContent(JsonSerializer.Serialize(authPayload), Encoding.UTF8, "application/json");
+            var content = new StringContent(
+                JsonSerializer.Serialize(authPayload, AppJsonSerializerContext.Default.AuthPayload),
+                Encoding.UTF8,
+                "application/json");
+
             var response = await _httpClient.PostAsync("Users/AuthenticateByName", content);
 
             if (!response.IsSuccessStatusCode)
@@ -107,7 +111,7 @@ public class JellyfinApiService : IJellyfinApiService
             }
 
             var jsonString = await response.Content.ReadAsStringAsync();
-            var authResult = JsonSerializer.Deserialize<AuthenticationResult>(jsonString);
+            var authResult = JsonSerializer.Deserialize(jsonString, AppJsonSerializerContext.Default.AuthenticationResult);
 
             _accessToken = authResult!.AccessToken;
             _userId = authResult.User.Id;
@@ -148,7 +152,8 @@ public class JellyfinApiService : IJellyfinApiService
             response.EnsureSuccessStatusCode();
             var jsonString = await response.Content.ReadAsStringAsync();
 
-            var userViewsResult = JsonSerializer.Deserialize<UserViewsResult>(jsonString);
+            var userViewsResult = JsonSerializer.Deserialize(jsonString, AppJsonSerializerContext.Default.UserViewsResult);
+
             return userViewsResult?.Items ?? [];
         }
         catch (Exception ex)
@@ -163,60 +168,66 @@ public class JellyfinApiService : IJellyfinApiService
         _accessToken = null;
         _userId = string.Empty;
 
-        if (_httpClient.DefaultRequestHeaders.Contains("X-Emby-Token"))
+        if (_httpClient is not null && _httpClient.DefaultRequestHeaders.Contains("X-Emby-Token"))
         {
             _httpClient.DefaultRequestHeaders.Remove("X-Emby-Token");
         }
 
-        Console.WriteLine("Logged out.");
+        Console.WriteLine("Logged out");
     }
 
     public async Task<List<Artist>> GetArtistsAsync(string libraryId)
     {
-        var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Artist>>(
-            $"Items?IncludeItemTypes=MusicArtist&ParentId={libraryId}&Recursive=true"
-        );
-        return response?.Items ?? [];
+        var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=MusicArtist&ParentId={libraryId}&Recursive=true");
+        response.EnsureSuccessStatusCode();
+        var stream = await response.Content.ReadAsStreamAsync();
+        var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinResponseArtist);
+        return result?.Items ?? [];
     }
 
     public async Task<List<Album>> GetAlbumsAsync(string libraryId)
     {
-        var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Album>>(
-            $"Items?IncludeItemTypes=MusicAlbum&ParentId={libraryId}&Recursive=true"
-        );
-        return response?.Items ?? [];
+        var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=MusicAlbum&ParentId={libraryId}&Recursive=true");
+        response.EnsureSuccessStatusCode();
+        var stream = await response.Content.ReadAsStreamAsync();
+        var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinResponseAlbum);
+        return result?.Items ?? [];
     }
 
     public async Task<List<Album>> GetAlbumsByArtistAsync(string artistId)
     {
-        var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Album>>(
-            $"Items?IncludeItemTypes=MusicAlbum&ParentId={artistId}"
-        );
-        return response?.Items ?? [];
+        var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=MusicAlbum&ParentId={artistId}");
+        response.EnsureSuccessStatusCode();
+        var stream = await response.Content.ReadAsStreamAsync();
+        var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinResponseAlbum);
+        return result?.Items ?? [];
     }
 
     public async Task<List<Track>> GetTracksAsync(string libraryId)
     {
-        var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
-            $"Items?IncludeItemTypes=Audio&ParentId={libraryId}&Recursive=true"
-        );
-        return response?.Items ?? [];
+        var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=Audio&ParentId={libraryId}&Recursive=true");
+        response.EnsureSuccessStatusCode();
+        var stream = await response.Content.ReadAsStreamAsync();
+        var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinResponseTrack);
+        return result?.Items ?? [];
     }
 
     public async Task<List<Track>> GetTracksByAlbumAsync(string albumId)
     {
-        var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
-            $"Items?IncludeItemTypes=Audio&ParentId={albumId}&SortBy=IndexNumber"
-        );
-        return response?.Items ?? [];
+        var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=Audio&ParentId={albumId}&SortBy=IndexNumber");
+        response.EnsureSuccessStatusCode();
+        var stream = await response.Content.ReadAsStreamAsync();
+        var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinResponseTrack);
+        return result?.Items ?? [];
     }
 
     public async Task<List<Track>> GetTracksByArtistAsync(string artistId)
     {
-        var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
-            $"Items?IncludeItemTypes=Audio&ArtistIds={artistId}&Recursive=true"
-        );
-        return response?.Items ?? [];
+        var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=Audio&ArtistIds={artistId}&Recursive=true");
+        response.EnsureSuccessStatusCode();
+        var stream = await response.Content.ReadAsStreamAsync();
+        var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinResponseTrack);
+        return result?.Items ?? [];
     }
 
     public async Task<List<SessionInfo>> GetSessionsAsync()
@@ -229,26 +240,33 @@ public class JellyfinApiService : IJellyfinApiService
     {
         var payload = new PlaybackPayload
         {
-            ItemIds = new[] { trackId },
+            ItemIds = [trackId],
             PlayCommand = "PlayNow"
         };
 
-        var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+        var content = new StringContent(JsonSerializer.Serialize(payload, AppJsonSerializerContext.Default.PlaybackPayload),
+            Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.PostAsync($"Sessions/{sessionId}/Playing", content);
+        var response = await _httpClient!.PostAsync($"Sessions/{sessionId}/Playing", content);
         response.EnsureSuccessStatusCode();
     }
 
     public string GetTrackStreamUrl(string trackId, string container = "mp3")
     {
+        if (_httpClient is null || _httpClient.BaseAddress is null)
+        {
+            return string.Empty;
+        }
+
         return $"{_httpClient.BaseAddress.AbsoluteUri}Audio/{trackId}/universal?UserId={_userId}&DeviceId={DeviceId}&Container={container}&api_key={_accessToken}";
     }
 
     public async Task<List<Track>> SearchTracksAsync(string query)
     {
-        var response = await _httpClient.GetFromJsonAsync<JellyfinResponse<Track>>(
-            $"Items?IncludeItemTypes=Audio&Recursive=true&SearchTerm={Uri.EscapeDataString(query)}"
-        );
-        return response?.Items ?? [];
+        var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=Audio&Recursive=true&SearchTerm={Uri.EscapeDataString(query)}");
+        response.EnsureSuccessStatusCode();
+        var stream = await response.Content.ReadAsStreamAsync();
+        var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinResponseTrack);
+        return result?.Items ?? [];
     }
 }
