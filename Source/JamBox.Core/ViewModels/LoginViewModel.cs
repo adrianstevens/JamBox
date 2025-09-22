@@ -89,19 +89,21 @@ public class LoginViewModel : ViewModelBase
 
         var dir = Path.GetDirectoryName(CredentialsPath);
 
-        if (!Directory.Exists(dir))
+        if (dir is not null && Directory.Exists(dir))
         {
-            Directory.CreateDirectory(dir!);
+            Directory.CreateDirectory(dir);
         }
 
-        File.WriteAllText(CredentialsPath, JsonSerializer.Serialize(creds));
+        var json = JsonSerializer.Serialize(creds, AppJsonSerializerContext.Default.UserCredentials);
+        File.WriteAllText(CredentialsPath, json);
     }
 
     private void LoadCredentials()
     {
         if (File.Exists(CredentialsPath))
         {
-            var creds = JsonSerializer.Deserialize<UserCredentials>(File.ReadAllText(CredentialsPath));
+            var json = File.ReadAllText(CredentialsPath);
+            var creds = JsonSerializer.Deserialize(json, AppJsonSerializerContext.Default.UserCredentials);
 
             if (creds != null)
             {

@@ -22,7 +22,7 @@ public class WindowSettings
             if (File.Exists(SettingsPath))
             {
                 var json = File.ReadAllText(SettingsPath);
-                return JsonSerializer.Deserialize(json, WindowSettingsContext.Default.WindowSettings) ?? new WindowSettings();
+                return JsonSerializer.Deserialize(json, AppJsonSerializerContext.Default.WindowSettings) ?? new WindowSettings();
             }
         }
         catch { }
@@ -34,10 +34,13 @@ public class WindowSettings
         try
         {
             var dir = Path.GetDirectoryName(SettingsPath);
-            if (!Directory.Exists(dir!))
-                Directory.CreateDirectory(dir!);
 
-            var json = JsonSerializer.Serialize(this, WindowSettingsContext.Default.WindowSettings);
+            if (dir is not null && Directory.Exists(dir) == false)
+            {
+                Directory.CreateDirectory(dir!);
+            }
+
+            var json = JsonSerializer.Serialize(this, AppJsonSerializerContext.Default.WindowSettings);
             File.WriteAllText(SettingsPath, json);
         }
         catch { }

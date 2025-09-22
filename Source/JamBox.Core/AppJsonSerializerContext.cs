@@ -1,4 +1,5 @@
 ﻿using JamBox.Core.Models;
+using JamBox.Core.Settings;
 using System.Text.Json.Serialization;
 
 namespace JamBox.Core;
@@ -26,6 +27,8 @@ namespace JamBox.Core;
 [JsonSerializable(typeof(SessionInfo))]
 [JsonSerializable(typeof(AuthPayload))]
 [JsonSerializable(typeof(PlaybackPayload))]
+[JsonSerializable(typeof(UserCredentials))]
+[JsonSerializable(typeof(WindowSettings))]
 public partial class AppJsonSerializerContext : JsonSerializerContext
 {
 }
