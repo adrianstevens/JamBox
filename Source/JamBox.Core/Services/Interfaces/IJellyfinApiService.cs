@@ -6,7 +6,7 @@ public interface IJellyfinApiService
 {
     bool IsAuthenticated { get; }
 
-    string CurrentUserId { get; }
+    string? CurrentUserId { get; }
 
     string? CurrentAccessToken { get; }
 

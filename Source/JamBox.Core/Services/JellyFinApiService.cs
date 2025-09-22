@@ -8,22 +8,22 @@ namespace JamBox.Core.Services;
 
 public class JellyfinApiService : IJellyfinApiService
 {
-    private HttpClient _httpClient;
+    private HttpClient? _httpClient;
     private string? _accessToken;
-    private string _userId;
+    private string? _userId;
 
     private const string ClientName = "JamBoxAvalonia";
-    private const string ClientVersion = "0.1.0";
+    private const string ClientVersion = "0.2.0";
     private const string DeviceName = "Desktop";
     private const string DeviceId = "jambox-avalonia-client-guid";
 
     public bool IsAuthenticated => !string.IsNullOrEmpty(_accessToken);
 
-    public string CurrentUserId => _userId;
+    public string? CurrentUserId => _userId;
 
     public string? CurrentAccessToken => _accessToken;
 
-    public string? ServerUrl => _httpClient.BaseAddress?.ToString();
+    public string? ServerUrl => _httpClient?.BaseAddress?.ToString();
 
     public JellyfinApiService()
     { }
@@ -52,8 +52,10 @@ public class JellyfinApiService : IJellyfinApiService
 
     public async Task<PublicSystemInfo?> GetPublicSystemInfoAsync()
     {
-        if (_httpClient.BaseAddress == null)
+        if (_httpClient?.BaseAddress == null)
+        {
             return null;
+        }
 
         try
         {
@@ -61,6 +63,12 @@ public class JellyfinApiService : IJellyfinApiService
             var response = await _httpClient.GetAsync("System/Info/Public");
             response.EnsureSuccessStatusCode();
             var jsonString = await response.Content.ReadAsStringAsync();
+
+            if (string.IsNullOrWhiteSpace(jsonString))
+            {
+                return null;
+            }
+
             return JsonSerializer.Deserialize<PublicSystemInfo>(jsonString);
         }
         catch (Exception ex)
@@ -75,7 +83,7 @@ public class JellyfinApiService : IJellyfinApiService
     /// </summary>
     public async Task<bool> AuthenticateUserAsync(string username, string password)
     {
-        if (_httpClient.BaseAddress == null)
+        if (_httpClient?.BaseAddress == null)
             return false;
 
         try
@@ -134,7 +142,7 @@ public class JellyfinApiService : IJellyfinApiService
         try
         {
             // Simplified URI
-            var response = await _httpClient.GetAsync($"Users/{_userId}/Views");
+            var response = await _httpClient!.GetAsync($"Users/{_userId}/Views");
             response.EnsureSuccessStatusCode();
             var jsonString = await response.Content.ReadAsStringAsync();
 
@@ -154,7 +162,9 @@ public class JellyfinApiService : IJellyfinApiService
         _userId = string.Empty;
 
         if (_httpClient.DefaultRequestHeaders.Contains("X-Emby-Token"))
+        {
             _httpClient.DefaultRequestHeaders.Remove("X-Emby-Token");
+        }
 
         Console.WriteLine("Logged out.");
     }

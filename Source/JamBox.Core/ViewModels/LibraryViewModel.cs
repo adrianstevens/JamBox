@@ -49,8 +49,8 @@ public class LibraryViewModel : ViewModelBase
 
     public ObservableCollection<Album> Albums { get; } = [];
 
-    private Album _selectedAlbum;
-    public Album SelectedAlbum
+    private Album? _selectedAlbum;
+    public Album? SelectedAlbum
     {
         get => _selectedAlbum;
         set
@@ -432,7 +432,7 @@ public class LibraryViewModel : ViewModelBase
 
         var headers = new Dictionary<string, string>
         {
-            ["X-Emby-Token"] = _jellyfinApiService.CurrentAccessToken
+            ["X-Emby-Token"] = _jellyfinApiService?.CurrentAccessToken ?? string.Empty
         };
 
         //debug url to test playback without auth

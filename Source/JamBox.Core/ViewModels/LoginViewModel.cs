@@ -46,8 +46,8 @@ public class LoginViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _connectionStatus, value);
     }
 
-    private PublicSystemInfo _serverInfo;
-    public PublicSystemInfo ServerInfo
+    private PublicSystemInfo? _serverInfo;
+    public PublicSystemInfo? ServerInfo
     {
         get => _serverInfo;
         set => this.RaiseAndSetIfChanged(ref _serverInfo, value);
