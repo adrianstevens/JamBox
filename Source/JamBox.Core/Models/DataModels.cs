@@ -35,37 +35,37 @@ public class UserData
     public bool Played { get; set; }
 
     [JsonPropertyName("Key")]
-    public string Key { get; set; }
+    public string Key { get; set; } = default!;
 
     [JsonPropertyName("ItemId")]
-    public string ItemId { get; set; }
+    public string ItemId { get; set; } = default!;
 }
 
 public class PublicSystemInfo
 {
     [JsonPropertyName("ServerName")]
-    public string ServerName { get; set; }
+    public string ServerName { get; set; } = default!;
 
     [JsonPropertyName("Version")]
-    public string Version { get; set; }
+    public string Version { get; set; } = default!;
 
     [JsonPropertyName("Id")]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
     [JsonPropertyName("DeviceName")]
-    public string DeviceName { get; set; }
+    public string DeviceName { get; set; } = default!;
 }
 
 public class MediaCollectionItem
 {
     [JsonPropertyName("Id")]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
     [JsonPropertyName("Name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
 
     [JsonPropertyName("CollectionType")]
-    public string CollectionType { get; set; } // e.g., "movies", "music", "tvshows"
+    public string CollectionType { get; set; } = default!; // e.g., "movies", "music", "tvshows"
 
     public string DisplayName => $"{Name} ({CollectionType})";
 }
@@ -73,22 +73,22 @@ public class MediaCollectionItem
 public class UserViewsResult
 {
     [JsonPropertyName("Items")]
-    public List<MediaCollectionItem> Items { get; set; }
+    public List<MediaCollectionItem> Items { get; set; } = default!;
 }
 
 public class Artist
 {
     [JsonPropertyName("Id")]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
     [JsonPropertyName("Name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
 
     [JsonPropertyName("ImageTags")]
-    public Dictionary<string, string> ImageTags { get; set; }
+    public Dictionary<string, string> ImageTags { get; set; } = default!;
 
     [JsonPropertyName("Genres")]
-    public List<string> Genres { get; set; }
+    public List<string> Genres { get; set; } = default!;
 
     [JsonPropertyName("ProductionYear")]
     public int? ProductionYear { get; set; }
@@ -109,40 +109,40 @@ public class Artist
 public class AlbumArtistInfo
 {
     [JsonPropertyName("Name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
     // Add other properties if needed
 }
 
 public class Album
 {
     [JsonPropertyName("Id")]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
     [JsonPropertyName("Name")]
-    public string Title { get; set; }
+    public string Title { get; set; } = default!;
 
     [JsonPropertyName("ProductionYear")]
     public int ProductionYear { get; set; }
 
     [JsonPropertyName("AlbumArtists")]
-    public List<AlbumArtistInfo> AlbumArtists { get; set; }
+    public List<AlbumArtistInfo> AlbumArtists { get; set; } = default!;
 
     [JsonPropertyName("UserData")]
-    public UserData UserData { get; set; }
+    public UserData UserData { get; set; } = default!;
 
     public string AlbumArtistsString => AlbumArtists == null ? "" : string.Join(", ", AlbumArtists);
 
     [JsonPropertyName("ImageTags")]
-    public Dictionary<string, string> ImageTags { get; set; }
+    public Dictionary<string, string> ImageTags { get; set; } = default!;
 
     [JsonIgnore]
-    public string AlbumSubtitle { get; set; }
+    public string AlbumSubtitle { get; set; } = default!;
 
     [JsonIgnore]
-    public string AlbumArtist => AlbumArtists?.FirstOrDefault().Name ?? "Unknown Artist";
+    public string AlbumArtist => AlbumArtists?.FirstOrDefault()?.Name ?? "Unknown Artist";
 
     [JsonIgnore]
-    public string AlbumArtUrl { get; set; }
+    public string AlbumArtUrl { get; set; } = default!;
 
     /// <summary>
     /// Returns the URL for the primary album cover.
@@ -165,25 +165,25 @@ public class Album
 public class ArtistInfo
 {
     [JsonPropertyName("Name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
 
     [JsonPropertyName("Id")]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 }
 
 public class Track
 {
     [JsonPropertyName("Id")]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
     [JsonPropertyName("Name")]
-    public string Title { get; set; }
+    public string Title { get; set; } = default!;
 
     [JsonPropertyName("AlbumId")]
-    public string AlbumId { get; set; }
+    public string AlbumId { get; set; } = default!;
 
     [JsonPropertyName("IndexNumber")]
-    public int IndexNumber { get; set; }
+    public int IndexNumber { get; set; } = default!;
 
     [JsonPropertyName("RunTimeTicks")]
     public long RunTimeTicks { get; set; }
@@ -194,7 +194,7 @@ public class Track
 public class ItemResult<T>
 {
     [JsonPropertyName("Items")]
-    public List<T> Items { get; set; }
+    public List<T> Items { get; set; } = default!;
 
     [JsonPropertyName("TotalRecordCount")]
     public int TotalRecordCount { get; set; }
@@ -202,19 +202,19 @@ public class ItemResult<T>
 
 public class JellyfinResponse<T>
 {
-    public List<T> Items { get; set; }
+    public List<T> Items { get; set; } = default!;
     public int TotalRecordCount { get; set; }
 }
 
 public class SessionInfo
 {
-    public string Id { get; set; }
-    public string UserId { get; set; }
-    public string UserName { get; set; }
-    public string Client { get; set; }       // e.g., "Jellyfin Web", "Android TV"
-    public string DeviceName { get; set; }   // e.g., "Living Room TV"
-    public string NowPlayingItemId { get; set; }
+    public string Id { get; set; } = default!;
+    public string UserId { get; set; } = default!;
+    public string UserName { get; set; } = default!;
+    public string Client { get; set; } = default!;      // e.g., "Jellyfin Web", "Android TV"
+    public string DeviceName { get; set; } = default!;   // e.g., "Living Room TV"
+    public string NowPlayingItemId { get; set; } = default!;
 
-    public string RemoteEndPoint { get; set; }
+    public string RemoteEndPoint { get; set; } = default!;
     public bool SupportsRemoteControl { get; set; }
 }
