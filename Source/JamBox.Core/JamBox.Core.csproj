@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="System.Text.Json" />
 	<PackageReference Include="LibVLCSharp" />
+	<PackageReference Include="Velopack" />
   </ItemGroup>
 
   <ItemGroup>

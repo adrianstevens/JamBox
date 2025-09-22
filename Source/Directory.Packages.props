@@ -13,6 +13,7 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
     <PackageVersion Include="System.Text.Json" Version="10.0.0-preview.7.25380.108" />
     <PackageVersion Include="LibVLCSharp" Version="3.8.4" />
+    <PackageVersion Include="Velopack" Version="0.0.1298" />
     <PackageVersion Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
     <PackageVersion Include="VideoLAN.LibVLC.Mac" Version="3.0.20" />
   </ItemGroup>
