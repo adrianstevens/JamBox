@@ -8,13 +8,13 @@ public class UrlToBitmapConverter : IValueConverter
 {
     private static readonly HttpClient _httpClient = new();
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is string url && !string.IsNullOrWhiteSpace(url))
         {
             try
             {
-                // Synchronously download the image (not ideal for large images/UI thread, but works for demo)
+                // Synchronously download the image (not ideal for large images/UI thread)
                 var response = _httpClient.GetAsync(url).GetAwaiter().GetResult();
                 response.EnsureSuccessStatusCode();
                 using var stream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
@@ -29,5 +29,5 @@ public class UrlToBitmapConverter : IValueConverter
         return null;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotImplementedException();
 }
