@@ -215,7 +215,6 @@ public class SessionInfo
     public string DeviceName { get; set; }   // e.g., "Living Room TV"
     public string NowPlayingItemId { get; set; }
 
-    // Extra info if you want
     public string RemoteEndPoint { get; set; }
     public bool SupportsRemoteControl { get; set; }
 }

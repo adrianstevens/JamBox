@@ -84,11 +84,13 @@ public class JellyfinApiService : IJellyfinApiService
     public async Task<bool> AuthenticateUserAsync(string username, string password)
     {
         if (_httpClient?.BaseAddress == null)
+        {
             return false;
+        }
 
         try
         {
-            var authPayload = new
+            var authPayload = new AuthPayload
             {
                 Username = username,
                 Pw = password
@@ -225,13 +227,14 @@ public class JellyfinApiService : IJellyfinApiService
 
     public async Task PlayTrackAsync(string sessionId, string trackId)
     {
-        var payload = new
+        var payload = new PlaybackPayload
         {
             ItemIds = new[] { trackId },
             PlayCommand = "PlayNow"
         };
 
         var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+
         var response = await _httpClient.PostAsync($"Sessions/{sessionId}/Playing", content);
         response.EnsureSuccessStatusCode();
     }
