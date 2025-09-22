@@ -9,8 +9,8 @@ public class MainViewModel : ReactiveObject
 {
     private readonly INavigationService _navigationService;
 
-    private UserControl _currentContent;
-    public UserControl CurrentContent
+    private UserControl? _currentContent;
+    public UserControl? CurrentContent
     {
         get => _currentContent;
         set => this.RaiseAndSetIfChanged(ref _currentContent, value);

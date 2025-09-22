@@ -284,6 +284,8 @@ public class LibraryViewModel : ViewModelBase
 
     private async Task LoadArtistsAsync()
     {
+        if (_selectedLibrary is null) { return; }
+
         Artists.Clear();
 
         var artists = await _jellyfinApiService.GetArtistsAsync(_selectedLibrary.Id);
@@ -304,6 +306,8 @@ public class LibraryViewModel : ViewModelBase
 
     private async Task LoadAlbumsAsync()
     {
+        if (_selectedLibrary is null) { return; }
+
         List<Album>? albums = [];
 
         Albums.Clear();
@@ -342,6 +346,8 @@ public class LibraryViewModel : ViewModelBase
 
     private async Task LoadTracksAsync()
     {
+        if (_selectedLibrary is null) { return; }
+
         List<Track>? tracks = [];
 
         Tracks.Clear();
