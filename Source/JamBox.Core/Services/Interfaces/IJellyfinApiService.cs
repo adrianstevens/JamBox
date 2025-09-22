@@ -18,7 +18,7 @@ public interface IJellyfinApiService
 
     Task<bool> AuthenticateUserAsync(string username, string password);
 
-    Task<List<BaseItemDto>> GetUserMediaViewsAsync();
+    Task<List<MediaCollectionItem>> GetUserMediaViewsAsync();
 
     void Logout();
 

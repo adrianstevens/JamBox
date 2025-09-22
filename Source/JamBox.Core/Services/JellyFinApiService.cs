@@ -137,7 +137,7 @@ public class JellyfinApiService : IJellyfinApiService
     /// <summary>
     /// Fetches the current user's media libraries (views).
     /// </summary>
-    public async Task<List<BaseItemDto>> GetUserMediaViewsAsync()
+    public async Task<List<MediaCollectionItem>> GetUserMediaViewsAsync()
     {
         if (!IsAuthenticated || string.IsNullOrEmpty(_userId))
         {

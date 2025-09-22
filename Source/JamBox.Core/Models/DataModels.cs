@@ -56,7 +56,7 @@ public class PublicSystemInfo
     public string DeviceName { get; set; }
 }
 
-public class BaseItemDto
+public class MediaCollectionItem
 {
     [JsonPropertyName("Id")]
     public string Id { get; set; }
@@ -73,7 +73,7 @@ public class BaseItemDto
 public class UserViewsResult
 {
     [JsonPropertyName("Items")]
-    public List<BaseItemDto> Items { get; set; }
+    public List<MediaCollectionItem> Items { get; set; }
 }
 
 public class Artist

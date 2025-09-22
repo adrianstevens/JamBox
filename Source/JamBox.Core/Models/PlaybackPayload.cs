@@ -5,8 +5,8 @@ namespace JamBox.Core.Models;
 public class PlaybackPayload
 {
     [JsonPropertyName("ItemIds")]
-    public string[] ItemIds { get; set; }
+    public required string[] ItemIds { get; set; }
 
     [JsonPropertyName("PlayCommand")]
-    public string PlayCommand { get; set; }
+    public required string PlayCommand { get; set; }
 }

@@ -13,7 +13,7 @@ public class LibraryViewModel : ViewModelBase
     private readonly INavigationService _navigationService;
     private readonly IJellyfinApiService _jellyfinApiService;
 
-    private BaseItemDto _selectedLibrary;
+    private MediaCollectionItem? _selectedLibrary;
 
     public ObservableCollection<Artist> Artists { get; private set; } = [];
 
@@ -127,15 +127,15 @@ public class LibraryViewModel : ViewModelBase
         }
     }
 
-    private string _nowPlayingAlbumArtUrl = "";
-    public string NowPlayingAlbumArtUrl
+    private string? _nowPlayingAlbumArtUrl = "";
+    public string? NowPlayingAlbumArtUrl
     {
         get => _nowPlayingAlbumArtUrl;
         set => this.RaiseAndSetIfChanged(ref _nowPlayingAlbumArtUrl, value);
     }
 
-    private string _nowPlayingSongTitle = "";
-    public string NowPlayingSongTitle
+    private string? _nowPlayingSongTitle = "";
+    public string? NowPlayingSongTitle
     {
         get => _nowPlayingSongTitle;
         set => this.RaiseAndSetIfChanged(ref _nowPlayingSongTitle, value);
@@ -438,10 +438,10 @@ public class LibraryViewModel : ViewModelBase
         //debug url to test playback without auth
         // url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 
-        var baseUrl = _jellyfinApiService.ServerUrl.TrimEnd('/');
+        var baseUrl = _jellyfinApiService?.ServerUrl?.TrimEnd('/');
 
         // The original file endpoint (no transcoding):
-        var url = $"{baseUrl}/Items/{SelectedTrack.Id}/File?api_key={_jellyfinApiService.CurrentAccessToken}";
+        var url = $"{baseUrl}/Items/{SelectedTrack.Id}/File?api_key={_jellyfinApiService?.CurrentAccessToken}";
 
         NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
         NowPlayingSongTitle = SelectedTrack.Title;
@@ -469,7 +469,7 @@ public class LibraryViewModel : ViewModelBase
         if (Playback == PlaybackState.Stopped)
         {
             if (SelectedTrack is null) return;
-            NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
+            NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl ?? null;
             NowPlayingSongTitle = SelectedTrack.Title;
             await PlaySelectedTrackAsync();
         }

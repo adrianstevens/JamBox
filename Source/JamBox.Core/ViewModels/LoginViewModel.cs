@@ -16,8 +16,6 @@ public class LoginViewModel : ViewModelBase
     private static string CredentialsPath =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "JamBox", "credentials.json");
 
-    private readonly MainViewModel _mainViewModel;
-
     private string _serverUrl = string.Empty;
     public string ServerUrl
     {
