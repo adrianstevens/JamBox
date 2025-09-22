@@ -1,6 +1,5 @@
 ﻿using JamBox.Core.Models;
 using JamBox.Core.Services.Interfaces;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
@@ -232,8 +231,16 @@ public class JellyfinApiService : IJellyfinApiService
 
     public async Task<List<SessionInfo>> GetSessionsAsync()
     {
-        var response = await _httpClient.GetFromJsonAsync<List<SessionInfo>>("Sessions");
-        return response ?? [];
+        if (_httpClient is null) { return []; }
+
+        var response = await _httpClient.GetAsync("Sessions");
+        response.EnsureSuccessStatusCode();
+
+        var stream = await response.Content.ReadAsStreamAsync();
+
+        var sessions = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.ListSessionInfo);
+
+        return sessions ?? [];
     }
 
     public async Task PlayTrackAsync(string sessionId, string trackId)

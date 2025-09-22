@@ -336,7 +336,8 @@ public class LibraryViewModel : ViewModelBase
 
         foreach (var album in albums)
         {
-            album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinApiService.ServerUrl ?? "", _jellyfinApiService.CurrentAccessToken ?? "");
+            album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinApiService.ServerUrl ?? "", _jellyfinApiService.CurrentAccessToken ?? "") ?? "";
+
             album.AlbumSubtitle = SelectedArtist == null ? album.AlbumArtist : album.ProductionYear.ToString();
             Albums.Add(album);
         }

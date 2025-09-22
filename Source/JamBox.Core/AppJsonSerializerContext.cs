@@ -29,6 +29,7 @@ namespace JamBox.Core;
 [JsonSerializable(typeof(PlaybackPayload))]
 [JsonSerializable(typeof(UserCredentials))]
 [JsonSerializable(typeof(WindowSettings))]
+[JsonSerializable(typeof(List<SessionInfo>))]
 public partial class AppJsonSerializerContext : JsonSerializerContext
 {
 }
