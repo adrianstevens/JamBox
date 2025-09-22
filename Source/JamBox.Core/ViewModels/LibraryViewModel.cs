@@ -33,8 +33,8 @@ public class LibraryViewModel : ViewModelBase
         }
     }
 
-    private string _artistCount;
-    public string ArtistCount
+    private string? _artistCount;
+    public string? ArtistCount
     {
         get => _artistCount;
         set => this.RaiseAndSetIfChanged(ref _artistCount, value);
@@ -64,8 +64,8 @@ public class LibraryViewModel : ViewModelBase
         }
     }
 
-    private string _albumCount;
-    public string AlbumCount
+    private string? _albumCount;
+    public string? AlbumCount
     {
         get => _albumCount;
         set => this.RaiseAndSetIfChanged(ref _albumCount, value);
@@ -80,15 +80,15 @@ public class LibraryViewModel : ViewModelBase
 
     public ObservableCollection<Track> Tracks { get; } = [];
 
-    private Track _selectedTrack;
-    public Track SelectedTrack
+    private Track? _selectedTrack;
+    public Track? SelectedTrack
     {
         get => _selectedTrack;
         set => this.RaiseAndSetIfChanged(ref _selectedTrack, value);
     }
 
-    private string _trackCount;
-    public string TrackCount
+    private string? _trackCount;
+    public string? TrackCount
     {
         get => _trackCount;
         set => this.RaiseAndSetIfChanged(ref _trackCount, value);
@@ -336,7 +336,7 @@ public class LibraryViewModel : ViewModelBase
 
         foreach (var album in albums)
         {
-            album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinApiService.ServerUrl, _jellyfinApiService.CurrentAccessToken);
+            album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinApiService.ServerUrl ?? "", _jellyfinApiService.CurrentAccessToken ?? "");
             album.AlbumSubtitle = SelectedArtist == null ? album.AlbumArtist : album.ProductionYear.ToString();
             Albums.Add(album);
         }

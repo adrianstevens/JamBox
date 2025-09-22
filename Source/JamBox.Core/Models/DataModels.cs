@@ -93,9 +93,9 @@ public class Artist
     [JsonPropertyName("ProductionYear")]
     public int? ProductionYear { get; set; }
 
-    public string PrimaryImageUrl { get; private set; }
+    public string? PrimaryImageUrl { get; private set; }
 
-    public string GetPrimaryImageUrl(string serverUrl, string accessToken, int width = 300, int height = 300)
+    public string? GetPrimaryImageUrl(string serverUrl, string accessToken, int width = 300, int height = 300)
     {
         if (ImageTags != null && ImageTags.TryGetValue("Primary", out var tag))
         {
@@ -147,7 +147,7 @@ public class Album
     /// <summary>
     /// Returns the URL for the primary album cover.
     /// </summary>
-    public string GetPrimaryImageUrl(string serverUrl, string accessToken, int width = 300, int height = 300)
+    public string? GetPrimaryImageUrl(string serverUrl, string accessToken, int width = 300, int height = 300)
     {
         if (!string.IsNullOrEmpty(Id) && ImageTags != null && ImageTags.TryGetValue("Primary", out var tag))
         {

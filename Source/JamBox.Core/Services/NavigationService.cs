@@ -11,7 +11,7 @@ public class NavigationService : INavigationService
 
     private readonly Stack<UserControl> _navigationStack = [];
 
-    private MainViewModel _mainViewModel;
+    private MainViewModel? _mainViewModel;
 
     public NavigationService(IServiceProvider serviceProvider)
     {
