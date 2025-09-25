@@ -450,7 +450,16 @@ public class LibraryViewModel : ViewModelBase
         // The original file endpoint (no transcoding):
         var url = $"{baseUrl}/Items/{SelectedTrack.Id}/File?api_key={_jellyfinApiService?.CurrentAccessToken}";
 
-        NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
+        if (SelectedAlbum == null)
+        {
+            var album = Albums.FirstOrDefault(a => a.Id == SelectedTrack.AlbumId);
+            NowPlayingAlbumArtUrl = album?.AlbumArtUrl;
+        }
+        else
+        {
+            NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
+        }
+
         NowPlayingSongTitle = SelectedTrack.Title;
         await _audioPlayer.PlayAsync(url, headers);
     }
