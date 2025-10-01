@@ -17,7 +17,6 @@ public class MainViewModel : ReactiveObject
     }
 
     public MainViewModel(
-        IAudioPlayer audioPlayer,
         INavigationService navigationService,
         IJellyfinApiService jellyfinApiService)
     {

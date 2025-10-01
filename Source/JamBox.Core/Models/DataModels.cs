@@ -188,6 +188,9 @@ public class Track
     [JsonPropertyName("RunTimeTicks")]
     public long RunTimeTicks { get; set; }
 
+    [JsonIgnore]
+    public bool IsPlaying { get; set; }
+
     public TimeSpan Duration => TimeSpan.FromTicks(RunTimeTicks);
 }
 

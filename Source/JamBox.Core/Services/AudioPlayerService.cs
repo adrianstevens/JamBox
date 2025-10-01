@@ -3,7 +3,7 @@ using LibVLCSharp.Shared;
 
 namespace JamBox.Core.Services;
 
-public sealed class AudioPlayer : IAudioPlayer
+public sealed class AudioPlayerService : IAudioPlayerService
 {
     private readonly LibVLC _libvlc;
     private readonly MediaPlayer _player;
@@ -37,7 +37,7 @@ public sealed class AudioPlayer : IAudioPlayer
 
     public event EventHandler<PlaybackState>? StateChanged;
 
-    public AudioPlayer()
+    public AudioPlayerService()
     {
         global::LibVLCSharp.Shared.Core.Initialize();
 

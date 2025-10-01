@@ -28,7 +28,7 @@ public partial class App : Application
 #endif
         var services = new ServiceCollection();
 
-        services.AddSingleton<IAudioPlayer, AudioPlayer>();
+        services.AddSingleton<IAudioPlayerService, AudioPlayerService>();
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<IJellyfinApiService, JellyfinApiService>();
 

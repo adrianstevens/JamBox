@@ -9,7 +9,7 @@ namespace JamBox.Core.ViewModels;
 
 public class LibraryViewModel : ViewModelBase
 {
-    private readonly IAudioPlayer _audioPlayer;
+    private readonly IAudioPlayerService _audioPlayerService;
     private readonly INavigationService _navigationService;
     private readonly IJellyfinApiService _jellyfinApiService;
 
@@ -164,7 +164,7 @@ public class LibraryViewModel : ViewModelBase
             if (_volume != value)
             {
                 this.RaiseAndSetIfChanged(ref _volume, value);
-                _audioPlayer.Volume = value;
+                _audioPlayerService.Volume = value;
             }
         }
     }
@@ -208,29 +208,32 @@ public class LibraryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> JukeBoxModeCommand { get; }
 
     public LibraryViewModel(
-        IAudioPlayer audioPlayer,
+        IAudioPlayerService audioPlayerService,
         INavigationService navigationService,
         IJellyfinApiService jellyfinApiService)
     {
-        _audioPlayer = audioPlayer;
+        _audioPlayerService = audioPlayerService;
         _navigationService = navigationService;
         _jellyfinApiService = jellyfinApiService;
 
-        _audioPlayer.StateChanged += (_, state) => Playback = state;
+        _audioPlayerService.StateChanged += (_, state) =>
+        {
+            Playback = state;
+        };
 
-        _audioPlayer.PositionChanged += (_, position) =>
+        _audioPlayerService.PositionChanged += (_, position) =>
         {
             if (!IsUserSeeking) { SeekPosition = position; }
 
             NowPlayingElapsedTime = FormatMs(position);
-            var remaining = Math.Max(0, _audioPlayer.LengthMs - position);
+            var remaining = Math.Max(0, _audioPlayerService.LengthMs - position);
             NowPlayingRemainingTime = "-" + FormatMs(remaining);
 
-            SeekLength = _audioPlayer.LengthMs;
+            SeekLength = _audioPlayerService.LengthMs;
         };
 
-        _audioPlayer.VolumeChanged += (_, volume) => Volume = volume;
-        Volume = _audioPlayer.Volume;
+        _audioPlayerService.VolumeChanged += (_, volume) => Volume = volume;
+        Volume = _audioPlayerService.Volume;
 
         LoadArtistsCommand = ReactiveCommand.CreateFromTask(LoadArtistsAsync);
         LoadAlbumsCommand = ReactiveCommand.CreateFromTask(LoadAlbumsAsync);
@@ -252,9 +255,9 @@ public class LibraryViewModel : ViewModelBase
         var canPlayPrevious = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.Tracks)
             .Select(t => t.Item1 != null && t.Item2.Count > 0 && t.Item2.IndexOf(t.Item1) > 0);
 
-        PauseCommand = ReactiveCommand.Create(() => _audioPlayer.Pause(), canPause);
-        ResumeCommand = ReactiveCommand.Create(() => _audioPlayer.Resume(), canResume);
-        StopCommand = ReactiveCommand.Create(() => _audioPlayer.Stop(), canStop);
+        PauseCommand = ReactiveCommand.Create(() => _audioPlayerService.Pause(), canPause);
+        ResumeCommand = ReactiveCommand.Create(() => _audioPlayerService.Resume(), canResume);
+        StopCommand = ReactiveCommand.Create(() => _audioPlayerService.Stop(), canStop);
         PlayCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
         PlayNextCommand = ReactiveCommand.CreateFromTask(PlayNextTrackAsync, canPlayNext);
         PlayPreviousCommand = ReactiveCommand.CreateFromTask(PlayPreviousTrackAsync, canPlayPrevious);
@@ -460,8 +463,10 @@ public class LibraryViewModel : ViewModelBase
             NowPlayingAlbumArtUrl = SelectedAlbum?.AlbumArtUrl;
         }
 
+        SelectedTrack.IsPlaying = true;
+
         NowPlayingSongTitle = SelectedTrack.Title;
-        await _audioPlayer.PlayAsync(url, headers);
+        await _audioPlayerService.PlayAsync(url, headers);
     }
 
     private async Task PlayPreviousTrackAsync()
@@ -501,17 +506,17 @@ public class LibraryViewModel : ViewModelBase
         }
         else if (Playback == PlaybackState.Playing)
         {
-            _audioPlayer.Pause();
+            _audioPlayerService.Pause();
         }
         else if (Playback == PlaybackState.Paused)
         {
-            _audioPlayer.Resume();
+            _audioPlayerService.Resume();
         }
     }
 
     public void SeekTo(double positionMs)
     {
-        _audioPlayer.Seek((long)positionMs);
+        _audioPlayerService.Seek((long)positionMs);
     }
 
     private static string FormatMs(long ms)

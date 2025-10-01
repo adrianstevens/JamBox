@@ -2,7 +2,7 @@
 
 public enum PlaybackState { Stopped, Playing, Paused }
 
-public interface IAudioPlayer : IDisposable
+public interface IAudioPlayerService : IDisposable
 {
     PlaybackState State { get; }
 
