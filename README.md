@@ -2,6 +2,8 @@
 
 # JamBox
 
+JamBox is a modern music media player client designed to connect seamlessly with your JellyFin server. It allows you to browse, stream, and play your music library with an intuitive interface, providing a smooth listening experience across platforms.
+
 ![JamBox GitHub Banner](/Assets/Images/jambox-screens.png)
 
 ## Linux (tested with Debian)
