@@ -9,11 +9,11 @@ JamBox is a modern music media player client designed to connect seamlessly with
 ## Software Stack
 
 <div align="center">
-  <a href="https://dotnet.microsoft.com/en-us/"><img width="10%" src="/assets/images/tile-net.png" alt=".NET"></a>
-  <a href="https://avaloniaui.net/"><img width="10%" src="/assets/Images/tile-avalonia.png.png" alt="Avalonia"/></a>
-  <a href="https://www.videolan.org/vlc/"><img width="10%" src="/assets/Images/tile-vlc.png" alt="VLC"/></a>
-  <a href="https://velopack.io/"><img width="10%" src="/assets/Images/tile-velopack.png" alt="Velopack"/></a>
-  <a href="https://learn.microsoft.com/en-us/dotnet/api/system.text.json?view=net-9.0/"><img width="10%" src="/assets/Images/tile-json.png" alt="Json"></a>
+  <a href="https://dotnet.microsoft.com/en-us/"><img width="10%" src="/Assets/images/tile-net.png" alt=".NET"></a>
+  <a href="https://avaloniaui.net/"><img width="10%" src="/Assets/Images/tile-avalonia.png.png" alt="Avalonia"/></a>
+  <a href="https://www.videolan.org/vlc/"><img width="10%" src="/Assets/Images/tile-vlc.png" alt="VLC"/></a>
+  <a href="https://velopack.io/"><img width="10%" src="/Assets/Images/tile-velopack.png" alt="Velopack"/></a>
+  <a href="https://learn.microsoft.com/en-us/dotnet/api/system.text.json?view=net-9.0/"><img width="10%" src="/Assets/Images/tile-json.png" alt="Json"></a>
 </div>
 
 ## Linux (tested with Debian)
