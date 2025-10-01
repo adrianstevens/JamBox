@@ -2,8 +2,7 @@
 
 # JamBox
 
-
-![JamBox GitHub Banner](/Assets/Images/jambox-media-screen.png)
+![JamBox GitHub Banner](/Assets/Images/jambox-screens.png)
 
 ## Linux (tested with Debian)
 
@@ -28,3 +27,8 @@ If you also need development headers for building applications with VLC:
 ```
 sudo apt install libvlc-dev
 ```
+
+
+## Support
+
+Finding bugs or weird behaviors? File an [issue](https://github.com/adrianstevens/JamBox/issues) with repro steps.
