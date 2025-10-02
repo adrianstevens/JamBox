@@ -32,12 +32,28 @@
                 DoubleTapped="ListBox_DoubleTapped">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock 
-                            Text="{Binding Title}"
-                            TextTrimming="CharacterEllipsis"
-                            TextWrapping="Wrap"
-                            MaxLines="2"
-                            ToolTip.Tip="{Binding Title}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock
+                                Grid.Column="0"
+                                Text="{Binding Title}"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="Wrap"
+                                MaxLines="2"
+                                ToolTip.Tip="{Binding Title}"
+                                VerticalAlignment="Center" />
+                            
+                            <Image
+                                Grid.Column="1" Background="Red"
+                                Source="avares://JamBox.Core/Assets/icon-note.png"
+                                VerticalAlignment="Center"
+                                Opacity="0.6"
+                                IsVisible="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                        </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

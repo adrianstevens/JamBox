@@ -130,14 +130,14 @@ public class LibraryViewModel : ViewModelBase
         }
     }
 
-    private string? _nowPlayingAlbumArtUrl = "";
+    private string? _nowPlayingAlbumArtUrl = string.Empty;
     public string? NowPlayingAlbumArtUrl
     {
         get => _nowPlayingAlbumArtUrl;
         set => this.RaiseAndSetIfChanged(ref _nowPlayingAlbumArtUrl, value);
     }
 
-    private string? _nowPlayingSongTitle = "";
+    private string? _nowPlayingSongTitle = string.Empty;
     public string? NowPlayingSongTitle
     {
         get => _nowPlayingSongTitle;
@@ -225,7 +225,7 @@ public class LibraryViewModel : ViewModelBase
 
             if (state == PlaybackState.EndReached)
             {
-                PlayNextCommand.Execute().Subscribe();
+                PlayNextCommand!.Execute().Subscribe();
             }
         };
 
