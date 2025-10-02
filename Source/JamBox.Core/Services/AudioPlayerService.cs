@@ -55,7 +55,7 @@ public sealed class AudioPlayerService : IAudioPlayerService
         _player.Playing += (_, __) => UpdateState(PlaybackState.Playing);
         _player.Paused += (_, __) => UpdateState(PlaybackState.Paused);
         _player.Stopped += (_, __) => UpdateState(PlaybackState.Stopped);
-        _player.EndReached += (_, __) => UpdateState(PlaybackState.Stopped);
+        _player.EndReached += (_, __) => UpdateState(PlaybackState.EndReached);
 
         _player.EncounteredError += (_, __) => System.Diagnostics.Debug.WriteLine("[VLC] EncounteredError");
 

@@ -1,4 +1,5 @@
-﻿using JamBox.Core.Models;
+﻿using Avalonia.Threading;
+using JamBox.Core.Models;
 using JamBox.Core.Services.Interfaces;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -14,6 +15,8 @@ public class LibraryViewModel : ViewModelBase
     private readonly IJellyfinApiService _jellyfinApiService;
 
     private MediaCollectionItem? _selectedLibrary;
+
+    private ObservableCollection<Track> playlist = [];
 
     public ObservableCollection<Artist> Artists { get; private set; } = [];
 
@@ -219,6 +222,11 @@ public class LibraryViewModel : ViewModelBase
         _audioPlayerService.StateChanged += (_, state) =>
         {
             Playback = state;
+
+            if (state == PlaybackState.EndReached)
+            {
+                PlayNextCommand.Execute().Subscribe();
+            }
         };
 
         _audioPlayerService.PositionChanged += (_, position) =>
@@ -250,9 +258,9 @@ public class LibraryViewModel : ViewModelBase
         var canResume = this.WhenAnyValue(x => x.Playback).Select(s => s == PlaybackState.Paused);
         var canStop = this.WhenAnyValue(x => x.Playback).Select(s => s is PlaybackState.Playing or PlaybackState.Paused);
         var canToggle = this.WhenAnyValue(x => x.SelectedTrack, x => x.Playback, (track, state) => state == PlaybackState.Playing || track != null);
-        var canPlayNext = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.Tracks)
+        var canPlayNext = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.playlist)
             .Select(t => t.Item1 != null && t.Item2.Count > 0 && t.Item2.IndexOf(t.Item1) + 1 < t.Item2.Count);
-        var canPlayPrevious = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.Tracks)
+        var canPlayPrevious = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.playlist)
             .Select(t => t.Item1 != null && t.Item2.Count > 0 && t.Item2.IndexOf(t.Item1) > 0);
 
         PauseCommand = ReactiveCommand.Create(() => _audioPlayerService.Pause(), canPause);
@@ -440,6 +448,8 @@ public class LibraryViewModel : ViewModelBase
     {
         if (SelectedTrack == null) { return; }
 
+        playlist = Tracks;
+
         var headers = new Dictionary<string, string>
         {
             ["X-Emby-Token"] = _jellyfinApiService?.CurrentAccessToken ?? string.Empty
@@ -469,30 +479,40 @@ public class LibraryViewModel : ViewModelBase
         await _audioPlayerService.PlayAsync(url, headers);
     }
 
-    private async Task PlayPreviousTrackAsync()
+    private Task PlayPreviousTrackAsync()
     {
-        if (SelectedTrack is null || !Tracks.Any())
+        Dispatcher.UIThread.Post(async () =>
         {
-            return;
-        }
+            if (SelectedTrack is null || !playlist.Any())
+            {
+                return;
+            }
 
-        var currentIndex = Tracks.IndexOf(SelectedTrack);
-        var previousIndex = currentIndex - 1;
-        SelectedTrack = Tracks[previousIndex];
-        await PlaySelectedTrackAsync();
+            var currentIndex = playlist.IndexOf(SelectedTrack);
+            var previousIndex = currentIndex - 1;
+            SelectedTrack = playlist[previousIndex];
+            await PlaySelectedTrackAsync();
+        });
+
+        return Task.CompletedTask;
     }
 
-    private async Task PlayNextTrackAsync()
+    private Task PlayNextTrackAsync()
     {
-        if (SelectedTrack is null || !Tracks.Any())
+        Dispatcher.UIThread.Post(async () =>
         {
-            return;
-        }
+            if (SelectedTrack is null || !playlist.Any())
+            {
+                return;
+            }
 
-        var currentIndex = Tracks.IndexOf(SelectedTrack);
-        var nextIndex = currentIndex + 1;
-        SelectedTrack = Tracks[nextIndex];
-        await PlaySelectedTrackAsync();
+            var currentIndex = playlist.IndexOf(SelectedTrack);
+            var nextIndex = currentIndex + 1;
+            SelectedTrack = playlist[nextIndex];
+            await PlaySelectedTrackAsync();
+        });
+
+        return Task.CompletedTask;
     }
 
     private async Task PlayPauseTrackAsync()

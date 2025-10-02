@@ -1,6 +1,6 @@
 ﻿namespace JamBox.Core.Services.Interfaces;
 
-public enum PlaybackState { Stopped, Playing, Paused }
+public enum PlaybackState { Stopped, Playing, Paused, EndReached }
 
 public interface IAudioPlayerService : IDisposable
 {
