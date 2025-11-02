@@ -177,6 +177,12 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
 
     public async Task<List<Artist>> GetArtistsAsync(string libraryId)
     {
+        if (!IsAuthenticated || _httpClient is null)
+        {
+            Console.WriteLine("Not authenticated. Please authenticate first.");
+            return [];
+        }
+
         var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=MusicArtist&ParentId={libraryId}&Recursive=true");
         response.EnsureSuccessStatusCode();
         var stream = await response.Content.ReadAsStreamAsync();
@@ -186,6 +192,11 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
 
     public async Task<List<Album>> GetAlbumsAsync(string libraryId)
     {
+        if (!IsAuthenticated || _httpClient is null)
+        {
+            Console.WriteLine("Not authenticated. Please authenticate first.");
+            return [];
+        }
         var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=MusicAlbum&ParentId={libraryId}&Recursive=true");
         response.EnsureSuccessStatusCode();
         var stream = await response.Content.ReadAsStreamAsync();
@@ -195,6 +206,12 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
 
     public async Task<List<Album>> GetAlbumsByArtistAsync(string artistId)
     {
+        if (!IsAuthenticated || _httpClient is null)
+        {
+            Console.WriteLine("Not authenticated. Please authenticate first.");
+            return [];
+        }
+
         var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=MusicAlbum&ParentId={artistId}");
         response.EnsureSuccessStatusCode();
         var stream = await response.Content.ReadAsStreamAsync();
@@ -204,6 +221,12 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
 
     public async Task<List<Track>> GetTracksAsync(string libraryId)
     {
+        if (!IsAuthenticated || _httpClient is null)
+        {
+            Console.WriteLine("Not authenticated. Please authenticate first.");
+            return [];
+        }
+
         var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=Audio&ParentId={libraryId}&Recursive=true");
         response.EnsureSuccessStatusCode();
         var stream = await response.Content.ReadAsStreamAsync();
@@ -213,6 +236,11 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
 
     public async Task<List<Track>> GetTracksByAlbumAsync(string albumId)
     {
+        if (!IsAuthenticated || _httpClient is null)
+        {
+            Console.WriteLine("Not authenticated. Please authenticate first.");
+            return [];
+        }
         var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=Audio&ParentId={albumId}&SortBy=IndexNumber");
         response.EnsureSuccessStatusCode();
         var stream = await response.Content.ReadAsStreamAsync();
@@ -222,6 +250,11 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
 
     public async Task<List<Track>> GetTracksByArtistAsync(string artistId)
     {
+        if (!IsAuthenticated || _httpClient is null)
+        {
+            Console.WriteLine("Not authenticated. Please authenticate first.");
+            return [];
+        }
         var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=Audio&ArtistIds={artistId}&Recursive=true");
         response.EnsureSuccessStatusCode();
         var stream = await response.Content.ReadAsStreamAsync();
