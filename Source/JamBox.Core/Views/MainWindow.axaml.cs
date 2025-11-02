@@ -23,7 +23,7 @@ public partial class MainWindow : Window
             Position = new PixelPoint((int)_settings.X.Value, (int)_settings.Y.Value);
         }
 
-        this.Closing += OnClosing;
+        Closing += OnClosing;
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)

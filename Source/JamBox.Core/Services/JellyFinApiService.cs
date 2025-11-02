@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace JamBox.Core.Services;
 
-public class JellyfinApiService : IJellyfinApiService
+public class JellyfinApiService : IJellyfinApiService, IDisposable
 {
     private HttpClient? _httpClient;
     private string? _accessToken;
@@ -275,5 +275,11 @@ public class JellyfinApiService : IJellyfinApiService
         var stream = await response.Content.ReadAsStreamAsync();
         var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinResponseTrack);
         return result?.Items ?? [];
+    }
+
+    public void Dispose()
+    {
+        _httpClient?.Dispose();
+        _httpClient = null;
     }
 }
