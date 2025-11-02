@@ -190,14 +190,52 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
         return result?.Items ?? [];
     }
 
+    /// <summary>
+    /// Gets the total count of albums in a specific library view without downloading the full metadata.
+    /// </summary>
+    public async Task<int> GetTotalAlbumCountAsync(string libraryId)
+    {
+        if (_httpClient is null)
+        {
+            return 0;
+        }
+
+        var queryString = new StringBuilder("Items")
+            .Append("?IncludeItemTypes=MusicAlbum")
+            .Append($"&ParentId={libraryId}")
+            .Append("&Recursive=true")
+            .Append("&Limit=0") // Crucial: return zero items
+            .Append("&Fields=Id"); // Minimal fields for faster server-side query processing
+
+        try
+        {
+            var response = await _httpClient.GetAsync(queryString.ToString());
+            response.EnsureSuccessStatusCode();
+
+            // Use the dedicated context to deserialize the count response
+            var stream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinCountResponse);
+
+            return result?.TotalRecordCount ?? 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting total album count: {ex.Message}");
+            return 0;
+        }
+    }
+
     public async Task<List<Album>> GetAlbumsAsync(string libraryId)
     {
+        var count = await GetTotalAlbumCountAsync(libraryId);
+        Console.WriteLine($"Total albums in library {libraryId}: {count}");
+
         if (!IsAuthenticated || _httpClient is null)
         {
             Console.WriteLine("Not authenticated. Please authenticate first.");
             return [];
         }
-        var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=MusicAlbum&ParentId={libraryId}&Recursive=true");
+        var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=MusicAlbum&ParentId={libraryId}&Recursive=true&Limit={50}");
         response.EnsureSuccessStatusCode();
         var stream = await response.Content.ReadAsStreamAsync();
         var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinResponseAlbum);

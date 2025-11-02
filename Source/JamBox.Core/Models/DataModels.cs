@@ -194,18 +194,12 @@ public class Track
     public TimeSpan Duration => TimeSpan.FromTicks(RunTimeTicks);
 }
 
-public class ItemResult<T>
+public class JellyfinResponse<T>
 {
     [JsonPropertyName("Items")]
     public List<T> Items { get; set; } = default!;
 
     [JsonPropertyName("TotalRecordCount")]
-    public int TotalRecordCount { get; set; }
-}
-
-public class JellyfinResponse<T>
-{
-    public List<T> Items { get; set; } = default!;
     public int TotalRecordCount { get; set; }
 }
 
@@ -220,4 +214,20 @@ public class SessionInfo
 
     public string RemoteEndPoint { get; set; } = default!;
     public bool SupportsRemoteControl { get; set; }
+}
+
+/// <summary>
+/// Model for deserializing the response from the /Items endpoint when only the count is requested (Limit=0).
+/// This structure efficiently extracts the TotalRecordCount.
+/// </summary>
+public class JellyfinCountResponse
+{
+    [JsonPropertyName("Items")]
+    public System.Text.Json.JsonElement Items { get; set; }
+
+    [JsonPropertyName("TotalRecordCount")]
+    public int TotalRecordCount { get; set; }
+
+    [JsonPropertyName("StartIndex")]
+    public int StartIndex { get; set; }
 }
