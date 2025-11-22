@@ -10,15 +10,15 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Diagnostics" />
-    <PackageReference Include="Avalonia.ReactiveUI" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="ReactiveUI.Avalonia" />
     <PackageReference Include="System.Text.Json" />
-	<PackageReference Include="LibVLCSharp" />
-	<PackageReference Include="Velopack" />
+    <PackageReference Include="LibVLCSharp" />
+    <PackageReference Include="Velopack" />
   </ItemGroup>
 
   <ItemGroup>
-      <AvaloniaResource Include="Assets\**" />
+    <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 </Project>

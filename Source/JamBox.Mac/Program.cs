@@ -1,6 +1,6 @@
 using Avalonia;
-using Avalonia.ReactiveUI;
 using JamBox.Core;
+using ReactiveUI.Avalonia;
 
 namespace JamBox;
 
