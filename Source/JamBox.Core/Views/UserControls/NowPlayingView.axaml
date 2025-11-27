@@ -4,10 +4,6 @@
     xmlns:conv="clr-namespace:JamBox.Core.Converters"
     x:Class="JamBox.Core.Views.UserControls.NowPlayingView">
 
-    <UserControl.Resources>
-        <conv:UrlToBitmapConverter x:Key="UrlToBitmap" />
-    </UserControl.Resources>
-
     <Grid
         Margin="0,20"
         HorizontalAlignment="Center"
@@ -21,13 +17,9 @@
             Grid.Column="0" 
             Width="60" 
             Height="60">
-            <Image Stretch="UniformToFill">
-                <Image.Source>
-                    <Binding 
-                        Path="NowPlayingAlbumArtUrl"
-                        Converter="{StaticResource UrlToBitmap}" />
-                </Image.Source>
-            </Image>
+            <Image 
+                Stretch="UniformToFill"
+                conv:AsyncImageLoader.Source="{Binding NowPlayingAlbumArtUrl}" />
         </Grid>
 
         <StackPanel

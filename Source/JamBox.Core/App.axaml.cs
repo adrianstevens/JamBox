@@ -16,6 +16,8 @@ public partial class App : Application
     private ServiceProvider? _serviceProvider;
     private TrayIcon? _tray;
 
+    public IServiceProvider? Services => _serviceProvider;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -31,6 +33,7 @@ public partial class App : Application
         services.AddSingleton<IAudioPlayerService, AudioPlayerService>();
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<IJellyfinApiService, JellyfinApiService>();
+        services.AddSingleton<IImageCacheService, ImageCacheService>();
 
         services.AddSingleton<MainViewModel>();
         services.AddTransient<LoginViewModel>();

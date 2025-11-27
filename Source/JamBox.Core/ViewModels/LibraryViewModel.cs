@@ -8,11 +8,18 @@ using System.Reactive.Linq;
 
 namespace JamBox.Core.ViewModels;
 
-public class LibraryViewModel : ViewModelBase
+public class LibraryViewModel : ViewModelBase, IDisposable
 {
     private readonly IAudioPlayerService _audioPlayerService;
     private readonly INavigationService _navigationService;
     private readonly IJellyfinApiService _jellyfinApiService;
+
+    // Event handler delegates for proper unsubscription
+    private readonly EventHandler<PlaybackState> _stateChangedHandler;
+    private readonly EventHandler<long> _positionChangedHandler;
+    private readonly EventHandler<int> _volumeChangedHandler;
+
+    private bool _disposed;
 
     private MediaCollectionItem? _selectedLibrary;
 
@@ -50,7 +57,7 @@ public class LibraryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _artistSortStatus, value);
     }
 
-    public ObservableCollection<Album> Albums { get; } = [];
+    public ObservableCollection<Album> Albums { get; private set; } = [];
 
     private Album? _selectedAlbum;
     public Album? SelectedAlbum
@@ -81,7 +88,7 @@ public class LibraryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _albumSortStatus, value);
     }
 
-    public ObservableCollection<Track> Tracks { get; } = [];
+    public ObservableCollection<Track> Tracks { get; private set; } = [];
 
     private Track? _selectedTrack;
     public Track? SelectedTrack
@@ -219,7 +226,8 @@ public class LibraryViewModel : ViewModelBase
         _navigationService = navigationService;
         _jellyfinApiService = jellyfinApiService;
 
-        _audioPlayerService.StateChanged += (_, state) =>
+        // Initialize event handlers as fields for proper unsubscription
+        _stateChangedHandler = (_, state) =>
         {
             Playback = state;
 
@@ -229,7 +237,7 @@ public class LibraryViewModel : ViewModelBase
             }
         };
 
-        _audioPlayerService.PositionChanged += (_, position) =>
+        _positionChangedHandler = (_, position) =>
         {
             if (!IsUserSeeking) { SeekPosition = position; }
 
@@ -240,7 +248,12 @@ public class LibraryViewModel : ViewModelBase
             SeekLength = _audioPlayerService.LengthMs;
         };
 
-        _audioPlayerService.VolumeChanged += (_, volume) => Volume = volume;
+        _volumeChangedHandler = (_, volume) => Volume = volume;
+
+        // Subscribe to events
+        _audioPlayerService.StateChanged += _stateChangedHandler;
+        _audioPlayerService.PositionChanged += _positionChangedHandler;
+        _audioPlayerService.VolumeChanged += _volumeChangedHandler;
         Volume = _audioPlayerService.Volume;
 
         LoadArtistsCommand = ReactiveCommand.CreateFromTask(LoadArtistsAsync);
@@ -297,8 +310,6 @@ public class LibraryViewModel : ViewModelBase
     {
         if (_selectedLibrary is null) { return; }
 
-        Artists.Clear();
-
         var artists = await _jellyfinApiService.GetArtistsAsync(_selectedLibrary.Id);
 
         if (ArtistSortStatus == "A-Z")
@@ -319,9 +330,7 @@ public class LibraryViewModel : ViewModelBase
     {
         if (_selectedLibrary is null) { return; }
 
-        List<Album>? albums = [];
-
-        Albums.Clear();
+        List<Album>? albums;
 
         if (SelectedArtist == null)
         {
@@ -348,10 +357,11 @@ public class LibraryViewModel : ViewModelBase
         foreach (var album in albums)
         {
             album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinApiService.ServerUrl ?? "", _jellyfinApiService.CurrentAccessToken ?? "") ?? "";
-
             album.AlbumSubtitle = SelectedArtist == null ? album.AlbumArtist : album.ProductionYear.ToString();
-            Albums.Add(album);
         }
+
+        Albums = new ObservableCollection<Album>(albums);
+        this.RaisePropertyChanged(nameof(Albums));
 
         AlbumCount = $"{Albums.Count} ALBUMS";
     }
@@ -360,9 +370,7 @@ public class LibraryViewModel : ViewModelBase
     {
         if (_selectedLibrary is null) { return; }
 
-        List<Track>? tracks = [];
-
-        Tracks.Clear();
+        List<Track>? tracks;
 
         if (SelectedArtist is not null && SelectedAlbum is null)
         {
@@ -390,10 +398,8 @@ public class LibraryViewModel : ViewModelBase
         //    tracks = tracks.OrderByDescending(t => t.CommunityRating).ToList();
         //}
 
-        foreach (var track in tracks)
-        {
-            Tracks.Add(track);
-        }
+        Tracks = new ObservableCollection<Track>(tracks);
+        this.RaisePropertyChanged(nameof(Tracks));
 
         TrackCount = $"{Tracks.Count} TRACKS";
     }
@@ -479,9 +485,9 @@ public class LibraryViewModel : ViewModelBase
         await _audioPlayerService.PlayAsync(url, headers);
     }
 
-    private Task PlayPreviousTrackAsync()
+    private async Task PlayPreviousTrackAsync()
     {
-        Dispatcher.UIThread.Post(async () =>
+        await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             if (SelectedTrack is null || !playlist.Any())
             {
@@ -493,13 +499,11 @@ public class LibraryViewModel : ViewModelBase
             SelectedTrack = playlist[previousIndex];
             await PlaySelectedTrackAsync();
         });
-
-        return Task.CompletedTask;
     }
 
-    private Task PlayNextTrackAsync()
+    private async Task PlayNextTrackAsync()
     {
-        Dispatcher.UIThread.Post(async () =>
+        await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             if (SelectedTrack is null || !playlist.Any())
             {
@@ -511,8 +515,6 @@ public class LibraryViewModel : ViewModelBase
             SelectedTrack = playlist[nextIndex];
             await PlaySelectedTrackAsync();
         });
-
-        return Task.CompletedTask;
     }
 
     private async Task PlayPauseTrackAsync()
@@ -548,5 +550,29 @@ public class LibraryViewModel : ViewModelBase
         return trackTime.Hours > 0
             ? $"{(int)trackTime.TotalHours}:{trackTime.Minutes:D2}:{trackTime.Seconds:D2}"
             : $"{trackTime.Minutes}:{trackTime.Seconds:D2}";
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            // Unsubscribe from all events
+            _audioPlayerService.StateChanged -= _stateChangedHandler;
+            _audioPlayerService.PositionChanged -= _positionChangedHandler;
+            _audioPlayerService.VolumeChanged -= _volumeChangedHandler;
+        }
+
+        _disposed = true;
     }
 }
