@@ -4,13 +4,14 @@ using System.Collections.Concurrent;
 
 namespace JamBox.Core.Services;
 
-public class ImageCacheService : IImageCacheService
+public class ImageCacheService : IImageCacheService, IDisposable
 {
     private readonly ConcurrentDictionary<string, Bitmap> _cache = new();
-    private readonly ConcurrentQueue<string> _accessOrder = new();
+    private readonly ConcurrentDictionary<string, byte> _accessOrder = new();
     private readonly object _evictionLock = new();
     private readonly int _maxCacheSize;
     private readonly HttpClient _httpClient;
+    private bool _disposed;
 
     public ImageCacheService(int maxCacheSize = 100)
     {
@@ -44,7 +45,7 @@ public class ImageCacheService : IImageCacheService
 
             var bitmap = new Bitmap(memoryStream);
 
-            // Add to cache
+            // Add to cache with thread-safe locking
             AddToCache(url, bitmap);
 
             return bitmap;
@@ -58,24 +59,40 @@ public class ImageCacheService : IImageCacheService
 
     private void AddToCache(string url, Bitmap bitmap)
     {
-        // Add to cache if not already present
-        if (_cache.TryAdd(url, bitmap))
+        lock (_evictionLock)
         {
-            _accessOrder.Enqueue(url);
+            // Check if already in cache (another thread may have added it)
+            if (_cache.ContainsKey(url))
+            {
+                bitmap.Dispose();
+                return;
+            }
+
+            // Add to cache
+            _cache[url] = bitmap;
+            _accessOrder[url] = 0;
             EvictIfNecessary();
         }
     }
 
     private void EvictIfNecessary()
     {
-        lock (_evictionLock)
+        // Already under lock from AddToCache
+        while (_cache.Count > _maxCacheSize)
         {
-            while (_cache.Count > _maxCacheSize && _accessOrder.TryDequeue(out var oldestKey))
+            // Get first key to evict
+            var keyToEvict = _accessOrder.Keys.FirstOrDefault();
+            if (keyToEvict != null)
             {
-                if (_cache.TryRemove(oldestKey, out var removedBitmap))
+                _accessOrder.TryRemove(keyToEvict, out _);
+                if (_cache.TryRemove(keyToEvict, out var removedBitmap))
                 {
                     removedBitmap.Dispose();
                 }
+            }
+            else
+            {
+                break;
             }
         }
     }
@@ -89,7 +106,29 @@ public class ImageCacheService : IImageCacheService
                 bitmap.Dispose();
             }
             _cache.Clear();
-            while (_accessOrder.TryDequeue(out _)) { }
+            _accessOrder.Clear();
         }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _httpClient.Dispose();
+            ClearCache();
+        }
+
+        _disposed = true;
     }
 }

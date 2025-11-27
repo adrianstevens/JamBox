@@ -322,8 +322,6 @@ public class LibraryViewModel : ViewModelBase, IDisposable
         }
 
         SetArtists(artists);
-
-        ArtistCount = $"{Artists.Count} ARTISTS";
     }
 
     private async Task LoadAlbumsAsync()
