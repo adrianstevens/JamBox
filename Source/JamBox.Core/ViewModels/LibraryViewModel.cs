@@ -16,7 +16,7 @@ public class LibraryViewModel : ViewModelBase
 
     private MediaCollectionItem? _selectedLibrary;
 
-    private ObservableCollection<Track> playlist = [];
+    private ObservableCollection<Track> _playlist = [];
 
     public ObservableCollection<Artist> Artists { get; private set; } = [];
 
@@ -258,9 +258,9 @@ public class LibraryViewModel : ViewModelBase
         var canResume = this.WhenAnyValue(x => x.Playback).Select(s => s == PlaybackState.Paused);
         var canStop = this.WhenAnyValue(x => x.Playback).Select(s => s is PlaybackState.Playing or PlaybackState.Paused);
         var canToggle = this.WhenAnyValue(x => x.SelectedTrack, x => x.Playback, (track, state) => state == PlaybackState.Playing || track != null);
-        var canPlayNext = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.playlist)
+        var canPlayNext = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm._playlist)
             .Select(t => t.Item1 != null && t.Item2.Count > 0 && t.Item2.IndexOf(t.Item1) + 1 < t.Item2.Count);
-        var canPlayPrevious = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.playlist)
+        var canPlayPrevious = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm._playlist)
             .Select(t => t.Item1 != null && t.Item2.Count > 0 && t.Item2.IndexOf(t.Item1) > 0);
 
         PauseCommand = ReactiveCommand.Create(() => _audioPlayerService.Pause(), canPause);
@@ -448,7 +448,7 @@ public class LibraryViewModel : ViewModelBase
     {
         if (SelectedTrack == null) { return; }
 
-        playlist = Tracks;
+        _playlist = Tracks;
 
         var headers = new Dictionary<string, string>
         {
@@ -483,14 +483,14 @@ public class LibraryViewModel : ViewModelBase
     {
         Dispatcher.UIThread.Post(async () =>
         {
-            if (SelectedTrack is null || !playlist.Any())
+            if (SelectedTrack is null || !_playlist.Any())
             {
                 return;
             }
 
-            var currentIndex = playlist.IndexOf(SelectedTrack);
+            var currentIndex = _playlist.IndexOf(SelectedTrack);
             var previousIndex = currentIndex - 1;
-            SelectedTrack = playlist[previousIndex];
+            SelectedTrack = _playlist[previousIndex];
             await PlaySelectedTrackAsync();
         });
 
@@ -501,14 +501,14 @@ public class LibraryViewModel : ViewModelBase
     {
         Dispatcher.UIThread.Post(async () =>
         {
-            if (SelectedTrack is null || !playlist.Any())
+            if (SelectedTrack is null || !_playlist.Any())
             {
                 return;
             }
 
-            var currentIndex = playlist.IndexOf(SelectedTrack);
+            var currentIndex = _playlist.IndexOf(SelectedTrack);
             var nextIndex = currentIndex + 1;
-            SelectedTrack = playlist[nextIndex];
+            SelectedTrack = _playlist[nextIndex];
             await PlaySelectedTrackAsync();
         });
 

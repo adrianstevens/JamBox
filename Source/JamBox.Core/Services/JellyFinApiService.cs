@@ -14,7 +14,10 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
     private const string ClientName = "JamBoxAvalonia";
     private const string ClientVersion = "0.2.0";
     private const string DeviceName = "Desktop";
-    private const string DeviceId = "jambox-avalonia-client-guid";
+    private readonly string _deviceId;
+
+    private static string DeviceIdPath =>
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "JamBox", "deviceid.txt");
 
     public bool IsAuthenticated => !string.IsNullOrEmpty(_accessToken);
 
@@ -25,7 +28,32 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
     public string? ServerUrl => _httpClient?.BaseAddress?.ToString();
 
     public JellyfinApiService()
-    { }
+    {
+        _deviceId = LoadOrGenerateDeviceId();
+    }
+
+    private static string LoadOrGenerateDeviceId()
+    {
+        if (File.Exists(DeviceIdPath))
+        {
+            var deviceId = File.ReadAllText(DeviceIdPath).Trim();
+            if (!string.IsNullOrEmpty(deviceId))
+            {
+                return deviceId;
+            }
+        }
+
+        var newDeviceId = Guid.NewGuid().ToString();
+        var dir = Path.GetDirectoryName(DeviceIdPath);
+
+        if (dir is not null && !Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
+
+        File.WriteAllText(DeviceIdPath, newDeviceId);
+        return newDeviceId;
+    }
 
     private void CreateHttpClient(string baseUrl)
     {
@@ -35,7 +63,7 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
             BaseAddress = new Uri(baseUrl)
         };
         var authHeader =
-            $"MediaBrowser Client=\"{ClientName}\", Device=\"{DeviceName}\", DeviceId=\"{DeviceId}\", Version=\"{ClientVersion}\"";
+            $"MediaBrowser Client=\"{ClientName}\", Device=\"{DeviceName}\", DeviceId=\"{_deviceId}\", Version=\"{ClientVersion}\"";
         _httpClient.DefaultRequestHeaders.Add("X-Emby-Authorization", authHeader);
     }
 
@@ -336,7 +364,7 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
             return string.Empty;
         }
 
-        return $"{_httpClient.BaseAddress.AbsoluteUri}Audio/{trackId}/universal?UserId={_userId}&DeviceId={DeviceId}&Container={container}&api_key={_accessToken}";
+        return $"{_httpClient.BaseAddress.AbsoluteUri}Audio/{trackId}/universal?UserId={_userId}&DeviceId={_deviceId}&Container={container}&api_key={_accessToken}";
     }
 
     public async Task<List<Track>> SearchTracksAsync(string query)
