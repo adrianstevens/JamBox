@@ -260,7 +260,7 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
             Console.WriteLine("Not authenticated. Please authenticate first.");
             return [];
         }
-        var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=MusicAlbum&ParentId={libraryId}&Recursive=true&Limit={50}");
+        var response = await _httpClient!.GetAsync($"Items?IncludeItemTypes=MusicAlbum&ParentId={libraryId}&Recursive=true&Limit={5000}");
         response.EnsureSuccessStatusCode();
         var stream = await response.Content.ReadAsStreamAsync();
         var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinResponseAlbum);
