@@ -89,7 +89,7 @@ public class LoginViewModel : ViewModelBase
 
         var dir = Path.GetDirectoryName(CredentialsPath);
 
-        if (dir is not null && Directory.Exists(dir))
+        if (dir is not null && !Directory.Exists(dir))
         {
             Directory.CreateDirectory(dir);
         }
