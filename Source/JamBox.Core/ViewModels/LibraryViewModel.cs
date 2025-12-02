@@ -51,7 +51,7 @@ public class LibraryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _artistSortStatus, value);
     }
 
-    public ObservableCollection<Album> Albums { get; } = [];
+    public ObservableCollection<Album> Albums { get; private set; } = [];
 
     private Album? _selectedAlbum;
     public Album? SelectedAlbum
@@ -82,7 +82,7 @@ public class LibraryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _albumSortStatus, value);
     }
 
-    public ObservableCollection<Track> Tracks { get; } = [];
+    public ObservableCollection<Track> Tracks { get; private set; } = [];
 
     private Track? _selectedTrack;
     public Track? SelectedTrack
@@ -139,7 +139,25 @@ public class LibraryViewModel : ViewModelBase
         PlayCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
         JukeBoxModeCommand = ReactiveCommand.Create(() => _navigationService.NavigateTo<JukeBoxPage, JukeBoxViewModel>());
 
-        _ = LoadLibraryAsync();
+        // Start library loading with proper error handling
+        _ = InitializeLibraryAsync();
+    }
+
+    private async Task InitializeLibraryAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            await LoadLibraryAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading library: {ex.Message}");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private void SetArtists(IEnumerable<Artist> artists)
@@ -188,8 +206,6 @@ public class LibraryViewModel : ViewModelBase
 
         List<Album>? albums = [];
 
-        Albums.Clear();
-
         if (SelectedArtist == null)
         {
             albums = await _jellyfinApiService.GetAlbumsAsync(_selectedLibrary.Id);
@@ -212,13 +228,16 @@ public class LibraryViewModel : ViewModelBase
             albums = albums.OrderByDescending(a => a.UserData.IsFavorite).ToList();
         }
 
+        // Prepare all album data first (URLs, subtitles) before updating collection
         foreach (var album in albums)
         {
             album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinApiService.ServerUrl ?? "", _jellyfinApiService.CurrentAccessToken ?? "") ?? "";
-
             album.AlbumSubtitle = SelectedArtist == null ? album.AlbumArtist : album.ProductionYear.ToString();
-            Albums.Add(album);
         }
+
+        // Batch update: replace entire collection at once to avoid multiple UI updates
+        Albums = new ObservableCollection<Album>(albums);
+        this.RaisePropertyChanged(nameof(Albums));
 
         AlbumCount = $"{Albums.Count} ALBUMS";
     }
@@ -228,8 +247,6 @@ public class LibraryViewModel : ViewModelBase
         if (_selectedLibrary is null) { return; }
 
         List<Track>? tracks = [];
-
-        Tracks.Clear();
 
         if (SelectedArtist is not null && SelectedAlbum is null)
         {
@@ -257,10 +274,9 @@ public class LibraryViewModel : ViewModelBase
         //    tracks = tracks.OrderByDescending(t => t.CommunityRating).ToList();
         //}
 
-        foreach (var track in tracks)
-        {
-            Tracks.Add(track);
-        }
+        // Batch update: replace entire collection at once to avoid multiple UI updates
+        Tracks = new ObservableCollection<Track>(tracks);
+        this.RaisePropertyChanged(nameof(Tracks));
 
         TrackCount = $"{Tracks.Count} TRACKS";
     }

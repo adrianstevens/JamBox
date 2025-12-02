@@ -255,9 +255,6 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
 
     public async Task<List<Album>> GetAlbumsAsync(string libraryId)
     {
-        var count = await GetTotalAlbumCountAsync(libraryId);
-        Console.WriteLine($"Total albums in library {libraryId}: {count}");
-
         if (!IsAuthenticated || _httpClient is null)
         {
             Console.WriteLine("Not authenticated. Please authenticate first.");

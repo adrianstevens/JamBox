@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
+using AsyncImageLoader;
+using AsyncImageLoader.Loaders;
 using JamBox.Core.Services;
 using JamBox.Core.Services.Interfaces;
 using JamBox.Core.ViewModels;
@@ -19,6 +21,14 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        
+        // Configure AsyncImageLoader with disk caching for improved performance
+        var cacheDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "JamBox",
+            "ImageCache");
+        
+        ImageLoader.AsyncImageLoader = new DiskCachedWebImageLoader(cacheDir);
     }
 
     public override void OnFrameworkInitializationCompleted()
