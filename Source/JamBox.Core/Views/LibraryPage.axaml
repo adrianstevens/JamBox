@@ -111,7 +111,7 @@
                             VerticalAlignment="Center" />
                         <Slider Grid.Column="1"
                             Minimum="0" Maximum="100" Width="128"
-                            Value="{Binding Volume, Mode=TwoWay}" />
+                            Value="{Binding Playback.Volume, Mode=TwoWay}" />
                         <Image 
                             Grid.Column="2" 
                             Source="avares://JamBox.Core/Assets/icon-volume-max.png" 
@@ -120,7 +120,8 @@
 
                     <!-- Now Playing  -->
                     <userControls:NowPlayingView
-                        IsVisible="{Binding ShowNowPlaying}" />
+                        DataContext="{Binding Playback}"
+                        IsVisible="{Binding Playback.ShowNowPlaying}" />
 
                     <!-- Playback Controls -->
                     <Grid 
@@ -162,7 +163,7 @@
                             Padding="0" 
                             Background="Transparent" 
                             CornerRadius="50"
-                            Command="{Binding PlayPreviousCommand}">
+                            Command="{Binding Playback.PlayPreviousCommand}">
                             <Image 
                                 Source="avares://JamBox.Core/Assets/icon-previous.png"
                                 Stretch="Uniform" />
@@ -173,14 +174,14 @@
                             Padding="0" 
                             Background="Transparent" 
                             CornerRadius="50" 
-                            Command="{Binding PlayPauseCommand}">
+                            Command="{Binding Playback.PlayPauseCommand}">
                             <Grid>
                                 <Image 
-                                    IsVisible="{Binding IsTrackPlaying, Converter={StaticResource BooleanInverseConverter}}"
+                                    IsVisible="{Binding Playback.IsTrackPlaying, Converter={StaticResource BooleanInverseConverter}}"
                                     Source="avares://JamBox.Core/Assets/icon-play.png" 
                                     Stretch="Uniform" />
                                 <Image
-                                    IsVisible="{Binding IsTrackPlaying}"
+                                    IsVisible="{Binding Playback.IsTrackPlaying}"
                                     Source="avares://JamBox.Core/Assets/icon-pause.png"
                                     Stretch="Uniform" />
                             </Grid>
@@ -191,7 +192,7 @@
                             Padding="0" 
                             Background="Transparent" 
                             CornerRadius="50"
-                            Command="{Binding PlayNextCommand}">
+                            Command="{Binding Playback.PlayNextCommand}">
                             <Image 
                                 Source="avares://JamBox.Core/Assets/icon-next.png" 
                                 Stretch="Uniform" />

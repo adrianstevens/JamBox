@@ -33,6 +33,7 @@ public partial class App : Application
         services.AddSingleton<IJellyfinApiService, JellyfinApiService>();
 
         services.AddSingleton<MainViewModel>();
+        services.AddSingleton<PlaybackViewModel>();
         services.AddTransient<LoginViewModel>();
         services.AddTransient<LibraryViewModel>();
         services.AddTransient<JukeBoxViewModel>();
