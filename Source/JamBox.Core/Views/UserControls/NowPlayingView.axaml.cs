@@ -34,7 +34,7 @@ public partial class NowPlayingView : UserControl
 
     private void Seek_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (DataContext is ViewModels.LibraryViewModel vm)
+        if (DataContext is ViewModels.PlaybackViewModel vm)
         {
             vm.IsUserSeeking = true;
         }
@@ -42,7 +42,7 @@ public partial class NowPlayingView : UserControl
 
     private void Seek_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (DataContext is ViewModels.LibraryViewModel vm && sender is Slider s)
+        if (DataContext is ViewModels.PlaybackViewModel vm && sender is Slider s)
         {
             vm.IsUserSeeking = false;
             vm.SeekTo(s.Value);
@@ -51,7 +51,7 @@ public partial class NowPlayingView : UserControl
 
     private void Seek_OnPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
     {
-        if (DataContext is ViewModels.LibraryViewModel vm && sender is Slider s)
+        if (DataContext is ViewModels.PlaybackViewModel vm && sender is Slider s)
         {
             vm.IsUserSeeking = false;
             vm.SeekTo(s.Value);
