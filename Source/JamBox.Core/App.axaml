@@ -93,7 +93,6 @@
                 <converters:ConnectionStatusToColorConverter x:Key="ConnectionStatusToColorConverter"/>
                 <converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
                 <converters:IsGreaterThanZeroConverter x:Key="IsGreaterThanZeroConverter"/>
-                <converters:UrlToBitmapConverter x:Key="UrlToBitmapConverter"/>
                 <converters:BooleanInverseConverter x:Key="BooleanInverseConverter"/>
             </Style.Resources>
         </Style>

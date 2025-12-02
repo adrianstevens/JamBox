@@ -1,12 +1,8 @@
 <UserControl 
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:conv="clr-namespace:JamBox.Core.Converters"
+    xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
     x:Class="JamBox.Core.Views.UserControls.NowPlayingView">
-
-    <UserControl.Resources>
-        <conv:UrlToBitmapConverter x:Key="UrlToBitmap" />
-    </UserControl.Resources>
 
     <Grid
         Margin="0,20"
@@ -21,13 +17,9 @@
             Grid.Column="0" 
             Width="60" 
             Height="60">
-            <Image Stretch="UniformToFill">
-                <Image.Source>
-                    <Binding 
-                        Path="NowPlayingAlbumArtUrl"
-                        Converter="{StaticResource UrlToBitmap}" />
-                </Image.Source>
-            </Image>
+            <Image 
+                Stretch="UniformToFill"
+                asyncImageLoader:ImageLoader.Source="{Binding NowPlayingAlbumArtUrl}" />
         </Grid>
 
         <StackPanel
