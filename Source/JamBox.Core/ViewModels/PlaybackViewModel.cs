@@ -208,6 +208,10 @@ public class PlaybackViewModel : ViewModelBase
 
             var currentIndex = _playlist.IndexOf(SelectedTrack);
             var previousIndex = currentIndex - 1;
+            if (previousIndex < 0)
+            {
+                return;
+            }
             SelectedTrack = _playlist[previousIndex];
             await PlaySelectedTrackAsync();
         });
@@ -226,6 +230,10 @@ public class PlaybackViewModel : ViewModelBase
 
             var currentIndex = _playlist.IndexOf(SelectedTrack);
             var nextIndex = currentIndex + 1;
+            if (nextIndex >= _playlist.Count)
+            {
+                return;
+            }
             SelectedTrack = _playlist[nextIndex];
             await PlaySelectedTrackAsync();
         });

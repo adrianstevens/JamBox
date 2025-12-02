@@ -121,7 +121,7 @@
                     <!-- Now Playing  -->
                     <userControls:NowPlayingView
                         DataContext="{Binding Playback}"
-                        IsVisible="{Binding ShowNowPlaying}" />
+                        IsVisible="{Binding Playback.ShowNowPlaying}" />
 
                     <!-- Playback Controls -->
                     <Grid 
