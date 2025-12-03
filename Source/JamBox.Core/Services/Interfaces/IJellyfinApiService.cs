@@ -26,6 +26,9 @@ public interface IJellyfinApiService
 
     Task<List<Album>> GetAlbumsAsync(string libraryId);
 
+    Task<(List<Album> Albums, int TotalCount)> GetAlbumsPagedAsync(
+        string libraryId, int startIndex = 0, int limit = 50, string? sortBy = null, string? sortOrder = null);
+
     Task<List<Album>> GetAlbumsByArtistAsync(string artistId);
 
     Task<List<Track>> GetTracksAsync(string libraryId);
