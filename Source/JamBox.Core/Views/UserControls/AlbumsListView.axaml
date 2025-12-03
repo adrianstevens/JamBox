@@ -28,6 +28,7 @@
         <Grid 
             Grid.Row="1">
             <ListBox
+                x:Name="AlbumsListBox"
                 ItemsSource="{Binding Albums}"
                 SelectedItem="{Binding SelectedAlbum}"
                 SelectionMode="Single">
@@ -84,6 +85,18 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+
+            <!-- Loading indicator at bottom -->
+            <StackPanel 
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Center"
+                IsVisible="{Binding IsLoadingMoreAlbums}"
+                Margin="0,0,0,10">
+                <TextBlock 
+                    Text="Loading more albums..." 
+                    Foreground="#EDF3F9"
+                    Opacity="0.7"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>
