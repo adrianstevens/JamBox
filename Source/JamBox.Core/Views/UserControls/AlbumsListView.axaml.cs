@@ -53,12 +53,16 @@ public partial class AlbumsListView : UserControl
         if (_scrollViewer != null)
         {
             _scrollViewer.ScrollChanged += OnScrollChanged;
+#if DEBUG
             System.Diagnostics.Debug.WriteLine($"AlbumsListView: Found ScrollViewer: {_scrollViewer.GetType().Name}");
+#endif
         }
+#if DEBUG
         else
         {
             System.Diagnostics.Debug.WriteLine("AlbumsListView: WARNING - No ScrollViewer found!");
         }
+#endif
     }
 
     private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
@@ -77,14 +81,20 @@ public partial class AlbumsListView : UserControl
         // Check if we're near the bottom
         var distanceFromBottom = _scrollViewer.Extent.Height - _scrollViewer.Offset.Y - _scrollViewer.Viewport.Height;
 
+#if DEBUG
         System.Diagnostics.Debug.WriteLine($"Scroll: Extent={_scrollViewer.Extent.Height}, Offset={_scrollViewer.Offset.Y}, Viewport={_scrollViewer.Viewport.Height}, DistanceFromBottom={distanceFromBottom}");
+#endif
 
         if (distanceFromBottom < ScrollThresholdPixels)
         {
             if (DataContext is LibraryViewModel vm && vm.HasMoreAlbums && !vm.IsLoadingMoreAlbums)
             {
+#if DEBUG
                 System.Diagnostics.Debug.WriteLine("Triggering LoadMoreAlbumsCommand");
-                vm.LoadMoreAlbumsCommand?.Execute().Subscribe(_ => { }, _ => { });
+#endif
+                vm.LoadMoreAlbumsCommand?.Execute().Subscribe(
+                    _ => { },
+                    ex => Console.WriteLine($"Error loading more albums: {ex.Message}"));
             }
         }
     }
