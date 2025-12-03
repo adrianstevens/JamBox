@@ -7,6 +7,8 @@ namespace JamBox.Core.Views.UserControls;
 
 public partial class AlbumsListView : UserControl
 {
+    private const double ScrollThresholdPixels = 200;
+
     public AlbumsListView()
     {
         InitializeComponent();
@@ -28,14 +30,14 @@ public partial class AlbumsListView : UserControl
     {
         if (sender is not ScrollViewer sv) return;
 
-        // Check if we're near the bottom (within 200 pixels)
+        // Check if we're near the bottom
         var distanceFromBottom = sv.Extent.Height - sv.Offset.Y - sv.Viewport.Height;
 
-        if (distanceFromBottom < 200)
+        if (distanceFromBottom < ScrollThresholdPixels)
         {
             if (DataContext is LibraryViewModel vm && vm.HasMoreAlbums && !vm.IsLoadingMoreAlbums)
             {
-                vm.LoadMoreAlbumsCommand?.Execute().Subscribe();
+                vm.LoadMoreAlbumsCommand?.Execute().Subscribe(_ => { }, _ => { });
             }
         }
     }
