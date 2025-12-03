@@ -14,6 +14,20 @@ public class LibraryViewModel : ViewModelBase
 
     private MediaCollectionItem? _selectedLibrary;
 
+    // Pagination state for albums
+    private int _albumsStartIndex = 0;
+    private int _totalAlbumCount = 0;
+    private const int AlbumsPageSize = 50;
+    private bool _isLoadingMoreAlbums = false;
+
+    public bool HasMoreAlbums => Albums.Count < _totalAlbumCount;
+
+    public bool IsLoadingMoreAlbums
+    {
+        get => _isLoadingMoreAlbums;
+        set => this.RaiseAndSetIfChanged(ref _isLoadingMoreAlbums, value);
+    }
+
     /// <summary>
     /// The PlaybackViewModel handles all playback-related state and commands.
     /// </summary>
@@ -115,6 +129,7 @@ public class LibraryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> ResetArtistsSelectionCommand { get; }
     public ReactiveCommand<Unit, Unit> ResetAlbumSelectionCommand { get; }
     public ReactiveCommand<Unit, Unit> JukeBoxModeCommand { get; }
+    public ReactiveCommand<Unit, Unit> LoadMoreAlbumsCommand { get; }
 
     public LibraryViewModel(
         PlaybackViewModel playbackViewModel,
@@ -134,6 +149,7 @@ public class LibraryViewModel : ViewModelBase
 
         ResetArtistsSelectionCommand = ReactiveCommand.CreateFromTask(ResetArtistsSelectionAsync);
         ResetAlbumSelectionCommand = ReactiveCommand.CreateFromTask(ResetAlbumSelectionAsync);
+        LoadMoreAlbumsCommand = ReactiveCommand.CreateFromTask(LoadMoreAlbumsAsync);
 
         var canPlay = this.WhenAnyValue(vm => vm.SelectedTrack).Select(t => t != null);
         PlayCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
@@ -204,42 +220,118 @@ public class LibraryViewModel : ViewModelBase
     {
         if (_selectedLibrary is null) { return; }
 
-        List<Album>? albums = [];
+        // Reset pagination state when loading fresh
+        _albumsStartIndex = 0;
+        _totalAlbumCount = 0;
+
+        List<Album>? albums;
 
         if (SelectedArtist == null)
         {
-            albums = await _jellyfinApiService.GetAlbumsAsync(_selectedLibrary.Id);
+            // Use paginated API for library albums with server-side sorting
+            var (sortBy, sortOrder) = GetSortParameters();
+            var (pagedAlbums, totalCount) = await _jellyfinApiService.GetAlbumsPagedAsync(
+                _selectedLibrary.Id, _albumsStartIndex, AlbumsPageSize, sortBy, sortOrder);
+            albums = pagedAlbums;
+            _totalAlbumCount = totalCount;
         }
         else
         {
+            // For artist-specific albums, load all (typically fewer albums)
             albums = await _jellyfinApiService.GetAlbumsByArtistAsync(SelectedArtist.Id);
-        }
+            _totalAlbumCount = albums.Count;
 
-        if (AlbumSortStatus == "A-Z")
-        {
-            albums = albums.OrderBy(a => a.Title).ToList();
-        }
-        else if (AlbumSortStatus == "BY RELEASE YEAR")
-        {
-            albums = albums.OrderByDescending(a => a.ProductionYear).ToList();
-        }
-        else if (AlbumSortStatus == "BY RATING")
-        {
-            albums = albums.OrderByDescending(a => a.UserData.IsFavorite).ToList();
+            // Apply client-side sorting for artist albums
+            if (AlbumSortStatus == "A-Z")
+            {
+                albums = albums.OrderBy(a => a.Title).ToList();
+            }
+            else if (AlbumSortStatus == "BY RELEASE YEAR")
+            {
+                albums = albums.OrderByDescending(a => a.ProductionYear).ToList();
+            }
+            else if (AlbumSortStatus == "BY RATING")
+            {
+                albums = albums.OrderByDescending(a => a.UserData.IsFavorite).ToList();
+            }
         }
 
         // Prepare all album data first (URLs, subtitles) before updating collection
+        PrepareAlbumData(albums);
+
+        // Batch update: replace entire collection at once to avoid multiple UI updates
+        Albums = new ObservableCollection<Album>(albums);
+        this.RaisePropertyChanged(nameof(Albums));
+        this.RaisePropertyChanged(nameof(HasMoreAlbums));
+
+        UpdateAlbumCount();
+    }
+
+    private async Task LoadMoreAlbumsAsync()
+    {
+        if (_selectedLibrary is null || SelectedArtist != null || !HasMoreAlbums || IsLoadingMoreAlbums)
+        {
+            return;
+        }
+
+        try
+        {
+            IsLoadingMoreAlbums = true;
+
+            _albumsStartIndex += AlbumsPageSize;
+
+            var (sortBy, sortOrder) = GetSortParameters();
+            var (albums, _) = await _jellyfinApiService.GetAlbumsPagedAsync(
+                _selectedLibrary.Id, _albumsStartIndex, AlbumsPageSize, sortBy, sortOrder);
+
+            // Prepare album data
+            PrepareAlbumData(albums);
+
+            // Append to existing collection
+            foreach (var album in albums)
+            {
+                Albums.Add(album);
+            }
+
+            this.RaisePropertyChanged(nameof(HasMoreAlbums));
+            UpdateAlbumCount();
+        }
+        finally
+        {
+            IsLoadingMoreAlbums = false;
+        }
+    }
+
+    private (string? sortBy, string? sortOrder) GetSortParameters()
+    {
+        return AlbumSortStatus switch
+        {
+            "A-Z" => ("SortName", "Ascending"),
+            "BY RELEASE YEAR" => ("ProductionYear", "Descending"),
+            "BY RATING" => ("IsFavorite", "Descending"),
+            _ => (null, null)
+        };
+    }
+
+    private void PrepareAlbumData(List<Album> albums)
+    {
         foreach (var album in albums)
         {
             album.AlbumArtUrl = album.GetPrimaryImageUrl(_jellyfinApiService.ServerUrl ?? "", _jellyfinApiService.CurrentAccessToken ?? "") ?? "";
             album.AlbumSubtitle = SelectedArtist == null ? album.AlbumArtist : album.ProductionYear.ToString();
         }
+    }
 
-        // Batch update: replace entire collection at once to avoid multiple UI updates
-        Albums = new ObservableCollection<Album>(albums);
-        this.RaisePropertyChanged(nameof(Albums));
-
-        AlbumCount = $"{Albums.Count} ALBUMS";
+    private void UpdateAlbumCount()
+    {
+        if (HasMoreAlbums)
+        {
+            AlbumCount = $"{Albums.Count} OF {_totalAlbumCount} ALBUMS";
+        }
+        else
+        {
+            AlbumCount = $"{Albums.Count} ALBUMS";
+        }
     }
 
     private async Task LoadTracksAsync()

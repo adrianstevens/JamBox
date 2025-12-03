@@ -267,6 +267,39 @@ public class JellyfinApiService : IJellyfinApiService, IDisposable
         return result?.Items ?? [];
     }
 
+    public async Task<(List<Album> Albums, int TotalCount)> GetAlbumsPagedAsync(
+        string libraryId, int startIndex = 0, int limit = 50, string? sortBy = null, string? sortOrder = null)
+    {
+        if (!IsAuthenticated || _httpClient is null)
+        {
+            return ([], 0);
+        }
+
+        var queryString = new StringBuilder("Items")
+            .Append("?IncludeItemTypes=MusicAlbum")
+            .Append($"&ParentId={libraryId}")
+            .Append("&Recursive=true")
+            .Append($"&StartIndex={startIndex}")
+            .Append($"&Limit={limit}");
+
+        if (!string.IsNullOrEmpty(sortBy))
+        {
+            queryString.Append($"&SortBy={sortBy}");
+        }
+
+        if (!string.IsNullOrEmpty(sortOrder))
+        {
+            queryString.Append($"&SortOrder={sortOrder}");
+        }
+
+        var response = await _httpClient.GetAsync(queryString.ToString());
+        response.EnsureSuccessStatusCode();
+        var stream = await response.Content.ReadAsStreamAsync();
+        var result = await JsonSerializer.DeserializeAsync(stream, AppJsonSerializerContext.Default.JellyfinResponseAlbum);
+
+        return (result?.Items ?? [], result?.TotalRecordCount ?? 0);
+    }
+
     public async Task<List<Album>> GetAlbumsByArtistAsync(string artistId)
     {
         if (!IsAuthenticated || _httpClient is null)
