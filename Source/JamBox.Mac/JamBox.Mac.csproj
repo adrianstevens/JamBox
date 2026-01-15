@@ -1,25 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net9.0</TargetFramework>
-		<SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
-		<RuntimeIdentifiers>osx-arm64;osx-x64</RuntimeIdentifiers>
+        <TargetFramework>net10.0</TargetFramework>
+        <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
+        <RuntimeIdentifiers>osx-arm64;osx-x64</RuntimeIdentifiers>
     </PropertyGroup>
-	<PropertyGroup>
-		<SelfContained>true</SelfContained>
-		<PublishSingleFile>false</PublishSingleFile>
-		<PublishTrimmed>false</PublishTrimmed>
-		<Nullable>enable</Nullable>
-		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-	</PropertyGroup>
+    <PropertyGroup>
+        <SelfContained>true</SelfContained>
+        <PublishSingleFile>false</PublishSingleFile>
+        <PublishTrimmed>false</PublishTrimmed>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia" />
         <PackageReference Include="Avalonia.Desktop" />
         <PackageReference Include="Avalonia.Diagnostics" />
         <PackageReference Include="Avalonia.Fonts.Inter" />
-		<PackageReference Include="VideoLAN.LibVLC.Mac" />
+        <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="System.Text.Json" />
+        <PackageReference Include="VideoLAN.LibVLC.Mac" />
     </ItemGroup>
 
     <ItemGroup>
