@@ -2,6 +2,7 @@
 using JamBox.Core.Services.Interfaces;
 using JamBox.Core.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reactive.Linq;
 
 namespace JamBox.Core.Services;
 
@@ -63,5 +64,10 @@ public class NavigationService : INavigationService
             var previousView = _navigationStack.Pop();
             _mainViewModel.SetCurrentContent(previousView);
         }
+    }
+
+    public void ToggleMiniPlayer()
+    {
+        _mainViewModel?.ToggleMiniPlayerCommand.Execute().Subscribe();
     }
 }

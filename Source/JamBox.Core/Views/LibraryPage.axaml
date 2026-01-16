@@ -39,6 +39,23 @@
                             Margin="20" />
                     </Grid>
 
+                    <!-- Mini Player Button -->
+                    <Button
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="20"
+                        Padding="8"
+                        Background="Transparent"
+                        CornerRadius="4"
+                        Command="{Binding MiniPlayerCommand}"
+                        ToolTip.Tip="Mini Player">
+                        <Image
+                            Source="avares://JamBox.Core/Assets/icon-collapse.png"
+                            Width="16"
+                            Height="16"
+                            Stretch="Uniform" />
+                    </Button>
+
                     <!-- Search and Tabs -->
                     <StackPanel 
                         HorizontalAlignment="Right" 

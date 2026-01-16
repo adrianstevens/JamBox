@@ -115,6 +115,7 @@ public class LibraryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> ResetArtistsSelectionCommand { get; }
     public ReactiveCommand<Unit, Unit> ResetAlbumSelectionCommand { get; }
     public ReactiveCommand<Unit, Unit> JukeBoxModeCommand { get; }
+    public ReactiveCommand<Unit, Unit> MiniPlayerCommand { get; }
 
     public LibraryViewModel(
         PlaybackViewModel playbackViewModel,
@@ -138,6 +139,7 @@ public class LibraryViewModel : ViewModelBase
         var canPlay = this.WhenAnyValue(vm => vm.SelectedTrack).Select(t => t != null);
         PlayCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
         JukeBoxModeCommand = ReactiveCommand.Create(() => _navigationService.NavigateTo<JukeBoxPage, JukeBoxViewModel>());
+        MiniPlayerCommand = ReactiveCommand.Create(() => _navigationService.ToggleMiniPlayer());
 
         // Start library loading with proper error handling
         _ = InitializeLibraryAsync();

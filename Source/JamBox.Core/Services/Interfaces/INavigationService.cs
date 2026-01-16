@@ -12,4 +12,6 @@ public interface INavigationService
     void NavigateTo<TView, TViewModel>() where TView : UserControl where TViewModel : class;
 
     void NavigateBack();
+
+    void ToggleMiniPlayer();
 }
