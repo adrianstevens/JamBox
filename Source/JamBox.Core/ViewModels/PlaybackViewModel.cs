@@ -62,6 +62,13 @@ public class PlaybackViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _nowPlayingSongTitle, value);
     }
 
+    private string? _nowPlayingArtist = string.Empty;
+    public string? NowPlayingArtist
+    {
+        get => _nowPlayingArtist;
+        set => this.RaiseAndSetIfChanged(ref _nowPlayingArtist, value);
+    }
+
     private string _nowPlayingElapsedTime = "0:00";
     public string NowPlayingElapsedTime
     {
@@ -194,6 +201,7 @@ public class PlaybackViewModel : ViewModelBase
 
         SelectedTrack.IsPlaying = true;
         NowPlayingSongTitle = SelectedTrack.Title;
+        NowPlayingArtist = SelectedTrack.AlbumArtist;
         await _audioPlayerService.PlayAsync(url, headers);
     }
 

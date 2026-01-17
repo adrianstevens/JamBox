@@ -182,6 +182,9 @@ public class Track
     [JsonPropertyName("AlbumId")]
     public string AlbumId { get; set; } = default!;
 
+    [JsonPropertyName("AlbumArtist")]
+    public string? AlbumArtist { get; set; }
+
     [JsonPropertyName("IndexNumber")]
     public int IndexNumber { get; set; } = default!;
 
