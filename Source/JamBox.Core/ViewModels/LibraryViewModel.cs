@@ -106,6 +106,7 @@ public class LibraryViewModel : ViewModelBase
     }
 
     public ReactiveCommand<Unit, Unit> PlayCommand { get; }
+    public ReactiveCommand<Album, Unit> PlayAlbumCommand { get; }
     public ReactiveCommand<Unit, Unit> LoadArtistsCommand { get; }
     public ReactiveCommand<Unit, Unit> LoadAlbumsCommand { get; }
     public ReactiveCommand<Unit, Unit> LoadTracksCommand { get; }
@@ -138,6 +139,7 @@ public class LibraryViewModel : ViewModelBase
 
         var canPlay = this.WhenAnyValue(vm => vm.SelectedTrack).Select(t => t != null);
         PlayCommand = ReactiveCommand.CreateFromTask(PlaySelectedTrackAsync, canPlay);
+        PlayAlbumCommand = ReactiveCommand.CreateFromTask<Album>(PlayAlbumAsync);
         JukeBoxModeCommand = ReactiveCommand.Create(() => _navigationService.NavigateTo<JukeBoxPage, JukeBoxViewModel>());
         MiniPlayerCommand = ReactiveCommand.Create(() => _navigationService.ToggleMiniPlayer());
 
@@ -349,5 +351,30 @@ public class LibraryViewModel : ViewModelBase
         Playback.SetPlaylist(Tracks, SelectedTrack, albumArtUrl);
         Playback.PlayCommand.Execute().Subscribe();
         return Task.CompletedTask;
+    }
+
+    private async Task PlayAlbumAsync(Album album)
+    {
+        if (album == null) { return; }
+
+        // Load tracks for the album
+        var tracks = await _jellyfinApiService.GetTracksByAlbumAsync(album.Id);
+        if (tracks == null || tracks.Count == 0) { return; }
+
+        // Sort by track number
+        tracks = tracks.OrderBy(t => t.IndexNumber).ToList();
+
+        // Update the tracks collection
+        Tracks = new ObservableCollection<Track>(tracks);
+        this.RaisePropertyChanged(nameof(Tracks));
+        TrackCount = $"{Tracks.Count} TRACKS";
+
+        // Select the first track and start playback
+        SelectedTrack = Tracks.FirstOrDefault();
+        if (SelectedTrack != null)
+        {
+            Playback.SetPlaylist(Tracks, SelectedTrack, album.AlbumArtUrl);
+            Playback.PlayCommand.Execute().Subscribe();
+        }
     }
 }
