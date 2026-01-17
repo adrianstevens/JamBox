@@ -14,6 +14,11 @@ public class PlaybackViewModel : ViewModelBase
     private readonly IJellyfinApiService _jellyfinApiService;
 
     private ObservableCollection<Track> _playlist = [];
+    public ObservableCollection<Track> Playlist
+    {
+        get => _playlist;
+        private set => this.RaiseAndSetIfChanged(ref _playlist, value);
+    }
 
     private Track? _selectedTrack;
     public Track? SelectedTrack
@@ -162,9 +167,9 @@ public class PlaybackViewModel : ViewModelBase
         var canResume = this.WhenAnyValue(x => x.Playback).Select(s => s == PlaybackState.Paused);
         var canStop = this.WhenAnyValue(x => x.Playback).Select(s => s is PlaybackState.Playing or PlaybackState.Paused);
         var canToggle = this.WhenAnyValue(x => x.SelectedTrack, x => x.Playback, (track, state) => state == PlaybackState.Playing || track != null);
-        var canPlayNext = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm._playlist)
+        var canPlayNext = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.Playlist)
             .Select(t => t.Item1 != null && t.Item2.Count > 0 && t.Item2.IndexOf(t.Item1) + 1 < t.Item2.Count);
-        var canPlayPrevious = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm._playlist)
+        var canPlayPrevious = this.WhenAnyValue(vm => vm.SelectedTrack, vm => vm.Playlist)
             .Select(t => t.Item1 != null && t.Item2.Count > 0 && t.Item2.IndexOf(t.Item1) > 0);
 
         PauseCommand = ReactiveCommand.Create(() => _audioPlayerService.Pause(), canPause);
@@ -182,7 +187,7 @@ public class PlaybackViewModel : ViewModelBase
     /// </summary>
     public void SetPlaylist(ObservableCollection<Track> tracks, Track selectedTrack, string? albumArtUrl)
     {
-        _playlist = tracks;
+        Playlist = tracks;
         SelectedTrack = selectedTrack;
         NowPlayingAlbumArtUrl = albumArtUrl;
     }
@@ -209,18 +214,18 @@ public class PlaybackViewModel : ViewModelBase
     {
         Dispatcher.UIThread.Post(async () =>
         {
-            if (SelectedTrack is null || !_playlist.Any())
+            if (SelectedTrack is null || !Playlist.Any())
             {
                 return;
             }
 
-            var currentIndex = _playlist.IndexOf(SelectedTrack);
+            var currentIndex = Playlist.IndexOf(SelectedTrack);
             var previousIndex = currentIndex - 1;
             if (previousIndex < 0)
             {
                 return;
             }
-            SelectedTrack = _playlist[previousIndex];
+            SelectedTrack = Playlist[previousIndex];
             await PlaySelectedTrackAsync();
         });
 
@@ -231,18 +236,18 @@ public class PlaybackViewModel : ViewModelBase
     {
         Dispatcher.UIThread.Post(async () =>
         {
-            if (SelectedTrack is null || !_playlist.Any())
+            if (SelectedTrack is null || !Playlist.Any())
             {
                 return;
             }
 
-            var currentIndex = _playlist.IndexOf(SelectedTrack);
+            var currentIndex = Playlist.IndexOf(SelectedTrack);
             var nextIndex = currentIndex + 1;
-            if (nextIndex >= _playlist.Count)
+            if (nextIndex >= Playlist.Count)
             {
                 return;
             }
-            SelectedTrack = _playlist[nextIndex];
+            SelectedTrack = Playlist[nextIndex];
             await PlaySelectedTrackAsync();
         });
 
