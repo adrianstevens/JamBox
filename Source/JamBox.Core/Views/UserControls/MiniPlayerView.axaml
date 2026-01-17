@@ -1,9 +1,9 @@
 <UserControl 
-xmlns="https://github.com/avaloniaui"
-xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
-xmlns:conv="clr-namespace:JamBox.Core.Converters"
-x:Class="JamBox.Core.Views.UserControls.MiniPlayerView">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+    xmlns:conv="clr-namespace:JamBox.Core.Converters"
+    x:Class="JamBox.Core.Views.UserControls.MiniPlayerView">
 
     <UserControl.Resources>
         <conv:BooleanInverseConverter x:Key="BooleanInverseConverter" />
@@ -24,15 +24,6 @@ x:Class="JamBox.Core.Views.UserControls.MiniPlayerView">
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-
-            <!-- Album Art -->
-            <Grid Grid.Row="0" Margin="20">
-                <Border CornerRadius="8" ClipToBounds="True">
-                    <Image 
-                        Stretch="UniformToFill"
-                        asyncImageLoader:ImageLoader.Source="{Binding Playback.NowPlayingAlbumArtUrl}" />
-                </Border>
-            </Grid>
 
             <!-- Song Title and Artist -->
             <StackPanel Grid.Row="1" Spacing="2" Margin="0,10,0,5">
@@ -55,36 +46,20 @@ x:Class="JamBox.Core.Views.UserControls.MiniPlayerView">
             <Grid Grid.Row="2" Margin="0,5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Slider
                     x:Name="SeekBar"
                     Grid.Row="0"
                     Minimum="0"
                     Maximum="{Binding Playback.SeekLength}"
-                    Value="{Binding Playback.SeekPosition, Mode=TwoWay}"
-                    PointerPressed="Seek_OnPointerPressed"
-                    PointerReleased="Seek_OnPointerReleased" />
-                <Grid Grid.Row="1">
-                    <TextBlock
-                        Text="{Binding Playback.NowPlayingElapsedTime}"
-                        FontSize="10"
-                        Foreground="#9CA3AF"
-                        HorizontalAlignment="Left" />
-                    <TextBlock
-                        Text="{Binding Playback.NowPlayingRemainingTime}"
-                        FontSize="10"
-                        Foreground="#9CA3AF"
-                        HorizontalAlignment="Right" />
-                </Grid>
+                    Value="{Binding Playback.SeekPosition, Mode=TwoWay}" />
             </Grid>
 
             <!-- Playback Controls -->
-            <Grid 
+            <Grid Background="Red"
                 Grid.Row="3"
                 HorizontalAlignment="Center" 
-                ColumnSpacing="16"
-                Margin="0,10,0,0">
+                ColumnSpacing="16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="28" />
                     <ColumnDefinition Width="40" />
